@@ -10,7 +10,7 @@
 - [GPT-6 Sol 交接](docs/HANDOFF_GPT6_SOL.md)
 - [GPQA 数据、长度与复核方法](data/gpqa/README.md)
 
-当前目标：原版 DeepSeek-V4-Flash，先在 GPU 4–7 上验证 TP=4 原生 SGLang 可运行性，再开发 MXFP4 routed-expert 的 Weave 跨卡 EP。正式对照如何处理 TP 与 EP 的并行方式差异仍待确定。GPQA Main、batch=1、Think High、最多生成 32K（32768）tokens，每组服务 ready 后预热与测量共最多20分钟。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
+当前目标：原版 DeepSeek-V4-Flash 混合精度权重，在 GPU 4–7 上以 EP=4 比较原生 SGLang 与完整 Weave。两组采用相同的专家划分和 attention/dense 并行布局；原生运行时对 MXFP4 专家 EP 路径的支持须先验证。SGLang 的 TP 参数可与 EP 参数同时使用，不能把 `--tp-size 4` 等同于 MoE 只使用 TP。GPQA Main、batch=1、Think High、最多生成 32K（32768）tokens，每组服务 ready 后预热与测量共最多20分钟。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
 
 旧 Qwen 输入长度审计的本地复核（不适用于 DeepSeek）：
 
