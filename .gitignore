@@ -1,0 +1,13 @@
+.venv-data/
+__pycache__/
+*.pyc
+.DS_Store
+# Keep benchmark examples out of public Git history. Fetch from the pinned source.
+data/gpqa/raw/
+data/gpqa/source/dataset.zip
+data/gpqa/prepared/
+data/tokenizers/
+results/
+build/
+.cache/
+*.egg-info/

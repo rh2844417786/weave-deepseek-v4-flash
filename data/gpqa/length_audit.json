@@ -1,0 +1,93 @@
+{
+  "tokenizer_id": "Qwen/Qwen3.5-35B-A3B",
+  "tokenizer_revision": "59d61f3ce65a6d9863b86d2e96597125219dc754",
+  "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+  "chat_template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+  "libraries": {
+    "tokenizers": "0.23.2",
+    "jinja2": "3.1.6"
+  },
+  "method": "Official Jinja chat template + tokenizers.encode(add_special_tokens=False); single user message; no system message; no few-shot examples; no padding or truncation",
+  "input_columns": [
+    "Question",
+    "Correct Answer",
+    "Incorrect Answer 1",
+    "Incorrect Answer 2",
+    "Incorrect Answer 3"
+  ],
+  "explanation_and_gold_label_in_prompt": false,
+  "answer_choice_seed": "42 + zero-based CSV row index",
+  "instruction": "Answer the following multiple-choice question. Explain your reasoning briefly, then state the final answer as A, B, C, or D.",
+  "prompt_modes": {
+    "thinking_off": {
+      "main": {
+        "count": 448,
+        "min": 76,
+        "median": 215.0,
+        "p95": 444.95,
+        "max": 2782,
+        "mean": 245.15,
+        "at_least_2048": 1,
+        "at_least_4096": 0,
+        "at_least_8192": 0
+      },
+      "diamond": {
+        "count": 198,
+        "min": 79,
+        "median": 220.5,
+        "p95": 462.0,
+        "max": 2782,
+        "mean": 254.0,
+        "at_least_2048": 1,
+        "at_least_4096": 0,
+        "at_least_8192": 0
+      },
+      "extended": {
+        "count": 546,
+        "min": 76,
+        "median": 218.0,
+        "p95": 465.0,
+        "max": 12325,
+        "mean": 269.8,
+        "at_least_2048": 2,
+        "at_least_4096": 1,
+        "at_least_8192": 1
+      }
+    },
+    "thinking_on": {
+      "main": {
+        "count": 448,
+        "min": 74,
+        "median": 213.0,
+        "p95": 442.95,
+        "max": 2780,
+        "mean": 243.15,
+        "at_least_2048": 1,
+        "at_least_4096": 0,
+        "at_least_8192": 0
+      },
+      "diamond": {
+        "count": 198,
+        "min": 77,
+        "median": 218.5,
+        "p95": 460.0,
+        "max": 2780,
+        "mean": 252.0,
+        "at_least_2048": 1,
+        "at_least_4096": 0,
+        "at_least_8192": 0
+      },
+      "extended": {
+        "count": 546,
+        "min": 74,
+        "median": 216.0,
+        "p95": 463.0,
+        "max": 12323,
+        "mean": 267.8,
+        "at_least_2048": 2,
+        "at_least_4096": 1,
+        "at_least_8192": 1
+      }
+    }
+  }
+}
