@@ -1,0 +1,84 @@
+{
+  "checkpoint": {
+    "model_path": "/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash",
+    "architecture": "DeepseekV4ForCausalLM",
+    "model_type": "deepseek_v4",
+    "expert_dtype": "fp4",
+    "expert_dtype_source": "derived_from_shard_header",
+    "expert_dtype_evidence": {
+      "expert_tensor": "layers.0.ffn.experts.0.w1.weight",
+      "storage_dtype": "I8",
+      "scale_dtype": "F8_E8M0",
+      "stored_width": 2048,
+      "scale_width": 128,
+      "assumed_block_size": 32,
+      "derived_expert_dtype": "fp4"
+    },
+    "hidden_size": 4096,
+    "moe_intermediate_size": 2048,
+    "n_routed_experts": 256,
+    "num_experts_per_tok": 6,
+    "num_hidden_layers": 43,
+    "max_position_embeddings": 1048576,
+    "quantization_config": {
+      "activation_scheme": "dynamic",
+      "fmt": "e4m3",
+      "quant_method": "fp8",
+      "scale_fmt": "ue8m0",
+      "weight_block_size": [
+        128,
+        128
+      ]
+    },
+    "config_sha256": "52b5a1aa87606cb5be4f3158d706594edb1c4ce97ce6b1cd6079f15df075d7f5",
+    "index_sha256": "7e975ba3bef8947a94e7da0abd60888375b232b4dfad883d59653e65c6ba522a",
+    "shard_count": 46,
+    "shard_bytes": 159617149040,
+    "missing_shards": [],
+    "shard_check": "presence_and_size_only; shard contents not hashed"
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "python_executable": "/usr/bin/python3",
+    "image": "sangfor-inference-sglang-nvidia-cuda13.0-ubuntu24.04-x86_64:v2.4.0.2",
+    "provenance_note": "Runtime image built on lmsysorg/sglang:v0.5.16 at commit fdebc938f7f4d16fe6b9f55dcd9a767cf0899ea1, matching the pinned SGLang v0.5.16 / PyTorch 2.11.0 / Transformers 5.12.1. The project's own /opt/sglang-v4 venv exists only in container c61793e2af9a's writable layer and is reproducible from no image, so this image supplies the same pinned release; the interpreter here is /usr/bin/python3.",
+    "packages": {
+      "sglang": "0.5.16",
+      "torch": "2.11.0+cu130",
+      "triton": "3.6.0",
+      "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py"
+    },
+    "cuda_visible_devices": null,
+    "nvidia_visible_devices": "void",
+    "gpu_inventory": {
+      "status": "observed",
+      "devices": [
+        {
+          "index": "0",
+          "uuid": "GPU-dd86c4db-6f83-d828-ccd4-cc2e9a407702",
+          "name": "NVIDIA H100 80GB HBM3",
+          "memory_mib": "81559"
+        },
+        {
+          "index": "1",
+          "uuid": "GPU-e178b6af-9dd7-1539-4498-a37c2db6d653",
+          "name": "NVIDIA H100 80GB HBM3",
+          "memory_mib": "81559"
+        },
+        {
+          "index": "2",
+          "uuid": "GPU-cc3e12d2-9fb7-ee93-127f-b32198b49402",
+          "name": "NVIDIA H100 80GB HBM3",
+          "memory_mib": "81559"
+        },
+        {
+          "index": "3",
+          "uuid": "GPU-f853f2c5-42a1-c90a-ca59-bb93e566fc88",
+          "name": "NVIDIA H100 80GB HBM3",
+          "memory_mib": "81559"
+        }
+      ]
+    }
+  },
+  "status": "inventory_only_not_generation_verified"
+}
