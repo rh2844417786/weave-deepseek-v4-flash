@@ -1,0 +1,13 @@
+#include "scheduler.h"
+#include <cassert>
+#include <cmath>
+int main() {
+  double rows[]={1,1,120,20,1,.5, 1,2,120,20,.9,.5, 1,4,120,20,.5,.5};
+  auto p=weave::choose_schedule(rows,3,4,6,4,2,10,2,2);
+  assert(p.c==1 && p.k==2 && p.steal==0);
+  assert(std::abs(p.seconds-(240./108.+.4))<1e-12);
+  double invalid[]={0,1,24,0,1,0};
+  assert(weave::choose_schedule(invalid,1,4,0,1,1,1,2,2).c==-1);
+  auto local=weave::choose_schedule(invalid,1,4,1,0,0,1,2,2);
+  assert(local.c==0 && local.seconds==1.);
+}

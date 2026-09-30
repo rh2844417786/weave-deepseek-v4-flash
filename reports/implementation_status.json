@@ -1,0 +1,30 @@
+{
+  "backend": "weave_functional",
+  "source": {
+    "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
+    "cuda_ipc_epoch_protocol": "implemented_unverified_on_gpu",
+    "gpu_joint_cost_model": "implemented_profile_required",
+    "chunk_pipeline": "implemented_unverified_on_gpu",
+    "bubble_stealing": "implemented_token_expert_work_unit",
+    "sglang_adapter": "implemented_eager_only_unverified",
+    "native_fallback": "not_provided"
+  },
+  "validation": {
+    "cpu_suite": {"status": "passed", "tests": 29},
+    "shared_scheduler_header_host_compile": "passed",
+    "python_syntax": "passed",
+    "cuda_build": "not_run",
+    "multi_gpu_correctness": "not_run",
+    "core_graph_replay": "not_run",
+    "sglang_integration": "not_run",
+    "full_model_generation": "not_run",
+    "performance": "not_run"
+  },
+  "remaining_acceptance": [
+    "Tensor Core expert tiles and matching tile stealing",
+    "Measured calibration profiles",
+    "H100 build and functional evidence",
+    "Full model and SGLang graph correctness",
+    "Matched native EP4 and Weave performance runs"
+  ]
+}

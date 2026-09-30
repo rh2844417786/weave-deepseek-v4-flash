@@ -12,6 +12,17 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class NativeEPLaunchTest(unittest.TestCase):
+    def test_functional_backend_mounts_extension_and_selects_eager_explicitly(self):
+        env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
+        run = subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--work-root', '/tmp/weave-work',
+                              '--backend', 'weave_functional'], cwd=ROOT, env=env, capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        args = json.loads(run.stdout)['docker_argv']
+        self.assertIn('SGLANG_EXTERNAL_MODEL_PACKAGE=weave.sglang_ext.models', args)
+        self.assertIn('PYTHONPATH=/workspace/src', args)
+        self.assertEqual(args[args.index('--cuda-graph-backend-decode')+1], 'disabled')
+        self.assertEqual(args[args.index('--ep-size')+1], '4')
+
     def test_preview_is_ep4_and_docker_device_list_is_one_quoted_argument(self):
         env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
         run = subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--work-root', '/tmp/weave-work'],
