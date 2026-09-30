@@ -1,0 +1,14 @@
+{
+  "image": "lmsysorg/sglang:v0.5.17",
+  "python_executable": "/usr/bin/python3",
+  "python_version": "3.12.3",
+  "torch_version": "2.11.0+cu130",
+  "torch_cuda": "13.0",
+  "nvcc_release": "13.0",
+  "sglang_version": "0.5.17",
+  "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+  "transformers_version": "5.12.1",
+  "work_directory": "work",
+  "gpu_allocation": "4,5,6,7",
+  "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+}

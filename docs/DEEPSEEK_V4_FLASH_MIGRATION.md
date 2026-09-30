@@ -23,7 +23,7 @@ TP 与 EP 参数可以共存。SGLang 的 EP 文档给出 `--tp 8 --ep 8` 等配
 
 ## 第一阶段：只读证据与原生可行性
 
-1. 服务器提交 `d716551` 已回传 `results/deepseek_v4_preflight.json`：46 个分片存在，实际包版本 SGLang 0.5.16、PyTorch 2.11.0+cu130，枚举到四张 H100。该报告只完成清单采集，生成和 EP 正确性未验证。镜像 tag 的源码来源说明指向 `fdebc938f7f4d16fe6b9f55dcd9a767cf0899ea1`；后续启动入口记录实际 image ID。可写工作盘通过必填 `--work-root` 传入。
+1. 历史提交 `d716551` 已回传 `results/deepseek_v4_preflight.json`：46 个分片存在，记录 SGLang 0.5.16、PyTorch 2.11.0+cu130 和四张 H100。用户对当前服务器的实测显示该镜像不可获得，因此当前契约改用本地已有的 `lmsysorg/sglang:v0.5.17`，每次启动重新记录 runtime 与 image ID。默认可写工作目录为 `<repo>/work`，环境变量或 `--work-root` 可覆盖，详见 `docs/RUNTIME_0517.md`。
 2. 在能读取原版权重的环境运行只读检查：
 
    ```bash
@@ -38,5 +38,5 @@ TP 与 EP 参数可以共存。SGLang 的 EP 文档给出 `--tp 8 --ep 8` 等配
 
 ## 待外部回传
 
-- 服务器工作盘 `WORK_ROOT`；GitHub 仓库虽已创建，源码推送状态须单独核验。
+- 当前服务器的新 runtime/GPU 功能报告；默认工作目录已选定为 `<repo>/work`。
 - 预检 JSON、实际 SGLang/Docker 版本与 EP=4 原生启动及短生成日志，包括实际专家划分与通信后端证据。

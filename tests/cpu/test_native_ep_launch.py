@@ -12,6 +12,17 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class NativeEPLaunchTest(unittest.TestCase):
+    def test_default_image_and_work_root_follow_current_host_contract(self):
+        env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
+        env.pop('WORK_ROOT', None)
+        run = subprocess.run([sys.executable, 'scripts/run_native_ep.py'], cwd=ROOT,
+                             env=env, capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        args = json.loads(run.stdout)['docker_argv']
+        self.assertIn('lmsysorg/sglang:v0.5.17', args)
+        self.assertIn(str(ROOT/'work') + ':/work', args)
+        self.assertIn('/workspace/scripts/check_runtime.py', args)
+
     def test_functional_backend_mounts_extension_and_selects_eager_explicitly(self):
         env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
         run = subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--work-root', '/tmp/weave-work',

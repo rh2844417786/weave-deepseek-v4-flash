@@ -8,6 +8,7 @@ data/gpqa/source/dataset.zip
 data/gpqa/prepared/
 data/tokenizers/
 results/
+work/
 build/
 .cache/
 *.egg-info/

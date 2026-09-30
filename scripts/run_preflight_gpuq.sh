@@ -18,36 +18,52 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODEL_PATH="${MODEL_PATH:-/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash}"
-OUTPUT_REL="${OUTPUT_REL:-results/deepseek_v4_preflight.json}"
-# The project pins SGLang v0.5.16 at commit fdebc938f7f4d16fe6b9f55dcd9a767cf0899ea1.
-# Its own /opt/sglang-v4 venv exists only in container c61793e2af9a's writable
-# layer and is reproducible from no image. This image is built on that exact
-# pinned release, so it supplies the same runtime.
-IMAGE="${IMAGE:-sangfor-inference-sglang-nvidia-cuda13.0-ubuntu24.04-x86_64:v2.4.0.2}"
+WORK_ROOT="${WORK_ROOT:-$REPO_ROOT/work}"
+[[ "$WORK_ROOT" == /* ]] || { echo 'WORK_ROOT must be absolute' >&2; exit 2; }
+mkdir -p "$WORK_ROOT"
+[[ -w "$WORK_ROOT" && -x "$WORK_ROOT" ]] || { echo 'WORK_ROOT must be writable and searchable' >&2; exit 2; }
+WORK_ROOT="$(cd "$WORK_ROOT" && pwd)"
+RUN_DIR="$(mktemp -d "$WORK_ROOT/preflight.XXXXXX")"
+RUN_NAME="$(basename "$RUN_DIR")"
+OUTPUT_REL="${OUTPUT_REL:-$RUN_NAME/deepseek_v4_preflight.json}"
+[[ "$OUTPUT_REL" != /* && "$OUTPUT_REL" != *'..'* ]] || { echo 'OUTPUT_REL must stay under WORK_ROOT' >&2; exit 2; }
+IMAGE="${IMAGE:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["image"])' "$REPO_ROOT/configs/runtime.json")}"
 RUNTIME_PYTHON="${RUNTIME_PYTHON:-/usr/bin/python3}"
-RUNTIME_NOTE="${RUNTIME_NOTE:-Runtime image built on lmsysorg/sglang:v0.5.16 at commit fdebc938f7f4d16fe6b9f55dcd9a767cf0899ea1, matching the pinned SGLang v0.5.16 / PyTorch 2.11.0 / Transformers 5.12.1. The project's own /opt/sglang-v4 venv exists only in container c61793e2af9a's writable layer and is reproducible from no image, so this image supplies the same pinned release; the interpreter here is /usr/bin/python3.}"
+RUNTIME_NOTE="${RUNTIME_NOTE:-Current-host image selection: $IMAGE. Package versions in this report are observed at runtime. Historical 0.5.16 preflight evidence belongs to its own recorded image and must not establish availability on this host.}"
+IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}')"
 
-mkdir -p "${REPO_ROOT}/$(dirname "${OUTPUT_REL}")"
+mkdir -p "${WORK_ROOT}/$(dirname "${OUTPUT_REL}")"
 
 echo "gpuq job id:      ${GPUQ_JOB_ID:-unset}"
 echo "gpuq project:     ${GPUQ_PROJECT:-unset}"
 echo "allocation:       CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
 echo "image:            ${IMAGE}"
-echo "image id:         $(docker image inspect "${IMAGE}" --format '{{.Id}}')"
+echo "image id:         ${IMAGE_ID}"
 echo "runtime python:   ${RUNTIME_PYTHON}"
 echo "model path:       ${MODEL_PATH}"
-echo "output:           ${OUTPUT_REL}"
+echo "output:           ${WORK_ROOT}/${OUTPUT_REL}"
 
-exec docker run --rm \
+set +e
+docker run --rm --pull=never \
   --gpus "\"device=${CUDA_VISIBLE_DEVICES}\"" \
   --network=host \
   --shm-size=8g \
-  -v "${REPO_ROOT}:/workspace" \
+  -v "${REPO_ROOT}:/workspace:ro" -v "${WORK_ROOT}:/work" \
   -v "${MODEL_PATH}:${MODEL_PATH}:ro" \
   -w /workspace \
-  "${IMAGE}" \
-  "${RUNTIME_PYTHON}" scripts/preflight_deepseek_v4.py \
+  -e CUDA_VISIBLE_DEVICES=0,1,2,3 \
+  -e "WEAVE_IMAGE_REF=$IMAGE" -e "WEAVE_IMAGE_ID=$IMAGE_ID" \
+  -e "WEAVE_HOST_HOSTNAME=$(hostname)" -e "WEAVE_HOST_ALLOCATION=$CUDA_VISIBLE_DEVICES" \
+  "${IMAGE_ID}" \
+  "${RUNTIME_PYTHON}" scripts/check_runtime.py --stage core --output-dir "/work/$RUN_NAME" \
+    --exec-command "${RUNTIME_PYTHON}" scripts/preflight_deepseek_v4.py \
     --model-path "${MODEL_PATH}" \
-    --output "${OUTPUT_REL}" \
+    --output "/work/${OUTPUT_REL}" \
     --runtime-image "${IMAGE}" \
-    --runtime-provenance-note "${RUNTIME_NOTE}"
+    --runtime-image-id "${IMAGE_ID}" \
+    --runtime-provenance-note "${RUNTIME_NOTE}" > "$RUN_DIR/preflight.log" 2>&1
+code=$?
+set -e
+printf '%s\n' "$code" > "$RUN_DIR/exit_code.txt"
+echo "Exit code: $code; evidence: $RUN_DIR"
+exit "$code"

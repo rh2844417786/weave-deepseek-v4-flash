@@ -1,0 +1,15 @@
+{
+  "version": "0.5.17",
+  "commit": "29481685462732237d80d86076d6563e1f658102",
+  "source": "https://github.com/sgl-project/sglang/tree/29481685462732237d80d86076d6563e1f658102",
+  "sha256": {
+    "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+    "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+    "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+    "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+    "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+    "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+    "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+    "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334"
+  }
+}

@@ -182,6 +182,7 @@ def main() -> None:
         default=None,
         help="provenance caveat about the runtime above, recorded verbatim",
     )
+    parser.add_argument("--runtime-image-id", default=None)
     args = parser.parse_args()
 
     report = {
@@ -190,6 +191,8 @@ def main() -> None:
             "python": sys.version.split()[0],
             "python_executable": sys.executable,
             "image": args.runtime_image,
+            "image_id": args.runtime_image_id,
+            "host_hostname": os.environ.get("WEAVE_HOST_HOSTNAME"),
             "provenance_note": args.runtime_provenance_note,
             "packages": {name: _version(name) for name in ("sglang", "torch", "triton", "sgl-kernel")},
             "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),

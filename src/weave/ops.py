@@ -4,6 +4,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sys
+
+
+def extension_name(torch_version, cuda_version):
+    root = Path(__file__).resolve().parents[2]
+    identity = f'{torch_version};{cuda_version};py{sys.version_info.major}.{sys.version_info.minor};{os.environ.get("TORCH_CUDA_ARCH_LIST", "9.0a")}'
+    content = (root/'csrc/megakernel.cu').read_bytes() + (root/'csrc/scheduler.h').read_bytes()
+    return 'weave_functional_' + hashlib.sha256(content + identity.encode()).hexdigest()[:16]
 
 
 @lru_cache(maxsize=1)
@@ -15,9 +23,8 @@ def extension():
     root = Path(__file__).resolve().parents[2]
     source = root / 'csrc/megakernel.cu'
     header = root / 'csrc/scheduler.h'
-    fingerprint = hashlib.sha256(source.read_bytes() + header.read_bytes()).hexdigest()[:12]
     os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '9.0a')
-    return load(name='weave_functional_' + fingerprint, sources=[str(source)],
+    return load(name=extension_name(str(torch.__version__), torch.version.cuda), sources=[str(source)],
                 extra_cuda_cflags=['-O3', '-lineinfo', '-std=c++17'],
                 extra_cflags=['-O3', '-std=c++17'], verbose=True)
 

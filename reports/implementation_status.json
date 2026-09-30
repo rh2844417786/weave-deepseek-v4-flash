@@ -1,16 +1,23 @@
 {
   "backend": "weave_functional",
+  "current_runtime_target": {
+    "image": "lmsysorg/sglang:v0.5.17",
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "work_root_default": "<repo>/work",
+    "actual_current_server_validation": "not_run"
+  },
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
     "cuda_ipc_epoch_protocol": "implemented_unverified_on_gpu",
     "gpu_joint_cost_model": "implemented_profile_required",
     "chunk_pipeline": "implemented_unverified_on_gpu",
     "bubble_stealing": "implemented_token_expert_work_unit",
-    "sglang_adapter": "implemented_eager_only_unverified",
+    "sglang_adapter": "implemented_eager_0.5.17_source_locked_unverified",
     "native_fallback": "not_provided"
   },
   "validation": {
-    "cpu_suite": {"status": "passed", "tests": 29},
+    "cpu_suite": {"status": "passed", "tests": 38},
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
     "cuda_build": "not_run",

@@ -1,4 +1,4 @@
-"""Experimental SGLang 0.5.16 adapter for the functional persistent kernel.
+"""Experimental SGLang 0.5.17 adapter for the functional persistent kernel.
 
 Installation replaces every routed expert module. Unsupported paths raise;
 there is no native expert fallback. Eager execution is the initial integration
@@ -11,6 +11,7 @@ import torch
 
 from .ops import PeerRuntime
 from .weights import load_raw_experts
+from .runtime_contract import load_contract, verify_adapter_sources
 
 
 class RoutedExperts(torch.nn.Module):
@@ -60,13 +61,14 @@ class RoutedExperts(torch.nn.Module):
 
 
 def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None, fixed_plan=(1, 1, 0)):
+    expected_version = load_contract()['sglang_version']
+    if importlib.metadata.version('sglang') != expected_version:
+        raise RuntimeError(f'adapter requires the source-audited SGLang {expected_version}')
+    verify_adapter_sources()
     from sglang.srt.distributed import get_tp_group
-    from sglang.srt.runtime_context import get_parallel
-    from sglang.srt.server_args import get_server_args
+    from sglang.srt.runtime_context import get_parallel, get_server_args
     from sglang.srt.layers.quantization.mxfp4_marlin_moe import Mxfp4MarlinMoEMethod
     from sglang.srt.layers.moe.utils import is_sbo_enabled, is_tbo_enabled
-    if importlib.metadata.version('sglang') != '0.5.16':
-        raise RuntimeError('adapter is source-audited for SGLang 0.5.16 only')
     if torch.cuda.is_current_stream_capturing():
         raise RuntimeError('install the adapter before CUDA Graph capture')
     args, parallel, config = get_server_args(), get_parallel(), model.config
