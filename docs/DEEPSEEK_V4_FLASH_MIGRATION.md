@@ -19,11 +19,11 @@ DeepSeek 官方原版配置为 `DeepseekV4ForCausalLM`，hidden size 4096、MoE 
 
 TP 与 EP 参数可以共存。SGLang 的 EP 文档给出 `--tp 8 --ep 8` 等配置，并说明若干通信后端要求 EP size 与 TP size 相等。因此本项目可验证 `--tp-size 4 --ep-size 4` 这一并行规模组合；具体 MoE runner/a2a 参数须由版本和硬件支持决定。这不是已验证可运行的完整启动命令。[SGLang EP 文档](https://github.com/sgl-project/sglang/blob/main/docs/docs/advanced_features/expert_parallelism.mdx)
 
-旧 `data/gpqa/length_audit.json` 只证明 Qwen tokenizer 下的输入长度。DeepSeek 官方模型卡说明该版本没有 Jinja chat template，而是使用 `encoding/` 中的 `encoding_dsv4`；DeepSeek 的 GPQA prompt、Think High 编码和实际输入长度需要重新审计，不能复用旧 token ID 清单。[官方编码说明](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash)
+旧 `data/gpqa/length_audit.json` 只证明 Qwen tokenizer 下的输入长度。DeepSeek 官方模型卡说明该版本没有 Jinja chat template，而是使用 `encoding/` 中的 `encoding_dsv4`。现已用锁定修订的 tokenizer/编码器在本地重算 GPQA Main：448 题，中位数 191、最长 2550 tokens，无 8K 输入，详见 `data/gpqa/deepseek_length_audit.json`。这些是 CPU 编码结果；服务器须核对同一编码器与 tokenizer 的哈希后复现。[官方编码说明](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash)
 
 ## 第一阶段：只读证据与原生可行性
 
-1. 锁定服务器实际 SGLang 源码版本、Python 环境、Docker 镜像 digest 和可用工作盘 `WORK_ROOT`。私有仓库已在 `rh2844417786/weave-deepseek-v4-flash` 创建。
+1. 锁定服务器实际 SGLang 源码版本、Python 环境、Docker 镜像 digest 和可用工作盘 `WORK_ROOT`。私有仓库已在 `rh2844417786/weave-deepseek-v4-flash` 创建。远端提交 `56feefd` 新增 GPUQ 预检启动脚本，并报告服务器模型 config 省略 `expert_dtype`；尚未将预检 JSON 或生成日志纳入仓库，因此运行状态待证据核验。
 2. 在能读取原版权重的环境运行只读检查：
 
    ```bash
@@ -32,7 +32,7 @@ TP 与 EP 参数可以共存。SGLang 的 EP 文档给出 `--tp 8 --ep 8` 等配
      --output results/deepseek_v4_preflight.json
    ```
 
-   此脚本检查模型架构、`expert_dtype=fp4`（仅指 MXFP4 routed experts）、索引列出的分片是否存在及其总字节数，记录配置/索引 SHA256、Python/包版本和 GPU 清单。它不读取全部分片内容，也不证明模型能生成。
+   此脚本检查模型架构、MXFP4 routed experts 的配置或分片头证据、索引列出的分片是否存在及其总字节数，记录配置/索引 SHA256、Python/包版本和 GPU 清单。它不读取完整权重内容，也不证明模型能生成。服务器可使用 `scripts/run_preflight_gpuq.sh` 通过 GPUQ 在其锁定镜像中执行。
 3. 在锁定的同一 SGLang runtime 上，用 GPU 4–7 验证原生 DeepSeek-V4-Flash 的 EP=4 路径，记录完整命令、实际 EP size、每 rank 专家归属、dispatch/combine 后端、MoE/attention 后端、权重显存和 CUDA Graph 状态；运行固定短输入并保存真实输出及错误。仅有服务 ready 或 TP 参数不能证明 EP 已生效。失败时定位并记录具体的格式/内核/通信/内存缺口。
 4. 按原生组相同的 EP=4 划分设计 MXFP4 专家计算、top-6 路由、共享专家和 SGLang V4 adapter。先通过数值/路由/多卡/graph 正确性，再做同拓扑对照。若原生 runtime 确需新增 EP 适配，该改动及基线名称必须如实记录，不能称为未经修改的原生支持。当前没有任何这一阶段的 GPU 结果。
 

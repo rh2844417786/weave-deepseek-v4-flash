@@ -3,6 +3,7 @@
 import hashlib
 import json
 from pathlib import Path
+import struct
 import tempfile
 import unittest
 
@@ -67,6 +68,28 @@ class CheckpointPreflightTest(unittest.TestCase):
             (model / "model-00002-of-00002.safetensors").unlink()
             with self.assertRaisesRegex(ValueError, "Missing.*model-00002"):
                 inspect_checkpoint(model)
+
+    def test_derives_mxfp4_experts_when_config_omits_dtype(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            model = self.make_checkpoint(Path(tmp))
+            config_path = model / "config.json"
+            config = json.loads(config_path.read_text())
+            del config["expert_dtype"]
+            config_path.write_text(json.dumps(config))
+            expert_name = "model.layers.3.ffn.experts.0.w1.weight"
+            scale_name = "model.layers.3.ffn.experts.0.w1.scale"
+            (model / "model.safetensors.index.json").write_text(json.dumps({
+                "weight_map": {expert_name: "model-00001-of-00002.safetensors", scale_name: "model-00001-of-00002.safetensors"}
+            }))
+            header = json.dumps({
+                expert_name: {"dtype": "I8", "shape": [64, 1024], "data_offsets": [0, 1]},
+                scale_name: {"dtype": "F8_E8M0", "shape": [2, 64], "data_offsets": [1, 2]},
+            }).encode()
+            (model / "model-00001-of-00002.safetensors").write_bytes(struct.pack("<Q", len(header)) + header + b"xx")
+            report = inspect_checkpoint(model)
+            self.assertEqual(report["expert_dtype"], "fp4")
+            self.assertEqual(report["expert_dtype_source"], "derived_from_shard_header")
+            self.assertEqual(report["expert_dtype_evidence"]["stored_width"], 1024)
 
 
 if __name__ == "__main__":

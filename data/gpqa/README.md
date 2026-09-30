@@ -1,6 +1,12 @@
 # GPQA 本地数据与输入长度审计
 
-> 本页的 token 长度数字使用旧 Qwen3.5 tokenizer/template。模型目标已改为 DeepSeek-V4-Flash；GPQA 原始数据可复用，长度与 token ID 清单必须用 DeepSeek 官方编码器重算。当前还没有 DeepSeek 的输入长度结果。
+> 下方旧表格使用 Qwen3.5 tokenizer/template。模型目标已改为 DeepSeek-V4-Flash；GPQA 原始数据可复用，DeepSeek 的输入长度审计见 [deepseek_length_audit.json](deepseek_length_audit.json)。
+
+DeepSeek Think High 的本地 CPU 审计使用模型修订 `60d8d70770c6776ff598c94bb586a859a38244f1` 的 `encoding_dsv4.py` 与 `tokenizer.json`，保留自然题目、原始行号决定选项、seed 42 决定题序。Main 448 题输入长度最短 64、中位数 191、P95 394.65、最长 2550 tokens，无 8K 输入。服务器如使用不同 tokenizer 或编码器，正式输入必须重新审计。准备脚本不打印题目内容，生成的 token ID 清单位于 Git 忽略的 `data/gpqa/prepared/`。
+
+```bash
+python3 scripts/prepare_gpqa.py --model-dir /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash
+```
 
 已从作者官方 GitHub 仓库下载原始加密 ZIP，并按作者公开的密码解压。当前执行状态是数据下载与 CPU tokenizer 审计完成；没有进行模型推理或 GPU 性能实验。
 

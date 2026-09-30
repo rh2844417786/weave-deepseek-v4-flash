@@ -1,0 +1,31 @@
+{
+  "model_id": "deepseek-ai/DeepSeek-V4-Flash",
+  "model_revision": "60d8d70770c6776ff598c94bb586a859a38244f1",
+  "pinned_model_metadata_sha256": {
+    "config.json": "b628e63398a645abc711d92207f8737dd8140f7a4ef1e0a5b3616019e0ddd818",
+    "tokenizer.json": "8f9f37ca37fdc4f5fd36d5cf4d3b0e8392edb4e894fd10cc0d70b4957c8633cf",
+    "encoding/encoding_dsv4.py": "bdbd57c132a1b3725042323d02b98b9d1df28e5f388f134399555d041f5055e0"
+  },
+  "observed_model_metadata_sha256": {
+    "config.json": "b628e63398a645abc711d92207f8737dd8140f7a4ef1e0a5b3616019e0ddd818",
+    "tokenizer.json": "8f9f37ca37fdc4f5fd36d5cf4d3b0e8392edb4e894fd10cc0d70b4957c8633cf",
+    "encoding/encoding_dsv4.py": "bdbd57c132a1b3725042323d02b98b9d1df28e5f388f134399555d041f5055e0"
+  },
+  "config_matches_pinned": true,
+  "gpqa_main_sha256": "acdeeac8f622267f2cd727d7d474202ea08dec80f7d3c3593b3ef8644f19b8e3",
+  "order_seed": 42,
+  "choice_seed": "42 + original zero-based CSV row index",
+  "prompt_instruction": "Answer the following multiple-choice question. Explain your reasoning briefly, then state the final answer as A, B, C, or D.",
+  "reasoning_mode": "Think High",
+  "thinking_mode": "thinking",
+  "reasoning_effort": "high",
+  "max_new_tokens": 32768,
+  "normal_eos_allowed": true,
+  "record_sha256": "cdcba49397971a26d71b444c7a00785cff3f4cb305456b2acf70e2c0dc30f888",
+  "count": 448,
+  "min": 64,
+  "median": 191.0,
+  "p95": 394.65,
+  "max": 2550,
+  "at_least_8192": 0
+}
