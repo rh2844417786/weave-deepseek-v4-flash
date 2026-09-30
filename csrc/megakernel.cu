@@ -336,14 +336,17 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     TORCH_CHECK(c>=0 || profile.size(0)>0,"dynamic scheduling requires measured profile rows");
     int occupancy=0; CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&occupancy,persistent,THREADS,i*2));
     TORCH_CHECK(occupancy>=1,"persistent worker cannot reside on an SM");
-    cudaDeviceProp prop; CUDA_OK(cudaGetDeviceProperties(&prop,device));
+    // cudaDeviceProp::clockRate was removed in CUDA 13; the driver attribute
+    // returns the same kHz value.
+    int clock_khz=0; CUDA_OK(cudaDeviceGetAttribute(&clock_khz,cudaDevAttrClockRate,device));
+    TORCH_CHECK(clock_khz>0,"device clock rate unavailable");
     Config cfg{};
     for(int p=0;p<ep;++p) cfg.peers[p]=layout.view(pointers[p]);
     cfg.rank=rank; cfg.ep=ep; cfg.capacity=cap; cfg.h=h; cfg.i=i; cfg.topk=topk; cfg.experts=experts; cfg.workers=workers;
     cfg.w1=w[0].data_ptr<unsigned char>(); cfg.w3=w[1].data_ptr<unsigned char>(); cfg.w2=w[2].data_ptr<unsigned char>();
     cfg.s1=w[3].data_ptr<unsigned char>(); cfg.s3=w[4].data_ptr<unsigned char>(); cfg.s2=w[5].data_ptr<unsigned char>();
     cfg.profile=profile.data_ptr<double>(); cfg.nprofile=profile.size(0); cfg.fixed_c=c; cfg.fixed_k=k; cfg.fixed_steal=steal;
-    cfg.timeout=U64(timeout_seconds*prop.clockRate*1000.); cfg.clamp=clamp;
+    cfg.timeout=U64(timeout_seconds*clock_khz*1000.); cfg.clamp=clamp;
     auto stream=at::cuda::getCurrentCUDAStream(device).stream();
     prepare<<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap);
     persistent<<<workers,THREADS,i*2,stream>>>(cfg);
