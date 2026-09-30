@@ -4,6 +4,8 @@
 
 ## 入口
 
+- [SGLang 锁定版本接入位置与原生 EP 启动候选](docs/SGLANG_V0516_INTEGRATION.md)
+- [EP 路由参考当前编码计划](docs/superpowers/plans/2026-09-30-deepseek-routing-reference.md)
 - [DeepSeek-V4-Flash 迁移与当前决策](docs/DEEPSEEK_V4_FLASH_MIGRATION.md)
 - [需求与架构设计](docs/superpowers/specs/2026-09-29-weave-qwen35-design.md)
 - [详细编码计划](docs/superpowers/plans/2026-09-29-weave-qwen35.md)
@@ -12,6 +14,8 @@
 - [DeepSeek GPQA 输入长度审计](data/gpqa/deepseek_length_audit.json)
 
 当前目标：原版 DeepSeek-V4-Flash 混合精度权重，在 GPU 4–7 上以 EP=4 比较原生 SGLang 与完整 Weave。两组采用相同的专家划分和 attention/dense 并行布局；原生运行时对 MXFP4 专家 EP 路径的支持须先验证。SGLang 的 TP 参数可与 EP 参数同时使用，不能把 `--tp-size 4` 等同于 MoE 只使用 TP。GPQA Main、batch=1、Think High、最多生成 32K（32768）tokens，每组服务 ready 后预热与测量共最多20分钟。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
+
+已有可运行代码包括：只读预检、DeepSeek GPQA token ID 准备、decode 计数、EP 路由去重/合并 CPU 参考，以及默认仅预览的原生 EP4 Docker 启动候选。服务器已回传 `results/deepseek_v4_preflight.json`。CUDA Weave megakernel、SGLang Weave adapter、EP 数值验证和性能实验尚未完成。
 
 旧 Qwen 输入长度审计的本地复核（不适用于 DeepSeek）：
 

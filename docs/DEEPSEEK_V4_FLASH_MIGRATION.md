@@ -23,7 +23,7 @@ TP 与 EP 参数可以共存。SGLang 的 EP 文档给出 `--tp 8 --ep 8` 等配
 
 ## 第一阶段：只读证据与原生可行性
 
-1. 锁定服务器实际 SGLang 源码版本、Python 环境、Docker 镜像 digest 和可用工作盘 `WORK_ROOT`。私有仓库已在 `rh2844417786/weave-deepseek-v4-flash` 创建。远端提交 `56feefd` 新增 GPUQ 预检启动脚本，并报告服务器模型 config 省略 `expert_dtype`；尚未将预检 JSON 或生成日志纳入仓库，因此运行状态待证据核验。
+1. 服务器提交 `d716551` 已回传 `results/deepseek_v4_preflight.json`：46 个分片存在，实际包版本 SGLang 0.5.16、PyTorch 2.11.0+cu130，枚举到四张 H100。该报告只完成清单采集，生成和 EP 正确性未验证。镜像 tag 的源码来源说明指向 `fdebc938f7f4d16fe6b9f55dcd9a767cf0899ea1`；后续启动入口记录实际 image ID。可写工作盘通过必填 `--work-root` 传入。
 2. 在能读取原版权重的环境运行只读检查：
 
    ```bash
