@@ -1,5 +1,7 @@
 # GPUQ 取消 ≠ 容器停止：bring-up launcher 的 SIGTERM 清理缺口
 
+> 修复现已写入 `src/weave/container_lifecycle.py`，并用于原生服务、CUDA 功能作业与预检入口。收到 SIGTERM/SIGINT 后限时停止本次唯一命名的容器，必要时 force-remove，记录清理结果；Docker client 与清理命令采用独立 session。进程信号与 daemon 状态分离的 CPU 测试已覆盖，当前服务器取消后的物理显存释放仍需验证。下文保留原始问题记录。
+
 2026-09-30 于本机（8×H100）实测。结论：`gpuq cancel`（以及作业超时、daemon 停止）只会终止 GPUQ 托管的进程组；由 launcher 通过 `docker run` 启动的容器**不会**随之退出，物理卡会继续被占用，直到有人显式 `docker stop`。任何在 GPUQ 作业里 spawn `docker run` 的 launcher 都必须自行处理 SIGTERM 清理。
 
 ## 现象（job-20260930-143712-a465d4ee）

@@ -14,19 +14,22 @@ mkdir -p "$WORK_ROOT"
 WORK_ROOT="$(cd "$WORK_ROOT" && pwd)"
 run_dir="$(mktemp -d "$WORK_ROOT/cuda-functional.XXXXXX")"
 run_name="$(basename "$run_dir")"
+container_name="weave-cuda-functional-${run_name#cuda-functional.}"
 printf '%s\n' "$image_id" > "$run_dir/image_id.txt"
 printf '%s\n' "GPUQ_JOB_ID=${GPUQ_JOB_ID:-unset}" "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES" > "$run_dir/allocation.txt"
 echo "CUDA build and functional log: $run_dir/build-and-test.log"
 set +e
-docker run --rm --pull=never --gpus "\"device=${CUDA_VISIBLE_DEVICES}\"" --network=host --shm-size=8g \
+python3 "$repo_root/scripts/manage_container.py" --name "$container_name" \
+  --evidence "$run_dir/container_lifecycle.json" --log "$run_dir/build-and-test.log" \
+  --exit-code-file "$run_dir/exit_code.txt" -- \
+  docker run --rm --name "$container_name" --pull=never --gpus "\"device=${CUDA_VISIBLE_DEVICES}\"" --network=host --shm-size=8g \
   -v "$repo_root:/workspace:ro" -v "$WORK_ROOT:/work" -w /workspace \
   -e CUDA_VISIBLE_DEVICES=0,1,2,3 -e GLOO_SOCKET_IFNAME=lo \
   -e "WEAVE_IMAGE_REF=$image_ref" -e "WEAVE_IMAGE_ID=$image_id" \
   -e "WEAVE_HOST_HOSTNAME=$(hostname)" -e "WEAVE_HOST_ALLOCATION=$CUDA_VISIBLE_DEVICES" \
   -e TORCH_EXTENSIONS_DIR=/work/torch_extensions -e MAX_JOBS=2 \
   "$image_id" "${RUNTIME_PYTHON:-/usr/bin/python3}" scripts/check_runtime.py \
-    --stage core --output-dir "/work/$run_name" --run-core-tests \
-    > "$run_dir/build-and-test.log" 2>&1
+    --stage core --output-dir "/work/$run_name" --run-core-tests
 code=$?
 set -e
 printf '%s\n' "$code" > "$run_dir/exit_code.txt"

@@ -25,6 +25,7 @@ mkdir -p "$WORK_ROOT"
 WORK_ROOT="$(cd "$WORK_ROOT" && pwd)"
 RUN_DIR="$(mktemp -d "$WORK_ROOT/preflight.XXXXXX")"
 RUN_NAME="$(basename "$RUN_DIR")"
+CONTAINER_NAME="weave-preflight-${RUN_NAME#preflight.}"
 OUTPUT_REL="${OUTPUT_REL:-$RUN_NAME/deepseek_v4_preflight.json}"
 [[ "$OUTPUT_REL" != /* && "$OUTPUT_REL" != *'..'* ]] || { echo 'OUTPUT_REL must stay under WORK_ROOT' >&2; exit 2; }
 IMAGE="${IMAGE:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["image"])' "$REPO_ROOT/configs/runtime.json")}"
@@ -44,7 +45,10 @@ echo "model path:       ${MODEL_PATH}"
 echo "output:           ${WORK_ROOT}/${OUTPUT_REL}"
 
 set +e
-docker run --rm --pull=never \
+python3 "$REPO_ROOT/scripts/manage_container.py" --name "$CONTAINER_NAME" \
+  --evidence "$RUN_DIR/container_lifecycle.json" --log "$RUN_DIR/preflight.log" \
+  --exit-code-file "$RUN_DIR/exit_code.txt" -- \
+docker run --rm --name "$CONTAINER_NAME" --pull=never \
   --gpus "\"device=${CUDA_VISIBLE_DEVICES}\"" \
   --network=host \
   --shm-size=8g \
@@ -61,7 +65,7 @@ docker run --rm --pull=never \
     --output "/work/${OUTPUT_REL}" \
     --runtime-image "${IMAGE}" \
     --runtime-image-id "${IMAGE_ID}" \
-    --runtime-provenance-note "${RUNTIME_NOTE}" > "$RUN_DIR/preflight.log" 2>&1
+    --runtime-provenance-note "${RUNTIME_NOTE}"
 code=$?
 set -e
 printf '%s\n' "$code" > "$RUN_DIR/exit_code.txt"

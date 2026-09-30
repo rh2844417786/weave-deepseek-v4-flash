@@ -9,6 +9,12 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def copy_manager(repo):
+    (repo/'src/weave').mkdir(parents=True)
+    shutil.copy(ROOT/'scripts/manage_container.py',repo/'scripts')
+    shutil.copy(ROOT/'src/weave/container_lifecycle.py',repo/'src/weave')
+
+
 class CUDAGateLauncherTest(unittest.TestCase):
     def test_default_work_directory_and_resolved_image_survive_gpuq_boundary(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -17,15 +23,18 @@ class CUDAGateLauncherTest(unittest.TestCase):
             (repo/'configs').mkdir()
             shutil.copy(ROOT/'scripts/run_cuda_functional_gpuq.sh', repo/'scripts')
             shutil.copy(ROOT/'configs/runtime.json', repo/'configs')
+            copy_manager(repo)
             bin_dir = Path(tmp)/'bin'
             bin_dir.mkdir()
             capture = Path(tmp)/'docker_args.json'
             docker = bin_dir/'docker'
             docker.write_text('#!/usr/bin/env python3\nimport json,os,sys\n'
                 'if sys.argv[1:3] == ["image","inspect"]: print("sha256:actual-image")\n'
-                'else:\n'
+                'elif sys.argv[1] == "run":\n'
                 '    open(os.environ["DOCKER_CAPTURE"],"w").write(json.dumps(sys.argv[1:]))\n'
-                '    sys.exit(7)\n')
+                '    sys.exit(7)\n'
+                'else:\n'
+                '    print("No such object",file=sys.stderr);sys.exit(1)\n')
             docker.chmod(0o755)
             env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7', 'DOCKER_CAPTURE': str(capture),
                    'PATH': str(bin_dir)+os.pathsep+os.environ['PATH']}
@@ -51,6 +60,7 @@ class CUDAGateLauncherTest(unittest.TestCase):
             (repo/'configs').mkdir()
             shutil.copy(ROOT/'scripts/run_preflight_gpuq.sh', repo/'scripts')
             shutil.copy(ROOT/'configs/runtime.json', repo/'configs')
+            copy_manager(repo)
             bin_dir = Path(tmp)/'bin'
             bin_dir.mkdir()
             capture = Path(tmp)/'args.json'

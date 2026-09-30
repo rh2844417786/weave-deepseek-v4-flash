@@ -1,6 +1,6 @@
 # CUDA 功能核心与 SGLang 接入
 
-这批代码实现了可供服务器编译的功能路径；尚未在本机编译 CUDA 或在 H100 上执行。对外后端名称为 `weave_functional`，通过全部 GPU 和 SGLang 验收前不使用 `weave_full` 名称。
+这批代码实现了可供服务器编译的功能路径。服务器提交 `f4ce0f9` 修复 CUDA 13 的 clock-rate API，并报告四 rank 小张量功能检查与 core graph replay 通过；原始文件仍在服务器 `work/cuda-functional.Uzo4T0`，尚未纳入可读取的 Git 报告。对外后端名称为 `weave_functional`，通过全部 GPU 和 SGLang 验收前不使用 `weave_full` 名称。
 
 ## 实现内容
 

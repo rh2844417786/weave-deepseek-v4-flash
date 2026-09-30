@@ -17,6 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.weave.runtime_contract import load_contract
+from src.weave.container_lifecycle import run_container
 CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
@@ -122,14 +123,12 @@ def main() -> int:
     report_path.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{args.backend} EP4 candidate; log: {run_dir / "server.log"}', flush=True)
     with (run_dir / 'server.log').open('w') as log:
-        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT)
-        try:
-            code = process.wait()
-        except KeyboardInterrupt:
-            subprocess.run(['docker', 'stop', '--time', '10', name], capture_output=True, timeout=30)
-            process.wait(timeout=30)
-            code = 130
+        lifecycle = run_container(command, name, run_dir/'container_lifecycle.json', stdout=log,
+                                  exit_code_path=run_dir/'exit_code.txt')
+    code = lifecycle['exit_code']
     report['exit_code'] = code
+    report['termination_signal'] = lifecycle['termination_signal']
+    report['container_cleanup'] = lifecycle['cleanup_status']
     report['finished_utc'] = datetime.now(timezone.utc).isoformat()
     report_path.write_text(json.dumps(report, indent=2) + '\n')
     return code

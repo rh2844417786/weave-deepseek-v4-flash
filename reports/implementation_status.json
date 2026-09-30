@@ -5,7 +5,7 @@
     "torch": "2.11.0+cu130",
     "cuda": "13.0",
     "work_root_default": "<repo>/work",
-    "actual_current_server_validation": "not_run"
+    "actual_current_server_validation": "server_reported_core_passed_raw_evidence_pending"
   },
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
@@ -17,15 +17,21 @@
     "native_fallback": "not_provided"
   },
   "validation": {
-    "cpu_suite": {"status": "passed", "tests": 38},
+    "cpu_suite": {"status": "passed", "tests": 44},
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "not_run",
-    "multi_gpu_correctness": "not_run",
-    "core_graph_replay": "not_run",
-    "sglang_integration": "not_run",
-    "full_model_generation": "not_run",
+    "cuda_build": "server_reported_passed_raw_artifacts_pending",
+    "multi_gpu_correctness": "server_reported_small_synthetic_checks_passed_raw_artifacts_pending",
+    "core_graph_replay": "server_reported_passed_raw_artifacts_pending",
+    "sglang_integration": "server_reported_ready_and_short_request_raw_log_pending",
+    "full_model_generation": "not_independently_verified",
     "performance": "not_run"
+  },
+  "server_report_sources": {
+    "core": "f4ce0f98484fca9a49747a58af1c7b5f2ba85c63 commit message; work/cuda-functional.Uzo4T0",
+    "bringup": "docs/GPUQ_CANCEL_CONTAINER_CLEANUP.md; work/native-ep-26fad58797ce4c9ebdbd3dbd6b926310/server.log",
+    "original_run_files_in_git": false,
+    "cancel_cleanup_fix_on_server": "not_run"
   },
   "remaining_acceptance": [
     "Tensor Core expert tiles and matching tile stealing",

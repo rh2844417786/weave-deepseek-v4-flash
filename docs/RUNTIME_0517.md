@@ -51,3 +51,18 @@ bash scripts/run_preflight_gpuq.sh
 默认输出 `<repo>/work/preflight.XXXXXX/` 下的 runtime 检查、模型预检 JSON、日志及退出码。此入口也使用当前 0.5.17 镜像。
 
 脚本保持 GPU 分配硬约束 `4,5,6,7`。它们只在 GPUQ 开始执行已分配的作业后工作，不设置排队期间的计时器，也不占用 0–3 卡。GPUQ 的 1 小时作业时限从实际启动起算；原先预计的排队时长属于用户提供的调度快照，脚本不硬编码该快照中的到期时间。
+
+## 取消与结果回传
+
+三个 Docker 入口共用命名容器的信号清理逻辑，处理 SIGTERM/SIGINT、限时停止和 force-remove fallback。`container_lifecycle.json` 记录终止信号及清理结果。GPUQ 取消后的实际显存释放验证见 `docs/GPUQ_CANCEL_CONTAINER_CLEANUP.md`。
+
+`work/` 保持忽略。已完成的 core 结果可直接导出至可追踪目录，无须重新占用 GPU：
+
+```bash
+python3 scripts/export_core_evidence.py --run-dir work/cuda-functional.Uzo4T0 --include-build-log
+git add reports/server/cuda-functional.Uzo4T0
+git commit -m "Record four-rank CUDA functional evidence"
+git push
+```
+
+导出脚本复制 runtime、rank0–3、退出码、镜像/分配记录及可选 core 编译日志，附上原文件哈希。它不递归复制目录，不复制原生服务生成日志。缺少 rank 或状态不一致时，导出摘要不会标记通过。上面的路径来自服务器此次提交的运行说明。
