@@ -1,0 +1,14 @@
+{
+  "rank": 0,
+  "status": "functional_checks_passed",
+  "core_graph_replay": "passed",
+  "sglang_adapter": "not_run",
+  "full_model": "not_run",
+  "performance": "not_run",
+  "profile": "synthetic_test_fixture_only",
+  "selected_plan": [
+    1,
+    2,
+    0
+  ]
+}

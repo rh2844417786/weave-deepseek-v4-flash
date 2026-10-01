@@ -1,0 +1,81 @@
+{
+  "captured_utc": "2026-10-01T09:29:35.610806+00:00",
+  "container_hostname": "h100-8",
+  "host_hostname": "h100-8",
+  "requested_image": "lmsysorg/sglang:v0.5.17",
+  "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "host_gpu_allocation": "4,5,6,7",
+  "python": "3.12.3",
+  "python_executable": "/usr/bin/python3",
+  "packages": {
+    "torch": "2.11.0+cu130",
+    "sglang": "0.5.17",
+    "transformers": "5.12.1",
+    "triton": "3.6.0",
+    "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+    "flashinfer-python": "0.6.15.post1"
+  },
+  "torch_cuda": "13.0",
+  "cuda_available": true,
+  "devices": [
+    {
+      "ordinal": 0,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    },
+    {
+      "ordinal": 1,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    },
+    {
+      "ordinal": 2,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    },
+    {
+      "ordinal": 3,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    }
+  ],
+  "nvcc_release": "13.0",
+  "cuda_home": "/usr/local/cuda",
+  "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+  "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+  "validation_stage": "core",
+  "validation_errors": [],
+  "runtime_status": "passed",
+  "expected_contract": {
+    "image": "lmsysorg/sglang:v0.5.17",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.12.3",
+    "torch_version": "2.11.0+cu130",
+    "torch_cuda": "13.0",
+    "nvcc_release": "13.0",
+    "sglang_version": "0.5.17",
+    "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+    "transformers_version": "5.12.1",
+    "work_directory": "work",
+    "gpu_allocation": "4,5,6,7",
+    "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+  },
+  "child_exit_code": 0,
+  "core_validation_status": "passed"
+}

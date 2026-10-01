@@ -1,0 +1,21 @@
+{
+  "exported_utc": "2026-10-01T09:30:35.520008+00:00",
+  "source_run_dir": "/home/jovyan/wangtonghan/weave-deepseek-v4-flash/work/cuda-functional.YfA3yp",
+  "scope": "small_synthetic_core_checks",
+  "reported_core_status": "passed",
+  "missing_rank_reports": [],
+  "full_model": "not_verified_by_this_export",
+  "performance": "not_verified_by_this_export",
+  "sha256": {
+    "runtime.json": "a081df5de7919c84356979c323292739d66012a184dba804aa2befc13ed8a557",
+    "rank0.json": "88a16eac38e62d6a80bf8f721ed76a743dc7f961a90c5763e480b1eedb071935",
+    "rank1.json": "a754e97fe7c19861e1bef7d432f0c3152bc69a2ce24642094e19ef9568924929",
+    "rank2.json": "800f6bf9a8415c7d56dfcfc05f853386932b10f466c4602fbf771366869599ea",
+    "rank3.json": "f56f757ca7b3f56a0dab6199fc43bc2bda639b49cde342ca6cb0223742860cb1",
+    "exit_code.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "image_id.txt": "d5b953de90f316a1cf6968d9924c69b6bb5fd0465175efd10023f6cf7eb79ff2",
+    "allocation.txt": "89a7472af0b760ad6d36ac9211f4695613f6b51133c63b60df74ccaa60daa985",
+    "container_lifecycle.json": "8ed6cdce757e0554c05dca07a43e5013f1ae559d29c13cc8ae4c36464caae742",
+    "build-and-test.log": "4402d796f17ec1a5a4b53fd1d745efe37b8b77e221896d93092e0e2c5a8bb175"
+  }
+}
