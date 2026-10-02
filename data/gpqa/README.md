@@ -4,9 +4,7 @@
 
 DeepSeek Think High 的本地 CPU 审计使用模型修订 `60d8d70770c6776ff598c94bb586a859a38244f1` 的 `encoding_dsv4.py` 与 `tokenizer.json`，保留自然题目、原始行号决定选项、seed 42 决定题序。Main 448 题输入长度最短 64、中位数 191、P95 394.65、最长 2550 tokens，无 8K 输入。服务器如使用不同 tokenizer 或编码器，正式输入必须重新审计。准备脚本不打印题目内容，生成的 token ID 清单位于 Git 忽略的 `data/gpqa/prepared/`。
 
-```bash
-python3 scripts/prepare_gpqa.py --model-dir /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash
-```
+服务器仅可从 GitHub 获取材料。GPQA 下载使用作者 GitHub 归档；编码读取本地模型，宿主 Python 缺依赖时复用已有 SGLang 镜像离线准备。命令见 [运行契约](../../docs/RUNTIME_0517.md#服务器网络与离线准备)，不要在服务器执行在线 `pip install`。
 
 已从作者官方 GitHub 仓库下载原始加密 ZIP，并按作者公开的密码解压。当前执行状态是数据下载与 CPU tokenizer 审计完成；没有进行模型推理或 GPU 性能实验。
 
@@ -35,9 +33,9 @@ Diamond 是 Main 的子集；不能把两者简单相加当作不同问题使用
 
 Main/Diamond 可以提供真实短输入的生成测速工作负载，不能提供 8K prefill 样本。Extended 只有一个自然长度超过 8K 的样本，不能支撑稳定的 8K 工作负载集合。最多生成 32K（32768）tokens 是输出限制，不会让短问题成为 8K prefill。首轮保留自然题目长度；不自动重复题目、补无意义文本或扩大数据集实验矩阵。
 
-## 复核与服务器准备
+## 联网开发机上的历史 Qwen 复核
 
-在项目根目录执行：
+以下仅供联网开发机复核旧 Qwen 审计；当前服务器的 DeepSeek 准备按上面的离线入口执行：
 
 ```bash
 python3 scripts/fetch_gpqa.py

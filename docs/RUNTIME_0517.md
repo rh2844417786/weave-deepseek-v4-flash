@@ -6,6 +6,26 @@
 
 默认 `WORK_ROOT=<repo>/work`，使用已有权限与继承 ACL，不修改目录所有权/权限；要求可写和可进入。`WORK_ROOT` 环境变量或 `--work-root` 可指定其他绝对路径。编译缓存、运行日志、JSON 证据均落入该目录，它已被 Git 忽略；需要回传的单份报告可另行 force-add 或复制到 `reports/`。
 
+## 服务器网络与离线准备
+
+用户已确认服务器只能从 GitHub 获取材料，不能依赖其他外网服务。服务器命令不得要求在线 `pip install`、Hugging Face 下载、apt 或 Docker pull。镜像和模型使用现有本地文件；原生与 Weave 启动均设置 `HF_HUB_OFFLINE=1`、`TRANSFORMERS_OFFLINE=1` 和 `HF_DATASETS_OFFLINE=1`。
+
+GPQA 下载脚本只访问作者固定 commit 的 GitHub 归档，并校验归档与 CSV 的 SHA256。下载后，Think High 输入准备只读取本地 CSV、tokenizer 和编码器。服务器宿主 Python 缺少依赖时，在现有镜像内完成 CPU 准备；此步骤不申请 GPU，并明确关闭容器网络。在仓库根目录执行：
+
+```bash
+python3 scripts/fetch_gpqa.py
+docker run --rm --pull=never --network=none \
+  --user "$(id -u):$(id -g)" \
+  -v "$PWD:/workspace" \
+  -v /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash:/model:ro \
+  -w /workspace \
+  -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 \
+  lmsysorg/sglang:v0.5.17 /usr/bin/python3 \
+  scripts/prepare_gpqa.py --model-dir /model
+```
+
+已有相同版本的本地 GPQA 归档时，下载脚本直接复用并校验；已有 CSV 时也可仅执行 `python3 scripts/fetch_gpqa.py --verify-only`。镜像或包缺失应先报告具体缺项。新增依赖由联网开发机准备适配服务器 Linux x86_64/Python/CUDA/Torch 的离线包，通过 GitHub 分发并校验后安装；不能拿 macOS wheel 给服务器使用。以上容器准备命令尚待服务器执行确认。
+
 ## 分阶段检查
 
 - Core 功能作业：检查 Python、Torch、torch CUDA、nvcc 和四张 SM90 GPU。SGLang/Transformers 版本只记录，不作为核心 kernel 检查的执行条件；该阶段不 import SGLang。PyTorch 2.13 与当前选择的 ABI 不同，会在编译前产生明确的失败报告。
