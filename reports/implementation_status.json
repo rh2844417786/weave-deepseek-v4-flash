@@ -40,7 +40,16 @@
     "new_source_checkpoint": "not_run_on_h100",
     "new_source_sglang_graph": "not_run_on_h100",
     "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending",
-    "shared_expert_numerics_header_host_compile": "passed_bf16_silu_and_route_product_counterexamples"
+    "shared_expert_numerics_header_host_compile": "passed_bf16_silu_and_route_product_counterexamples",
+    "last_reported_model_acceptance": {
+      "job_id": "job-20261002-092219-69d97c32",
+      "evidence_kind": "server_markdown_report",
+      "checkpoint": "reported_passed",
+      "native": "reported_passed",
+      "weave_eager": "failed_numerical_gate",
+      "weave_graph": "not_run",
+      "corrected_rounding_source_validated_by_this_run": false
+    }
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",
@@ -48,7 +57,8 @@
     "cancel_cleanup_fix_on_server": "service_SIGTERM_cleanup_reported_absent_raw_lifecycle_not_in_git",
     "original_core_run_files_in_git": true,
     "original_bringup_log_in_git": false,
-    "model_acceptance": "docs/MODEL_ACCEPTANCE_TOPK_GATE.md; raw work/model-acceptance-d4773fb0c91f JSON not in Git"
+    "model_acceptance": "docs/MODEL_ACCEPTANCE_TOPK_GATE.md; raw work/model-acceptance-d4773fb0c91f JSON not in Git",
+    "latest_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293"
   },
   "remaining_acceptance": [
     "Real model dimensions and checkpoint expert-weight correctness",

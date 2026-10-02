@@ -7,6 +7,7 @@
 - [当前服务器镜像、版本与工作目录契约](docs/RUNTIME_0517.md)
 - [服务器仅访问 GitHub：数据与依赖离线准备](docs/RUNTIME_0517.md#服务器网络与离线准备)
 - [真实 43 层 checkpoint、WMMA 与 SGLang graph 验收入口](docs/REAL_CHECKPOINT_GRAPH_ACCEPTANCE.md)
+- [a934293 回传的模型验收结果摘要（服务器说明，原始 JSON 待回传）](reports/model_acceptance.json)
 - [CUDA 功能核心、动态调度与 SGLang adapter](docs/CUDA_FUNCTIONAL_CORE.md)
 - [历史 SGLang 0.5.16 接入核对](docs/SGLANG_V0516_INTEGRATION.md)
 - [EP 路由参考当前编码计划](docs/superpowers/plans/2026-09-30-deepseek-routing-reference.md)

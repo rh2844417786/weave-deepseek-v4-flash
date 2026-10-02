@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "scope": "functional_model_acceptance_not_gpqa_performance",
+  "evidence": {
+    "kind": "server_markdown_report",
+    "merge_commit": "a93429326000e6db2d3fccdf2e2177aab071ef52",
+    "report_introduced_by": "e2ac1df17f1ee2943d35fbc51745e37cace16075",
+    "path": "docs/MODEL_ACCEPTANCE_TOPK_GATE.md",
+    "report_at_merge_sha256": "bfcb6f5f47fc7afc2c9a820cb9949a9ab1e2fa89a4740d4049413c08e6e6dcdf",
+    "raw_work_json_in_git": false,
+    "gpu_execution_independently_verified": false
+  },
+  "run": {
+    "date": "2026-10-02",
+    "job_id": "job-20261002-092219-69d97c32",
+    "elapsed_seconds_reported": 1974,
+    "physical_gpus": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "entrypoint": "scripts/run_model_acceptance.py",
+    "work_directory_reported": "work/model-acceptance-d4773fb0c91f",
+    "tested_git_revision": null,
+    "tested_git_revision_note": "not explicitly recorded in the uploaded report"
+  },
+  "stages": {
+    "checkpoint": {
+      "status": "server_reported_passed"
+    },
+    "native": {
+      "status": "server_reported_passed",
+      "generate_http_status_reported": 200
+    },
+    "weave_eager": {
+      "status": "server_reported_failed_numerical_comparison",
+      "runtime_status_reported": "passed",
+      "generate_http_status_reported": 200,
+      "first_failed_check": "first_token_top_logprob_support"
+    },
+    "weave_graph": {
+      "status": "not_run"
+    }
+  },
+  "first_token_comparison": {
+    "native_token_id": 2581,
+    "weave_token_id": 2581,
+    "token_matches_reported": true,
+    "selected_logprob_delta_reported": 0.0,
+    "logprob_table_precision": "copied from formatted report, not raw JSON",
+    "topk": 10,
+    "common_count": 8,
+    "native_only": [
+      2337,
+      9832
+    ],
+    "weave_only": [
+      1124,
+      92341
+    ],
+    "common_deltas_from_report_table": [
+      {
+        "token_id": 201,
+        "native_logprob_as_reported": -17.125,
+        "weave_logprob_as_reported": -16.625,
+        "abs_delta": 0.5
+      },
+      {
+        "token_id": 666,
+        "native_logprob_as_reported": -18.125,
+        "weave_logprob_as_reported": -18.25,
+        "abs_delta": 0.125
+      },
+      {
+        "token_id": 671,
+        "native_logprob_as_reported": -14.25,
+        "weave_logprob_as_reported": -13.875,
+        "abs_delta": 0.375
+      },
+      {
+        "token_id": 1350,
+        "native_logprob_as_reported": -15.875,
+        "weave_logprob_as_reported": -15.625,
+        "abs_delta": 0.25
+      },
+      {
+        "token_id": 2581,
+        "native_logprob_as_reported": 0.0,
+        "weave_logprob_as_reported": 0.0,
+        "abs_delta": 0.0
+      },
+      {
+        "token_id": 5718,
+        "native_logprob_as_reported": -14.75,
+        "weave_logprob_as_reported": -14.875,
+        "abs_delta": 0.125
+      },
+      {
+        "token_id": 10318,
+        "native_logprob_as_reported": -13.375,
+        "weave_logprob_as_reported": -13.125,
+        "abs_delta": 0.25
+      },
+      {
+        "token_id": 11428,
+        "native_logprob_as_reported": -17.875,
+        "weave_logprob_as_reported": -17.75,
+        "abs_delta": 0.125
+      }
+    ],
+    "max_abs_common_delta": 0.5,
+    "atol": 0.1,
+    "common_tokens_exceeding_atol": 7,
+    "eight_generated_token_match": "inferred_from_gate_order_not_independently_checked"
+  },
+  "cleanup": {
+    "native": {
+      "signal_reported": 15,
+      "exit_code_reported": 143,
+      "status_reported": "absent"
+    },
+    "weave_eager": {
+      "signal_reported": 15,
+      "exit_code_reported": 143,
+      "status_reported": "absent"
+    },
+    "no_weave_containers_after_run": "server_reported",
+    "physical_gpu_memory_release_independently_verified": false,
+    "gpuq_external_cancellation_test_demonstrated": false
+  },
+  "performance": {
+    "status": "not_measured",
+    "gpqa_full_comparison": "not_run"
+  },
+  "followup": {
+    "fix_commit": "af447d6977b5374ef57a61f7c5433d87b6badf94",
+    "fix": "native BF16 SiLU and routing-product rounding; complete failure diagnostics",
+    "fix_validated_by_this_run": false,
+    "remaining": "rerun corrected checkpoint and service acceptance, including graph; inspect EP partial-sum/shared-expert reduction boundary if numerical failure persists"
+  }
+}
