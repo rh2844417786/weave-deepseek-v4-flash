@@ -12,25 +12,33 @@
     "cuda_ipc_epoch_protocol": "implemented_small_synthetic_gpu_checks_passed",
     "gpu_joint_cost_model": "implemented_synthetic_device_selection_verified_measured_profile_pending",
     "chunk_pipeline": "implemented_small_shape_K1_K2_checks_passed",
-    "bubble_stealing": "implemented_token_expert_work_unit_nonzero_gpu_budget_not_tested",
-    "sglang_adapter": "implemented_eager_0.5.17_source_locked_unverified",
-    "native_fallback": "not_provided"
+    "bubble_stealing": "whole_token_expert_work_with_completed_device_counters_real_shape_gate_pending",
+    "sglang_adapter": "eager_and_opt_in_batch1_graph_candidate_15_source_files_locked",
+    "native_fallback": "not_provided",
+    "tensor_core": "experimental_single_token_bf16_wmma_implemented_not_compiled_on_h100",
+    "real_checkpoint_gate": "all_43_layers_scalar_wmma_reference_graph_and_nonzero_steal_tests_implemented",
+    "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented"
   },
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 44
+      "tests": 55,
+      "skipped": 0,
+      "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "passed_h100_sm90a_cuda13",
+    "cuda_build": "historical_scalar_passed_new_source_not_compiled",
     "multi_gpu_correctness": "passed_small_synthetic_fixture_twice",
     "core_graph_replay": "passed_small_synthetic_fixture_twice",
     "sglang_integration": "server_reported_ready_and_short_request_raw_log_pending",
     "full_model_generation": "not_independently_verified",
     "performance": "not_run",
     "normal_container_exit": "passed_exit0_no_signal",
-    "gpuq_sigterm_cleanup": "not_verified_on_server"
+    "gpuq_sigterm_cleanup": "not_verified_on_server",
+    "new_source_checkpoint": "not_run_on_h100",
+    "new_source_sglang_graph": "not_run_on_h100",
+    "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending"
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",

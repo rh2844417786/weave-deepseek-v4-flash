@@ -28,10 +28,14 @@ class RoutedExperts(torch.nn.Module):
         self.supports_deferred_finalize = False
         self.use_flashinfer_trtllm_moe = False
         self.coverage = {'prefill': 0, 'decode': 0, 'other': 0}
+        self.capture_calls = 0
+        self.register_buffer('device_calls', torch.zeros(3, dtype=torch.int64, device=f'cuda:{runtime.device}'))
 
     def forward(self, hidden_states, topk_output):
-        if torch.cuda.is_current_stream_capturing():
-            raise RuntimeError('SGLang graph lifecycle not validated; use explicit eager functional verification')
+        capturing = torch.cuda.is_current_stream_capturing()
+        if capturing and (not self.runtime.allow_decode_graph or self.runtime.phase != 'decode'
+                          or hidden_states.shape[0] != 1):
+            raise RuntimeError('graph candidate supports exactly one decode row and requires explicit opt-in')
         if hasattr(topk_output, 'topk_ids') and hasattr(topk_output, 'topk_weights'):
             ids, weights = topk_output.topk_ids, topk_output.topk_weights
         elif hasattr(topk_output, 'packed_topk_ids'):
@@ -50,7 +54,12 @@ class RoutedExperts(torch.nn.Module):
         # rows only; the native outer all-reduce restores replicated routed output.
         partial = torch.zeros_like(hidden_states)
         partial[start:end].copy_(own)
-        self.coverage[self.runtime.phase] += 1
+        phase = self.runtime.phase
+        self.device_calls[{'prefill': 0, 'decode': 1, 'other': 2}[phase]].add_(1)
+        if capturing:
+            self.capture_calls += 1
+        else:
+            self.coverage[phase] += 1
         return partial
 
     def forward_impl(self, hidden_states, topk_output):
@@ -60,7 +69,8 @@ class RoutedExperts(torch.nn.Module):
         raise RuntimeError('deferred native finalize is outside this adapter contract')
 
 
-def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None, fixed_plan=(1, 1, 0)):
+def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None, fixed_plan=(1, 1, 0),
+                          kernel='scalar', allow_decode_graph=False):
     expected_version = load_contract()['sglang_version']
     if importlib.metadata.version('sglang') != expected_version:
         raise RuntimeError(f'adapter requires the source-audited SGLang {expected_version}')
@@ -80,6 +90,9 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         raise ValueError('functional adapter requires TP4/EP4, expert TP1, attention DP1, no PP/EPLB/MTP')
     if getattr(args, 'moe_a2a_backend', 'none') != 'none':
         raise ValueError('adapter owns dispatch/combine and requires the standard outer runtime path')
+    if allow_decode_graph and (getattr(args, 'max_running_requests', None) != 1
+                               or list(args.cuda_graph_config.decode.bs) != [1]):
+        raise ValueError('graph candidate requires max-running-requests=1 and decode graph buckets=[1]')
     if (config.hidden_size, config.moe_intermediate_size, config.n_routed_experts,
             config.num_experts_per_tok, config.num_hidden_layers) != (4096, 2048, 256, 6, 43):
         raise ValueError('unexpected DeepSeek-V4-Flash architecture')
@@ -94,16 +107,25 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
                 or mlp.experts.should_fuse_routed_scaling_factor_in_topk
                 or getattr(mlp, '_fuse_shared_experts_inside_sbo', False)):
             raise ValueError('unsupported expert/scaling/shared-expert path; no partial fallback')
-    runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256)
+    runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256, kernel=kernel)
+    runtime.allow_decode_graph = allow_decode_graph
     profile = runtime.profile_from_file(profile_path) if profile_path else None
     for layer in layers:
         raw = load_raw_experts(model_path, layer.mlp.layer_id, runtime.rank, runtime.ep,
                                device=torch.device('cuda', runtime.device))
         layer.mlp.experts = RoutedExperts(layer.mlp.experts, runtime, raw, profile, fixed_plan, config.swiglu_limit)
     model.weave_runtime = runtime
-    return {'backend': 'weave_functional', 'layers': len(layers), 'graph_status': 'not_validated',
+    return {'backend': 'weave_functional', 'kernel': kernel, 'layers': len(layers),
+            'graph_status': 'batch1_candidate_unvalidated' if allow_decode_graph else 'disabled',
             'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed'}
 
 
 def coverage(model):
-    return {str(layer.mlp.layer_id): dict(layer.mlp.experts.coverage) for layer in model.model.layers}
+    return {'rank': model.weave_runtime.rank, 'kernel': model.weave_runtime.kernel,
+            'source_sha256': model.weave_runtime.source_sha256,
+            'graph_enabled': model.weave_runtime.allow_decode_graph,
+            'layers': {str(layer.mlp.layer_id): {
+                'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
+                'capture_calls': layer.mlp.experts.capture_calls,
+                'python_decode_calls': layer.mlp.experts.coverage['decode'],
+                'python_calls': dict(layer.mlp.experts.coverage)} for layer in model.model.layers}}

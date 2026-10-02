@@ -12,6 +12,20 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class NativeEPLaunchTest(unittest.TestCase):
+    def test_wmma_graph_candidate_keeps_ep4_and_uses_explicit_graph_opt_in(self):
+        env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
+        run = subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--backend', 'weave_functional',
+                              '--kernel', 'wmma', '--decode-graph', 'full'], cwd=ROOT,
+                             env=env, capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        args = json.loads(run.stdout)['docker_argv']
+        self.assertIn('WEAVE_KERNEL=wmma', args)
+        self.assertIn('WEAVE_DECODE_GRAPH=1', args)
+        self.assertIn('WEAVE_EVIDENCE_PORT_BASE=30110', args)
+        self.assertEqual(args[args.index('--cuda-graph-backend-decode')+1], 'full')
+        self.assertEqual(args[args.index('--cuda-graph-max-bs-decode')+1], '1')
+        self.assertEqual(args[args.index('--ep-size')+1], '4')
+
     def test_default_image_and_work_root_follow_current_host_contract(self):
         env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
         env.pop('WORK_ROOT', None)

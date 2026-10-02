@@ -16,6 +16,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.weave.runtime_contract import load_contract, validate_inventory, verify_adapter_sources
+from src.weave.ops import kernel_source_sha256
 
 
 def package_version(name):
@@ -32,6 +33,7 @@ def package_version(name):
 
 def capture():
     result = {'captured_utc': datetime.now(timezone.utc).isoformat(),
+              'kernel_source_sha256': kernel_source_sha256(),
               'container_hostname': platform.node(), 'host_hostname': os.environ.get('WEAVE_HOST_HOSTNAME'),
               'requested_image': os.environ.get('WEAVE_IMAGE_REF'),
               'resolved_image_id': os.environ.get('WEAVE_IMAGE_ID'),
@@ -74,6 +76,9 @@ def main():
     parser.add_argument('--stage', choices=['core', 'native', 'adapter'], default='core')
     parser.add_argument('--output-dir', type=Path)
     parser.add_argument('--run-core-tests', action='store_true')
+    parser.add_argument('--run-checkpoint-tests', action='store_true')
+    parser.add_argument('--model-path', type=Path)
+    parser.add_argument('--checkpoint-layers', default='all')
     parser.add_argument('--exec-command', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     contract = load_contract()
@@ -84,6 +89,8 @@ def main():
         parser.error('--output-dir required')
     if args.run_core_tests and (args.stage != 'core' or args.exec_command):
         parser.error('--run-core-tests is only valid for the core stage without another command')
+    if args.run_checkpoint_tests and (args.stage != 'core' or args.exec_command or args.model_path is None):
+        parser.error('--run-checkpoint-tests requires core stage, model-path and no exec-command')
     args.output_dir.mkdir(parents=True, exist_ok=True)
     observed = capture()
     errors = validate_inventory(observed, args.stage, contract)
@@ -99,7 +106,7 @@ def main():
     print(json.dumps({'runtime_status': observed['runtime_status'], 'errors': errors, 'evidence': str(path)}), flush=True)
     if errors:
         return 2
-    if args.run_core_tests:
+    if args.run_core_tests or args.run_checkpoint_tests:
         command = [sys.executable, '-m', 'torch.distributed.run', '--standalone', '--nproc-per-node=4',
                    str(ROOT/'tests/gpu/check_functional.py'), '--output-dir', str(args.output_dir)]
     else:
@@ -108,7 +115,7 @@ def main():
         return 0
     code = subprocess.call(command, cwd=ROOT)
     observed['child_exit_code'] = code
-    if args.run_core_tests:
+    if args.run_core_tests or args.run_checkpoint_tests:
         ranks = []
         for rank in range(4):
             report = args.output_dir/f'rank{rank}.json'
@@ -119,6 +126,24 @@ def main():
         observed['core_validation_status'] = 'passed' if code == 0 and all(ranks) else 'failed'
         if code == 0 and not all(ranks):
             code = 3
+    if code == 0 and args.run_checkpoint_tests:
+        command = [sys.executable, '-m', 'torch.distributed.run', '--standalone', '--nproc-per-node=4',
+                   str(ROOT/'tests/gpu/check_checkpoint.py'), '--output-dir', str(args.output_dir),
+                   '--model-path', str(args.model_path), '--layers', args.checkpoint_layers]
+        code = subprocess.call(command, cwd=ROOT)
+        ranks = []
+        for rank in range(4):
+            try:
+                data = json.loads((args.output_dir/f'checkpoint-rank{rank}.json').read_text())
+                expected_layers = list(range(43)) if args.checkpoint_layers == 'all' else [int(v) for v in args.checkpoint_layers.split(',')]
+                ranks.append(data.get('status') == 'checkpoint_checks_passed' and data['layers'] == expected_layers
+                             and data['kernels'] == ['scalar', 'wmma'])
+            except (OSError, ValueError, KeyError):
+                ranks.append(False)
+        observed['checkpoint_validation_status'] = 'passed' if code == 0 and all(ranks) else 'failed'
+        if code == 0 and not all(ranks):
+            code = 3
+        observed['child_exit_code'] = code
     path.write_text(json.dumps(observed, indent=2)+'\n')
     return code
 

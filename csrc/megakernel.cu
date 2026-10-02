@@ -1,5 +1,4 @@
-// Functional persistent EP kernel. Scalar MXFP4 GEMV work units establish the
-// communication/scheduling contract before a Tensor Core tile implementation.
+// Persistent EP kernel with scalar and experimental BF16 WMMA expert work.
 #include <torch/extension.h>
 #include <pybind11/stl.h>
 #include <ATen/cuda/CUDAContext.h>
@@ -7,6 +6,7 @@
 #include <cuda/atomic>
 #include <cuda_bf16.h>
 #include <cuda_runtime.h>
+#include <mma.h>
 #include <math_constants.h>
 #include <cstddef>
 #include <cstring>
@@ -24,6 +24,7 @@ struct alignas(256) Control {
   int n, dispatch_next, dispatch_done, return_next, return_done, final_next, ctas_done;
   int npayloads, ntasks, local_pairs, remote_pairs, remote_unique;
   int c, k, steal;
+  int actual_stolen, actual_computed;
   int starts[MAX_K], ends[MAX_K], next[MAX_K], computed[MAX_K];
 };
 struct Payload { int origin, token; };
@@ -47,7 +48,7 @@ struct Config {
   int rank, ep, capacity, h, i, topk, experts, workers;
   const unsigned char *w1, *w3, *w2, *s1, *s3, *s2;
   const double* profile;
-  int nprofile, fixed_c, fixed_k, fixed_steal;
+  int nprofile, fixed_c, fixed_k, fixed_steal, tensor_core;
   float clamp;
   U64 timeout;
 };
@@ -100,6 +101,7 @@ __global__ void prepare(Control* p,int capacity) {
   check(p->n>=0 && p->n<=capacity);
   p->dispatch_next=p->dispatch_done=p->return_next=p->return_done=p->final_next=p->ctas_done=0;
   p->npayloads=p->ntasks=p->local_pairs=p->remote_pairs=p->remote_unique=0;
+  p->actual_stolen=p->actual_computed=0;
   for(int k=0;k<MAX_K;++k) p->starts[k]=p->ends[k]=p->next[k]=p->computed[k]=0;
   __threadfence_system();
   release(&p->ready,acquire(&p->ready)+1);
@@ -125,12 +127,62 @@ __device__ int claim_task(Control* p) {
   }
   return -1;
 }
+// Each warp computes sixteen output rows. Only A's first token row is valid;
+// the other fifteen rows are padded. This is a numerical Tensor Core candidate,
+// not yet an efficient grouped-token GEMM or tile-granularity stealing scheme.
+__device__ float wmma_dot(const __nv_bfloat16* x,const unsigned char* w,
+                         const unsigned char* s,size_t first_row,int width,
+                         __nv_bfloat16* scratch) {
+  using namespace nvcuda;
+  int lane=threadIdx.x%32;
+  auto a=scratch; auto b=a+256;
+  auto out=reinterpret_cast<float*>(b+256);
+  wmma::fragment<wmma::matrix_a,16,16,16,__nv_bfloat16,wmma::row_major> af;
+  wmma::fragment<wmma::matrix_b,16,16,16,__nv_bfloat16,wmma::col_major> bf;
+  wmma::fragment<wmma::accumulator,16,16,16,float> accum;
+  wmma::fill_fragment(accum,0.f);
+  for(int col=0;col<width;col+=16) {
+    for(int j=lane;j<256;j+=32) {
+      a[j]=j<16?x[col+j]:__float2bfloat16_rn(0.f);
+      b[j]=__float2bfloat16_rn(weight(w,s,first_row+j/16,col+j%16,width));
+    }
+    __syncwarp();
+    wmma::load_matrix_sync(af,a,16); wmma::load_matrix_sync(bf,b,16);
+    wmma::mma_sync(accum,af,bf,accum);
+    __syncwarp();
+  }
+  wmma::store_matrix_sync(out,accum,16,wmma::mem_row_major);
+  __syncwarp();
+  float result=lane<16?out[lane]:0.f;
+  __syncwarp();
+  return result;
+}
 __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
   View v=cfg.peers[cfg.rank]; Task t=v.tasks[idx];
   if(threadIdx.x==0) wait_epoch(&v.cache_ready[t.payload],epoch,cfg.timeout);
   __syncthreads();
   int lane=threadIdx.x%32, warp=threadIdx.x/32;
   const __nv_bfloat16* x=v.cache+size_t(t.payload)*cfg.h;
+  if(cfg.tensor_core) {
+    // 1024 BF16 elements/warp: A (256), B (256), C (256 floats).
+    auto scratch=mid+cfg.i+warp*1024;
+    for(int row=warp*16;row<cfg.i;row+=(THREADS/32)*16) {
+      size_t wr=size_t(t.expert)*cfg.i+row;
+      float g=wmma_dot(x,cfg.w1,cfg.s1,wr,cfg.h,scratch);
+      float u=wmma_dot(x,cfg.w3,cfg.s3,wr,cfg.h,scratch);
+      if(lane<16) {
+        g=__bfloat162float(__float2bfloat16_rn(g));
+        u=__bfloat162float(__float2bfloat16_rn(u));
+        g=fminf(g,cfg.clamp); u=fminf(fmaxf(u,-cfg.clamp),cfg.clamp);
+        mid[row+lane]=__float2bfloat16_rn((g/(1.f+expf(-g)))*u);
+      }
+    }
+    __syncthreads();
+    for(int row=warp*16;row<cfg.h;row+=(THREADS/32)*16) {
+      float sum=wmma_dot(mid,cfg.w2,cfg.s2,size_t(t.expert)*cfg.h+row,cfg.i,scratch);
+      if(lane<16) v.task_out[size_t(idx)*cfg.h+row+lane]=__bfloat162float(__float2bfloat16_rn(sum));
+    }
+  } else {
   for(int row=warp;row<cfg.i;row+=THREADS/32) {
     float g=0.f,u=0.f; size_t wr=size_t(t.expert)*cfg.i+row;
     for(int col=lane;col<cfg.h;col+=32) {
@@ -154,16 +206,18 @@ __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
     sum=warp_sum(sum);
     if(lane==0) v.task_out[size_t(idx)*cfg.h+row]=__bfloat162float(__float2bfloat16_rn(sum));
   }
+  }
   __syncthreads();
   __threadfence();
-  if(threadIdx.x==0) add_i(&v.ctl->computed[t.chunk],1);
+  if(threadIdx.x==0) { add_i(&v.ctl->computed[t.chunk],1); add_i(&v.ctl->actual_computed,1); }
   __syncthreads();
 }
 
 __global__ void persistent(Config cfg) {
   View v=cfg.peers[cfg.rank]; Control* p=v.ctl;
   U64 epoch=acquire(&p->ready);
-  extern __shared__ __nv_bfloat16 mid[];
+  extern __shared__ __align__(32) unsigned char shared_bytes[];
+  auto mid=reinterpret_cast<__nv_bfloat16*>(shared_bytes);
   __shared__ int job;
   if(blockIdx.x==0 && threadIdx.x==0) {
     for(int origin=0;origin<cfg.ep;++origin) {
@@ -228,6 +282,7 @@ __global__ void persistent(Config cfg) {
     if(threadIdx.x==0) job=claim_task(p);
     __syncthreads(); if(job<0) break;
     compute_task(cfg,job,epoch,mid);
+    if(comm && threadIdx.x==0) add_i(&p->actual_stolen,1);
   }
   // Chunk combine can overlap subsequent chunks' computation. Compute workers
   // join the tail after exhausting the shared compute queue.
@@ -325,16 +380,19 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
   torch::Tensor n() { return tensor(layout.control+offsetof(Control,n),{1},torch::kInt32); }
   torch::Tensor output() { return tensor(layout.output,{cap,h},torch::kBFloat16); }
   torch::Tensor schedule() { return tensor(layout.control+offsetof(Control,c),{3},torch::kInt32); }
-  void run(const std::vector<torch::Tensor>& w,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp) {
+  torch::Tensor work_counters() { return tensor(layout.control+offsetof(Control,actual_stolen),{2},torch::kInt32); }
+  void run(const std::vector<torch::Tensor>& w,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp,int tensor_core) {
     c10::cuda::CUDAGuard guard(device);
     TORCH_CHECK(connected && w.size()==6 && timeout_seconds>0 && clamp>0);
     TORCH_CHECK(c>=-1 && c<workers && k>=1 && k<=8 && steal>=0);
+    TORCH_CHECK(tensor_core==0 || tensor_core==1,"unknown expert compute implementation");
     std::vector<std::vector<int64_t>> shapes={{experts/ep,i,h/2},{experts/ep,i,h/2},{experts/ep,h,i/2},
                                             {experts/ep,i,h/32},{experts/ep,i,h/32},{experts/ep,h,i/32}};
     for(int j=0;j<6;++j) TORCH_CHECK(w[j].is_cuda() && w[j].get_device()==device && w[j].is_contiguous() && w[j].scalar_type()==torch::kUInt8 && w[j].sizes().vec()==shapes[j],"bad raw MXFP4 weight tensor ",j);
     TORCH_CHECK(profile.is_cuda() && profile.get_device()==device && profile.is_contiguous() && profile.scalar_type()==torch::kFloat64 && profile.dim()==2 && profile.size(1)==6);
     TORCH_CHECK(c>=0 || profile.size(0)>0,"dynamic scheduling requires measured profile rows");
-    int occupancy=0; CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&occupancy,persistent,THREADS,i*2));
+    int shared_bytes=i*2+(tensor_core?8192:0);
+    int occupancy=0; CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&occupancy,persistent,THREADS,shared_bytes));
     TORCH_CHECK(occupancy>=1,"persistent worker cannot reside on an SM");
     // cudaDeviceProp::clockRate was removed in CUDA 13; the driver attribute
     // returns the same kHz value.
@@ -346,10 +404,11 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     cfg.w1=w[0].data_ptr<unsigned char>(); cfg.w3=w[1].data_ptr<unsigned char>(); cfg.w2=w[2].data_ptr<unsigned char>();
     cfg.s1=w[3].data_ptr<unsigned char>(); cfg.s3=w[4].data_ptr<unsigned char>(); cfg.s2=w[5].data_ptr<unsigned char>();
     cfg.profile=profile.data_ptr<double>(); cfg.nprofile=profile.size(0); cfg.fixed_c=c; cfg.fixed_k=k; cfg.fixed_steal=steal;
+    cfg.tensor_core=tensor_core;
     cfg.timeout=U64(timeout_seconds*clock_khz*1000.); cfg.clamp=clamp;
     auto stream=at::cuda::getCurrentCUDAStream(device).stream();
     prepare<<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap);
-    persistent<<<workers,THREADS,i*2,stream>>>(cfg);
+    persistent<<<workers,THREADS,shared_bytes,stream>>>(cfg);
     CUDA_OK(cudaGetLastError());
   }
 };
@@ -362,5 +421,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME,m) {
     .def_property_readonly("x",&Workspace::x).def_property_readonly("ids",&Workspace::ids)
     .def_property_readonly("routing",&Workspace::routing).def_property_readonly("n",&Workspace::n)
     .def_property_readonly("output",&Workspace::output).def_property_readonly("schedule",&Workspace::schedule)
+    .def_property_readonly("work_counters",&Workspace::work_counters)
     .def("run",&Workspace::run);
 }

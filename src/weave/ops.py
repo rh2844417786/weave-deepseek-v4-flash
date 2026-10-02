@@ -7,6 +7,12 @@ from pathlib import Path
 import sys
 
 
+def kernel_source_sha256():
+    root = Path(__file__).resolve().parents[2]
+    return hashlib.sha256((root/'csrc/megakernel.cu').read_bytes() +
+                          (root/'csrc/scheduler.h').read_bytes()).hexdigest()
+
+
 def extension_name(torch_version, cuda_version):
     root = Path(__file__).resolve().parents[2]
     identity = f'{torch_version};{cuda_version};py{sys.version_info.major}.{sys.version_info.minor};{os.environ.get("TORCH_CUDA_ARCH_LIST", "9.0a")}'
@@ -24,9 +30,14 @@ def extension():
     source = root / 'csrc/megakernel.cu'
     header = root / 'csrc/scheduler.h'
     os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '9.0a')
-    return load(name=extension_name(str(torch.__version__), torch.version.cuda), sources=[str(source)],
+    source_digest = kernel_source_sha256()
+    module = load(name=extension_name(str(torch.__version__), torch.version.cuda), sources=[str(source)],
                 extra_cuda_cflags=['-O3', '-lineinfo', '-std=c++17'],
                 extra_cflags=['-O3', '-std=c++17'], verbose=True)
+    if kernel_source_sha256() != source_digest:
+        raise RuntimeError('CUDA source changed during extension build')
+    module.weave_source_sha256 = source_digest
+    return module
 
 
 class PeerRuntime:
@@ -36,10 +47,13 @@ class PeerRuntime:
     uses peer memory and the persistent kernel; no CPU routing statistics or
     NCCL dispatch are hidden outside the kernel.
     """
-    def __init__(self, group, capacity, hidden_size, intermediate_size, top_k, experts):
+    def __init__(self, group, capacity, hidden_size, intermediate_size, top_k, experts, *, kernel='scalar'):
         import torch
         import torch.distributed as dist
         self.torch = torch
+        if kernel not in ('scalar', 'wmma'):
+            raise ValueError('kernel must be scalar or wmma')
+        self.kernel = kernel
         self.group = group
         self.rank, self.ep = dist.get_rank(group), dist.get_world_size(group)
         if self.ep > 4 or dist.get_backend(group) != 'gloo':
@@ -50,10 +64,12 @@ class PeerRuntime:
         self.capacity, self.h, self.i, self.topk = capacity, hidden_size, intermediate_size, top_k
         signature = (capacity, hidden_size, intermediate_size, top_k, experts)
         signatures = [None] * self.ep
-        dist.all_gather_object(signatures, signature, group=group)
-        if any(s != signature for s in signatures):
+        dist.all_gather_object(signatures, (signature, kernel), group=group)
+        if any(s != (signature, kernel) for s in signatures):
             raise ValueError('ranks disagree on workspace dimensions')
-        self.ws = extension().Workspace(self.rank, self.ep, *signature)
+        module = extension()
+        self.source_sha256 = module.weave_source_sha256
+        self.ws = module.Workspace(self.rank, self.ep, *signature)
         handles = [None] * self.ep
         dist.all_gather_object(handles, bytes(self.ws.handle()), group=group)
         self.ws.connect(handles)
@@ -66,7 +82,8 @@ class PeerRuntime:
         data = json.loads(Path(path).read_text())
         prop = torch.cuda.get_device_properties(self.device)
         key = f'{prop.name};sm{prop.major}{prop.minor};{prop.multi_processor_count}'
-        if (data.get('status') != 'measured' or data.get('kernel') != 'scalar_mxfp4_token_v1'
+        if (data.get('status') != 'measured' or data.get('kernel') != f'{self.kernel}_mxfp4_token_v1'
+                or data.get('source_sha256') != self.source_sha256
                 or data.get('device_key') != key or data.get('hidden_size') != self.h
                 or data.get('intermediate_size') != self.i):
             raise ValueError('profile is not a measured match for this kernel/device/shape')
@@ -108,5 +125,5 @@ class PeerRuntime:
             profile = self.empty_profile
         else:
             c, k, steal = -1, 1, 0
-        self.ws.run(list(raw_weights), profile, c, k, steal, timeout_seconds, clamp)
+        self.ws.run(list(raw_weights), profile, c, k, steal, timeout_seconds, clamp, int(self.kernel == 'wmma'))
         return self.ws.output[:n]

@@ -9,6 +9,7 @@ import argparse
 from datetime import datetime, timezone
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -42,7 +43,9 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
             '-e', 'PYTHONPATH=/workspace/src',
             '-e', 'SGLANG_EXTERNAL_MODEL_PACKAGE=weave.sglang_ext.models',
             '-e', 'WEAVE_MODEL_PATH=/model', '-e', 'WEAVE_CAPACITY=2048',
-            '-e', 'WEAVE_FIXED_PLAN=1,1,0', '-e', 'TORCH_EXTENSIONS_DIR=/work/torch_extensions',
+            '-e', f'WEAVE_FIXED_PLAN={args.fixed_plan}', '-e', 'TORCH_EXTENSIONS_DIR=/work/torch_extensions',
+            '-e', f'WEAVE_KERNEL={args.kernel}', '-e', f'WEAVE_DECODE_GRAPH={int(args.decode_graph == "full")}',
+            '-e', f'WEAVE_EVIDENCE_PORT_BASE={args.evidence_port_base}',
         ]
         if args.profile:
             relative = args.profile.relative_to(args.work_root)
@@ -57,7 +60,7 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
         '--moe-runner-backend', 'marlin', '--moe-a2a-backend', 'none',
         '--context-length', '131072', '--mem-fraction-static', '0.80',
         '--chunked-prefill-size', '8192', '--max-running-requests', '1',
-        '--cuda-graph-backend-decode', 'disabled' if functional else 'full', '--cuda-graph-max-bs-decode', '1',
+        '--cuda-graph-backend-decode', args.decode_graph, '--cuda-graph-max-bs-decode', '1',
         '--watchdog-timeout', '1800', '--disable-custom-all-reduce',
         '--disable-shared-experts-fusion', '--reasoning-parser', 'deepseek-v4',
         '--decode-log-interval', '10', '--enable-metrics',
@@ -72,9 +75,25 @@ def main() -> int:
     parser.add_argument('--runtime-python', default=os.environ.get('RUNTIME_PYTHON', CONTRACT['python_executable']))
     parser.add_argument('--port', type=int, default=30001)
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
+    parser.add_argument('--kernel', choices=['scalar', 'wmma'], default='scalar')
+    parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
+    parser.add_argument('--fixed-plan', default='1,1,0', help='explicit c,K,completed-task steal budget per comm worker')
+    parser.add_argument('--evidence-port-base', type=int, default=30110)
+    parser.add_argument('--run-name', help='fresh native-ep-* directory name, for acceptance orchestration')
     parser.add_argument('--profile', type=Path, help='measured profile JSON under WORK_ROOT; otherwise functional fixed plan')
     parser.add_argument('--execute', action='store_true', help='launch Docker; default only prints the candidate command')
     args = parser.parse_args()
+    args.decode_graph = args.decode_graph or ('disabled' if args.backend == 'weave_functional' else 'full')
+    if args.run_name and not re.fullmatch(r'native-ep-[A-Za-z0-9_.-]+', args.run_name):
+        parser.error('run-name must be a safe native-ep-* basename')
+    try:
+        c, k, steal = [int(v) for v in args.fixed_plan.split(',')]
+        if c < 0 or not 1 <= k <= 8 or steal < 0:
+            raise ValueError
+    except ValueError:
+        parser.error('fixed-plan must contain nonnegative c/steal and K in 1..8')
+    if not 1 <= args.evidence_port_base <= 65532 or args.port in range(args.evidence_port_base, args.evidence_port_base+4):
+        parser.error('evidence port range must be valid and distinct from serving port')
     allocation = os.environ.get('CUDA_VISIBLE_DEVICES', '')
     if allocation != '4,5,6,7':
         parser.error('GPUQ allocation must be CUDA_VISIBLE_DEVICES=4,5,6,7')
@@ -105,7 +124,7 @@ def main() -> int:
     image_id = inspection.stdout.strip()
     if not image_id.startswith('sha256:'):
         raise ValueError('docker image inspect did not return a content-addressed image ID')
-    run_dir = args.work_root / ('native-ep-' + uuid.uuid4().hex)
+    run_dir = args.work_root / (args.run_name or 'native-ep-' + uuid.uuid4().hex)
     run_dir.mkdir()
     command = docker_command(args, image_id, name, run_dir.name)
     report = {

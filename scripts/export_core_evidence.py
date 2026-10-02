@@ -5,8 +5,11 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
+from src.weave.service_acceptance import validate_checkpoint_gate
 
 
 def main():
@@ -25,6 +28,8 @@ def main():
         parser.error('this exporter accepts core functional runs only')
     names=['runtime.json']+[f'rank{r}.json' for r in range(4)]+[
         'exit_code.txt','image_id.txt','allocation.txt','container_lifecycle.json']
+    if runtime.get('checkpoint_validation_status') is not None:
+        names += ['checkpoint_identity.json']+[f'checkpoint-rank{r}.json' for r in range(4)]
     if args.include_build_log:
         names.append('build-and-test.log')
     data,parsed={},{}
@@ -54,6 +59,17 @@ def main():
               'missing_rank_reports':missing,'full_model':'not_verified_by_this_export',
               'performance':'not_verified_by_this_export',
               'sha256':{name:hashlib.sha256(content).hexdigest() for name,content in data.items()}}
+    if runtime.get('checkpoint_validation_status') is not None:
+        manifest['scope']='small_core_and_original_checkpoint_checks'
+        try:
+            ranks=[parsed[f'checkpoint-rank{r}.json'] for r in range(4)]
+            validate_checkpoint_gate(runtime,ranks,source_sha256=runtime['kernel_source_sha256'],
+                                     index_sha256=ranks[0]['checkpoint_index_sha256'],
+                                     checkpoint_sha256=parsed['checkpoint_identity.json']['sha256'])
+            manifest['reported_checkpoint_status']='passed'
+        except (ValueError,KeyError) as exc:
+            manifest['reported_checkpoint_status']='not_passed'
+            manifest['checkpoint_validation_error']=str(exc)
     (output/'evidence_manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(json.dumps({'exported_to':str(output),'reported_core_status':status,'files':list(data)}))
     return 0

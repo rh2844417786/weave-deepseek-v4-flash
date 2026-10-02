@@ -15,7 +15,12 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
                 raise ValueError('WEAVE_FIXED_PLAN must be c,K,steal-task-count')
             result = install_weave_backend(self, model_path,
                 capacity=int(os.environ.get('WEAVE_CAPACITY', '2048')),
-                profile_path=os.environ.get('WEAVE_PROFILE'), fixed_plan=fixed)
+                profile_path=os.environ.get('WEAVE_PROFILE'), fixed_plan=fixed,
+                kernel=os.environ.get('WEAVE_KERNEL', 'scalar'),
+                allow_decode_graph=os.environ.get('WEAVE_DECODE_GRAPH') == '1')
+            if os.environ.get('WEAVE_EVIDENCE_PORT_BASE'):
+                from weave.evidence_server import start_evidence_server
+                self.weave_evidence_server = start_evidence_server(self, int(os.environ['WEAVE_EVIDENCE_PORT_BASE']))
             print(json.dumps(result), flush=True)
             atexit.register(lambda: print(json.dumps({'weave_coverage': coverage(self)}), flush=True))
         batch = kwargs.get('forward_batch', args[2] if len(args) > 2 else None)
