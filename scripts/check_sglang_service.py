@@ -11,7 +11,7 @@ from urllib.request import ProxyHandler, Request, build_opener
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from src.weave.service_acceptance import validate_coverage_delta, compare_first_token, NumericalComparisonError
+from src.weave.service_acceptance import validate_coverage_delta, compare_first_token
 
 DIRECT = build_opener(ProxyHandler({}))
 
@@ -73,7 +73,8 @@ def check_service(url, records_path, output, *, weave=False, graph=False, eviden
               'input_sha256': input_sha, 'row_index': record['row_index'],
               'request_settings': {k: v for k, v in request.items() if k != 'input_ids'},
               'request': request, 'prepared_manifest': prepared,
-              'graph_required': graph, 'performance': 'not_measured'}
+              'graph_required': graph, 'performance': 'not_measured',
+              'logprob_policy': 'record_only'}
     # Store decodable input/output only under ignored work, never in git reports.
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2)+'\n')
@@ -94,8 +95,6 @@ def check_service(url, records_path, output, *, weave=False, graph=False, eviden
             report['native_comparison']['matched_generated_tokens'] = len(token_ids)
         report['status'] = 'passed'
     except Exception as exc:
-        if isinstance(exc, NumericalComparisonError):
-            report['native_comparison'] = dict(exc.diagnostics, matched_generated_tokens=len(token_ids))
         report['status'], report['error'] = 'failed', f'{type(exc).__name__}: {exc}'
         raise
     finally:

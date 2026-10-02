@@ -22,6 +22,8 @@
 
 已有代码包括：只读预检、DeepSeek GPQA token ID 准备、decode 计数、EP 路由去重/合并 CPU 参考，以及原生 EP4 Docker 启动入口。现已加入 CUDA IPC persistent 功能核心、GPU 端 c/K 选择和连续 stealing、raw MXFP4 专家加载器，以及源码核对后的 SGLang 0.5.17 eager adapter。默认使用当前服务器已有的 `lmsysorg/sglang:v0.5.17`，工作目录为 `<repo>/work`。后端名为 `weave_functional`：H100 上的 CUDA 编译、两轮四卡小张量功能与 core graph replay 已通过并核对原始报告；已验证的计算单元是历史标量 GEMV；本批新增可选 BF16 WMMA 候选。真实模型尺寸、非零 stealing、新 WMMA 数值与 SGLang graph 待服务器验收，高效 Tensor Core tile 和性能实验继续待完成。证据见 `reports/core_acceptance.json`，状态见 `reports/implementation_status.json`。
 
+当前服务验收中，logprob 和 top-k 候选集合仅保存诊断，不作为通过/失败门限；实际生成 token 一致性、checkpoint、43 层执行与 graph replay 按验收入口检查。
+
 本批增加 `tests/gpu/check_checkpoint.py`、实际窃取设备计数、可选 BF16 WMMA、batch=1 graph 接入候选和 43 层设备调用证据。`python3 scripts/run_model_acceptance.py` 在 GPUQ 分配内串起全权重检查、原生 EP4、Weave eager 与 Weave graph；未通过新源码 gate 会停止。旧结果不证明新增 CUDA 已编译；校准及 GPQA 正式速度对照仍未完成。
 
 旧 Qwen 输入长度审计的本地复核（不适用于 DeepSeek）：

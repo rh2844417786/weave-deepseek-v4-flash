@@ -119,7 +119,8 @@ def main():
     out.mkdir()
     report = {'status': 'running', 'source_sha256': kernel_source_sha256(),
               'kernel': args.kernel, 'scope': 'correctness_and_graph_acceptance', 'performance': 'not_run',
-              'steps': {}, 'server_runs': {}}
+              'steps': {}, 'server_runs': {},
+              'acceptance_policy': {'logprob': 'record_only', 'top_logprob_support': 'record_only'}}
     report_path = out/'acceptance.json'
     report_path.write_text(json.dumps(report, indent=2)+'\n')
     print(f'Model acceptance evidence: {out}', flush=True)

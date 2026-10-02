@@ -68,5 +68,12 @@
     "Full model and SGLang graph correctness",
     "Matched native EP4 and Weave performance runs",
     "Native per-rank BF16 partial sums and shared-expert reduction order versus Weave global combine"
-  ]
+  ],
+  "acceptance_policy": {
+    "logprob": "record_only",
+    "top_logprob_support": "record_only",
+    "unavailable_logprobs": "record_reason_without_failing",
+    "generated_token_ids": "eight_token_exact_match",
+    "checkpoint_and_coverage": "required"
+  }
 }

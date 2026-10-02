@@ -1,5 +1,7 @@
 # 模型验收门失败分析：weave_eager 首 token top-k 支撑集与尾部数值漂移
 
+> 当前策略已按用户要求改为：logprob 数值与 top-k 支撑集仅记录，不作为验收门限。下文保留该次作业采用旧门限时的原始结果及后续修复过程。历史失败状态不改判，graph 尚需重跑。
+
 2026-10-02，作业 `job-20261002-092219-69d97c32`（`scripts/run_model_acceptance.py`，GPU 4–7，运行 32 分 54 秒）。四步中 **checkpoint ✅、native ✅、weave_eager ❌、weave_graph 未运行**。
 
 服务侧完全正常：两级运行契约 `runtime_status: passed`、两次 `POST /generate 200 OK`、无 traceback；容器生命周期（含 SIGTERM 强制清理）全部达标。失败点是**数值验收门**，不是 bring-up 或崩溃。

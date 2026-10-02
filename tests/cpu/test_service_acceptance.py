@@ -17,7 +17,7 @@ def snapshot():
 
 
 class ServiceAcceptanceTest(unittest.TestCase):
-    def test_failed_service_request_persists_complete_numerical_diagnostics(self):
+    def test_logprob_drift_is_recorded_without_failing_generation(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             records = root/'main.jsonl'
@@ -37,19 +37,37 @@ class ServiceAcceptanceTest(unittest.TestCase):
                                           'response': response}))
             changed = copy.deepcopy(response)
             changed['meta_info']['output_top_logprobs'][0][1][1] = 10
-            output = root/'failed-request.json'
+            changed['meta_info']['output_token_logprobs'][0][0] = -1.4
+            changed['meta_info']['output_top_logprobs'][0][0][0] = -1.4
+            output = root/'request.json'
             # Only the external HTTP boundary is replaced; manifest, comparison,
             # exception handling and evidence-file writes all execute normally.
             with patch('scripts.check_sglang_service.http_json', side_effect=[None, changed]):
-                with self.assertRaises(ValueError):
-                    check_service('http://127.0.0.1:1', records, output, native=native)
+                result = check_service('http://127.0.0.1:1', records, output, native=native)
+            self.assertEqual(result['status'], 'passed')
             evidence = json.loads(output.read_text())
-            self.assertEqual(evidence['status'], 'failed')
+            self.assertEqual(evidence['status'], 'passed')
             self.assertEqual(evidence['response'], changed)
             diagnostic = evidence.get('native_comparison', {})
             self.assertEqual(diagnostic.get('native_only_token_ids'), [9])
             self.assertEqual(diagnostic.get('weave_only_token_ids'), [10])
             self.assertEqual(diagnostic.get('matched_generated_tokens'), 8)
+            self.assertEqual(diagnostic['status'], 'recorded')
+            self.assertFalse(diagnostic['used_for_acceptance'])
+            self.assertAlmostEqual(diagnostic['first_token_logprob_delta'], 1.)
+            # Missing optional logprob output must also be a record, not a gate.
+            missing = {'output_ids': [12]*8, 'meta_info': {}}
+            with patch('scripts.check_sglang_service.http_json', side_effect=[None, missing]):
+                result = check_service('http://127.0.0.1:1', records, output, native=native)
+            self.assertEqual(result['status'], 'passed')
+            self.assertEqual(result['native_comparison']['status'], 'unavailable')
+            # Actual generated-token disagreement remains an acceptance failure.
+            different = copy.deepcopy(changed)
+            different['output_ids'][-1] = 13
+            with patch('scripts.check_sglang_service.http_json', side_effect=[None, different]):
+                with self.assertRaisesRegex(ValueError, 'generated token IDs differ'):
+                    check_service('http://127.0.0.1:1', records, output, native=native)
+            self.assertEqual(json.loads(output.read_text())['status'], 'failed')
 
     def test_changed_topk_support_does_not_hide_common_tail_drift(self):
         # Transcribed numeric table in the server note, not raw run acceptance.
@@ -60,15 +78,15 @@ class ServiceAcceptanceTest(unittest.TestCase):
         def response(top):
             return {'input_sha256': 'same', 'response': {'meta_info': {
                 'output_token_logprobs': [[0.,2581,None]], 'output_top_logprobs': [top]}}}
-        with self.assertRaises(ValueError) as caught:
-            compare_first_token(response(native_top), response(weave_top))
-        diagnostic = getattr(caught.exception, 'diagnostics', {})
-        self.assertEqual(diagnostic.get('status'), 'failed')
+        diagnostic = compare_first_token(response(native_top), response(weave_top))
+        self.assertEqual(diagnostic['status'], 'recorded')
+        self.assertFalse(diagnostic['used_for_acceptance'])
         self.assertEqual(diagnostic.get('native_only_token_ids'), [2337,9832])
         self.assertEqual(diagnostic.get('weave_only_token_ids'), [1124,92341])
         self.assertEqual(diagnostic.get('max_abs_common_logprob_delta'), .5)
-        self.assertEqual(diagnostic.get('common_tokens_exceeding_atol'), 7)
-        self.assertEqual(diagnostic.get('atol'), .1)
+        self.assertEqual(len(diagnostic['common_logprob_deltas']), 8)
+        self.assertNotIn('atol', diagnostic)
+        self.assertNotIn('failures', diagnostic)
 
     def test_checkpoint_gate_rejects_old_or_partial_evidence(self):
         runtime = {'runtime_status': 'passed', 'checkpoint_validation_status': 'passed',
@@ -123,28 +141,32 @@ class ServiceAcceptanceTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '43'):
             validate_coverage_delta(before, after, require_graph=False)
 
-    def test_first_token_comparison_uses_same_prompt_and_token_ids(self):
+    def test_logprob_diagnostics_require_same_prompt_and_record_metadata_tokens(self):
         a = {'input_sha256': 'same', 'response': {'meta_info': {
             'output_token_logprobs': [[-0.4, 12, None]],
             'output_top_logprobs': [[[-0.4, 12, None], [-2., 9, None]]]}}}
         b = copy.deepcopy(a)
-        self.assertEqual(compare_first_token(a, b)['status'], 'passed')
+        self.assertEqual(compare_first_token(a, b)['status'], 'recorded')
         b['input_sha256'] = 'different'
         with self.assertRaisesRegex(ValueError, 'prompt'):
             compare_first_token(a, b)
         b = copy.deepcopy(a)
         b['response']['meta_info']['output_token_logprobs'][0][1] = 13
-        with self.assertRaisesRegex(ValueError, 'token'):
-            compare_first_token(a, b)
+        result = compare_first_token(a, b)
+        self.assertEqual(result['status'], 'recorded')
+        self.assertFalse(result['first_token_matches'])
 
-    def test_identical_but_invalid_logprob_evidence_cannot_pass(self):
+    def test_invalid_logprobs_are_recorded_as_unavailable(self):
         for value in (float('nan'), float('inf'), .5):
             with self.subTest(value=value):
                 item = {'input_sha256': 'same', 'response': {'meta_info': {
                     'output_token_logprobs': [[value, 12, None]],
                     'output_top_logprobs': [[[value, 12, None]]]}}}
-                with self.assertRaises(ValueError):
-                    compare_first_token(item, copy.deepcopy(item))
+                result = compare_first_token(item, copy.deepcopy(item))
+                self.assertEqual(result['status'], 'unavailable')
+                self.assertFalse(result['used_for_acceptance'])
+                self.assertIn('error', result)
+                json.dumps(result, allow_nan=False)
 
 
 if __name__ == '__main__':

@@ -48,7 +48,7 @@ python3 scripts/run_model_acceptance.py
 3. Weave WMMA eager，batch=1。
 4. Weave WMMA full decode graph，batch=1。
 
-服务阶段共用同一条自然长度 GPQA 输入；检查 8 个实际输出 token 的一致性以及首 token top10 logprobs，容许 logprob 绝对误差 0.1。测试为证明 decode 执行而显式要求 8 token、忽略 EOS；这仅属于功能验收。正式 GPQA 保持 Think High、32768 上限和正常 EOS。
+服务阶段共用同一条自然长度 GPQA 输入，检查 8 个实际输出 token 的一致性。首 token 和 top10 logprobs 仅作为诊断记录：保存候选集合差异、逐项差值和最大差值，不设置 logprob 容差门限，不因 top-k 支撑集变化而中止验收。logprob 缺失或异常时标记 unavailable 并记录原因。测试为证明 decode 执行而显式要求 8 token、忽略 EOS；这仅属于功能验收。正式 GPQA 保持 Think High、32768 上限和正常 EOS。
 
 每次请求前 flush cache，确保执行 prefill。四个 TP worker 的 localhost 30110..30113 `/coverage` 仅在 idle 时查询；查询会同步 CUDA，不能放到性能计时区间。逐层设备计数在 graph 中递增，Python 调用计数与 capture 计数单独记录。请求后的 decode device delta 大于 Python decode delta，且 capture 次数没有增加，才能建立 graph replay 证据。任何层或 rank 缺失都会失败。
 
@@ -80,6 +80,8 @@ python3 scripts/run_model_acceptance.py --core-run-dir /absolute/work/cuda-funct
 
 服务器提交了 [失败分析](MODEL_ACCEPTANCE_TOPK_GATE.md)，报告旧源码 checkpoint/native 通过，Weave eager 数值门失败，graph 未运行；原始工作目录 JSON 尚未回传。本轮修正 SiLU 中间结果、路由权重与逐专家加权输出的 BF16 舍入。旧参考实现也缺少这些边界，因此旧 checkpoint 门通过不能替代本轮验收。
 
-新增 `expert_numerics.h` 已纳入扩展缓存和源码 SHA256。必须重新执行完整 `python3 scripts/run_model_acceptance.py`；不要用旧 `--core-run-dir`，其源码校验会拒绝复用。top-10 支撑集一致和 logprob atol=0.1 的严格条件保留，失败时 `native_comparison` 会同时记录支撑差异、逐项 delta、最大 delta、超差数量和已匹配的生成 token 数。
+新增 `expert_numerics.h` 已纳入扩展缓存和源码 SHA256。a934293 回传中使用的旧 CUDA 报告不能用于舍入修正后的源码；若尚未执行修正后的 checkpoint 门，需完整运行 `python3 scripts/run_model_acceptance.py`。按用户后续指示，logprob 和 top-k 支撑集比较已改为仅记录，不再阻断 eager 或 graph 阶段。`native_comparison` 使用 `status=recorded/unavailable`、`used_for_acceptance=false` 标识，保留差值明细与已匹配的生成 token 数。
 
-两处修正尚未在 H100 编译/运行。EP rank 部分和与 shared-expert 合并的舍入顺序仍不同，不能据此保证端到端漂移已消失。若服务门继续失败，须先结合完整诊断定位此边界，再讨论有依据的验收方式。
+两处修正尚未在 H100 编译/运行。EP rank 部分和与 shared-expert 合并的舍入顺序仍不同，不能据此保证端到端漂移已消失。这些数值差异继续作为诊断数据。当前服务门检查实际生成 token、输入与源码/权重身份、43 层执行、graph replay 及容器清理。单纯 logprob 差异不会导致失败。
+
+本次 logprob 策略调整只涉及 Python 验收与记录，没有改变 CUDA 源码。已有与当前源码和 checkpoint 身份一致的全 43 层通过报告时，可使用上文 `--core-run-dir` 复用；历史失败作业的状态不因规则调整而改写，未执行的 graph 仍须实际运行。
