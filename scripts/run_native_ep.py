@@ -34,6 +34,8 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
         '-e', 'GLOO_SOCKET_IFNAME=lo', '-e', 'NCCL_CUMEM_HOST_ENABLE=0',
         '-e', 'TORCH_NCCL_ASYNC_ERROR_HANDLING=1', '-e', 'TORCH_NCCL_BLOCKING_WAIT=1',
         '-e', 'XDG_CACHE_HOME=/work/cache', '-e', 'HF_HOME=/work/cache/huggingface',
+        '-e', 'HF_HUB_OFFLINE=1', '-e', 'TRANSFORMERS_OFFLINE=1',
+        '-e', 'HF_DATASETS_OFFLINE=1',
         '-e', f'WEAVE_IMAGE_REF={args.image}', '-e', f'WEAVE_IMAGE_ID={image}',
         '-e', f'WEAVE_HOST_HOSTNAME={os.uname().nodename}', '-e', 'WEAVE_HOST_ALLOCATION=4,5,6,7',
     ]

@@ -33,14 +33,7 @@ CHECKPOINT_TESTS=1 CHECKPOINT_LAYERS=all bash scripts/run_cuda_functional_gpuq.s
 
 ## 2. 一次作业串起 checkpoint 与服务门槛
 
-服务器需先生成两组共用的 Think High token-ID 清单：
-
-```bash
-python3 scripts/fetch_gpqa.py
-python3 scripts/prepare_gpqa.py --model-dir /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash
-```
-
-准备脚本需要 `requirements-data.txt` 中的 CPU 依赖；已经准备好的清单可以通过 `--records /absolute/path/main.jsonl` 指定。
+服务器需先生成两组共用的 Think High token-ID 清单。服务器只能从 GitHub 获取材料：GPQA 来自作者固定版本的 GitHub 归档，随后使用本地模型文件和已有 SGLang 镜像离线编码。完整命令见 [服务器网络与离线准备](RUNTIME_0517.md#服务器网络与离线准备)，不要求服务器在线安装 Python 包。已经准备好的清单可以通过 `--records /absolute/path/main.jsonl` 指定。
 
 在 GPUQ 分配好的作业内运行：
 

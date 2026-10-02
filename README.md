@@ -5,6 +5,7 @@
 ## 入口
 
 - [当前服务器镜像、版本与工作目录契约](docs/RUNTIME_0517.md)
+- [服务器仅访问 GitHub：数据与依赖离线准备](docs/RUNTIME_0517.md#服务器网络与离线准备)
 - [真实 43 层 checkpoint、WMMA 与 SGLang graph 验收入口](docs/REAL_CHECKPOINT_GRAPH_ACCEPTANCE.md)
 - [CUDA 功能核心、动态调度与 SGLang adapter](docs/CUDA_FUNCTIONAL_CORE.md)
 - [历史 SGLang 0.5.16 接入核对](docs/SGLANG_V0516_INTEGRATION.md)
@@ -29,7 +30,7 @@ python3 scripts/fetch_gpqa.py --verify-only
 .venv-data/bin/python scripts/audit_gpqa_lengths.py
 ```
 
-新服务器/新 checkout 的 GPQA 数据下载与旧 Qwen 审计命令（DeepSeek 需另用其编码器重新审计）：
+联网开发机上复核旧 Qwen 审计的命令（仅为历史审计；服务器使用上面的 DeepSeek 离线准备入口）：
 
 ```bash
 python3 scripts/fetch_gpqa.py
