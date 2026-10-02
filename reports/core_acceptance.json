@@ -1,0 +1,86 @@
+{
+  "review_date": "2026-10-02",
+  "review_timezone": "America/New_York",
+  "source_git_commit": "017315f7b56e5b9c695130e3aec1dbb676f820b0",
+  "verdict": "small_synthetic_core_functional_gate_passed",
+  "runs": [
+    {
+      "directory": "reports/server/cuda-functional.Uzo4T0",
+      "job": "job-20260930-143258-4804ff92",
+      "runtime_status": "passed",
+      "child_exit_code": 0,
+      "core_validation_status": "passed",
+      "rank_reports_passed": 4,
+      "verified_file_hashes": 9,
+      "manifest_sha256": "995cb122be1e6b93d86777a5d4d2bbcf75fb45b1c1032fb2a80c71112c4a1cae"
+    },
+    {
+      "directory": "reports/server/cuda-functional.YfA3yp",
+      "job": "job-20260930-161809-b276d3d5",
+      "runtime_status": "passed",
+      "child_exit_code": 0,
+      "core_validation_status": "passed",
+      "rank_reports_passed": 4,
+      "verified_file_hashes": 10,
+      "manifest_sha256": "4f55cc29f156e23f9715b63ed5baec3bf9391320a33071999c08e5519c553543"
+    }
+  ],
+  "runtime": {
+    "image": "lmsysorg/sglang:v0.5.17",
+    "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+    "python": "3.12.3",
+    "packages": {
+      "torch": "2.11.0+cu130",
+      "sglang": "0.5.17",
+      "transformers": "5.12.1",
+      "triton": "3.6.0",
+      "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+      "flashinfer-python": "0.6.15.post1"
+    },
+    "torch_cuda": "13.0",
+    "nvcc_release": "13.0",
+    "host_gpu_allocation": "4,5,6,7"
+  },
+  "test_scope": {
+    "ep_size": 4,
+    "hidden_size": 32,
+    "intermediate_size": 32,
+    "experts": 8,
+    "top_k": 2,
+    "max_local_tokens": 2,
+    "reference_rtol": 0.025,
+    "reference_atol": 0.002,
+    "graph_valid_counts": [
+      2,
+      0,
+      1,
+      2
+    ],
+    "routing_changes_between_replays": true,
+    "dynamic_profile": "synthetic_fixture",
+    "selected_plan": [
+      1,
+      2,
+      0
+    ],
+    "nonzero_stealing_exercised": false,
+    "oracle_limit": "Synthetic expert weights repeat across destination ranks; this is not a full per-expert routing-identity test with real checkpoint weights."
+  },
+  "container_lifecycle": {
+    "container_name": "weave-cuda-functional-YfA3yp",
+    "started_utc": "2026-10-01T09:29:33.250530+00:00",
+    "termination_signal": null,
+    "exit_code": 0,
+    "cleanup_status": "not_required",
+    "finished_utc": "2026-10-01T09:29:51.465285+00:00"
+  },
+  "remaining_unverified": [
+    "real_model_dimensions_and_checkpoint_weights",
+    "sglang_adapter_in_these_runs",
+    "sglang_full_model_graph",
+    "measured_calibration",
+    "nonzero_stealing",
+    "sigterm_cleanup_on_server",
+    "performance"
+  ]
+}

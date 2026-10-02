@@ -5,38 +5,45 @@
     "torch": "2.11.0+cu130",
     "cuda": "13.0",
     "work_root_default": "<repo>/work",
-    "actual_current_server_validation": "server_reported_core_passed_raw_evidence_pending"
+    "actual_current_server_validation": "passed_small_synthetic_core_with_reviewed_raw_artifacts"
   },
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
-    "cuda_ipc_epoch_protocol": "implemented_unverified_on_gpu",
-    "gpu_joint_cost_model": "implemented_profile_required",
-    "chunk_pipeline": "implemented_unverified_on_gpu",
-    "bubble_stealing": "implemented_token_expert_work_unit",
+    "cuda_ipc_epoch_protocol": "implemented_small_synthetic_gpu_checks_passed",
+    "gpu_joint_cost_model": "implemented_synthetic_device_selection_verified_measured_profile_pending",
+    "chunk_pipeline": "implemented_small_shape_K1_K2_checks_passed",
+    "bubble_stealing": "implemented_token_expert_work_unit_nonzero_gpu_budget_not_tested",
     "sglang_adapter": "implemented_eager_0.5.17_source_locked_unverified",
     "native_fallback": "not_provided"
   },
   "validation": {
-    "cpu_suite": {"status": "passed", "tests": 44},
+    "cpu_suite": {
+      "status": "passed",
+      "tests": 44
+    },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "server_reported_passed_raw_artifacts_pending",
-    "multi_gpu_correctness": "server_reported_small_synthetic_checks_passed_raw_artifacts_pending",
-    "core_graph_replay": "server_reported_passed_raw_artifacts_pending",
+    "cuda_build": "passed_h100_sm90a_cuda13",
+    "multi_gpu_correctness": "passed_small_synthetic_fixture_twice",
+    "core_graph_replay": "passed_small_synthetic_fixture_twice",
     "sglang_integration": "server_reported_ready_and_short_request_raw_log_pending",
     "full_model_generation": "not_independently_verified",
-    "performance": "not_run"
+    "performance": "not_run",
+    "normal_container_exit": "passed_exit0_no_signal",
+    "gpuq_sigterm_cleanup": "not_verified_on_server"
   },
   "server_report_sources": {
-    "core": "f4ce0f98484fca9a49747a58af1c7b5f2ba85c63 commit message; work/cuda-functional.Uzo4T0",
+    "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",
     "bringup": "docs/GPUQ_CANCEL_CONTAINER_CLEANUP.md; work/native-ep-26fad58797ce4c9ebdbd3dbd6b926310/server.log",
-    "original_run_files_in_git": false,
-    "cancel_cleanup_fix_on_server": "not_run"
+    "cancel_cleanup_fix_on_server": "normal_exit_observed_sigterm_branch_not_exercised",
+    "original_core_run_files_in_git": true,
+    "original_bringup_log_in_git": false
   },
   "remaining_acceptance": [
+    "Real model dimensions and checkpoint expert-weight correctness",
+    "Nonzero stealing budget and GPUQ SIGTERM cleanup checks",
     "Tensor Core expert tiles and matching tile stealing",
     "Measured calibration profiles",
-    "H100 build and functional evidence",
     "Full model and SGLang graph correctness",
     "Matched native EP4 and Weave performance runs"
   ]
