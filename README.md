@@ -1,6 +1,6 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-本项目目标已从 Qwen3.5-35B-A3B 切换为原版 DeepSeek-V4-Flash 混合精度权重。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史标量 CUDA 核心已通过两轮四 H100 小尺寸检查；新增 WMMA、真实原始权重和 SGLang graph 门槛等待服务器执行。
+本项目目标已从 Qwen3.5-35B-A3B 切换为原版 DeepSeek-V4-Flash 混合精度权重。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史标量 CUDA 核心已通过两轮四 H100 小尺寸检查；服务器最新说明报告旧 WMMA/checkpoint 门通过，但 Weave eager 首 token 数值门失败，graph 未运行；本轮修正原生 BF16 舍入边界，等待服务器重跑。
 
 ## 入口
 

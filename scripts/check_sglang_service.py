@@ -11,7 +11,7 @@ from urllib.request import ProxyHandler, Request, build_opener
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from src.weave.service_acceptance import validate_coverage_delta, compare_first_token
+from src.weave.service_acceptance import validate_coverage_delta, compare_first_token, NumericalComparisonError
 
 DIRECT = build_opener(ProxyHandler({}))
 
@@ -94,6 +94,8 @@ def check_service(url, records_path, output, *, weave=False, graph=False, eviden
             report['native_comparison']['matched_generated_tokens'] = len(token_ids)
         report['status'] = 'passed'
     except Exception as exc:
+        if isinstance(exc, NumericalComparisonError):
+            report['native_comparison'] = dict(exc.diagnostics, matched_generated_tokens=len(token_ids))
         report['status'], report['error'] = 'failed', f'{type(exc).__name__}: {exc}'
         raise
     finally:

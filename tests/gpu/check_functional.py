@@ -51,9 +51,9 @@ def main():
                 w = matrix(int(ids[row,slot]))
                 gate = (x[row].float() @ w.float().T).to(torch.bfloat16).float().clamp(max=10)
                 up = (x[row].float() @ w.float().T).to(torch.bfloat16).float().clamp(-10,10)
-                mid = (torch.nn.functional.silu(gate)*up).to(torch.bfloat16)
+                mid = torch.nn.functional.silu(gate.bfloat16()) * up.bfloat16()
                 output = (mid.float() @ w.float().T).to(torch.bfloat16).float()
-                total += output*route_weights[row,slot]
+                total += (output.bfloat16()*route_weights[row,slot].bfloat16()).float()
             outputs.append(total.to(torch.bfloat16))
         return torch.stack(outputs) if outputs else x[:0]
 

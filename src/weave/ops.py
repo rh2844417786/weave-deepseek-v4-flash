@@ -7,16 +7,19 @@ from pathlib import Path
 import sys
 
 
-def kernel_source_sha256():
+def _kernel_source_bytes():
     root = Path(__file__).resolve().parents[2]
-    return hashlib.sha256((root/'csrc/megakernel.cu').read_bytes() +
-                          (root/'csrc/scheduler.h').read_bytes()).hexdigest()
+    return b''.join((root/'csrc'/name).read_bytes() for name in
+                    ('megakernel.cu', 'scheduler.h', 'expert_numerics.h'))
+
+
+def kernel_source_sha256():
+    return hashlib.sha256(_kernel_source_bytes()).hexdigest()
 
 
 def extension_name(torch_version, cuda_version):
-    root = Path(__file__).resolve().parents[2]
     identity = f'{torch_version};{cuda_version};py{sys.version_info.major}.{sys.version_info.minor};{os.environ.get("TORCH_CUDA_ARCH_LIST", "9.0a")}'
-    content = (root/'csrc/megakernel.cu').read_bytes() + (root/'csrc/scheduler.h').read_bytes()
+    content = _kernel_source_bytes()
     return 'weave_functional_' + hashlib.sha256(content + identity.encode()).hexdigest()[:16]
 
 

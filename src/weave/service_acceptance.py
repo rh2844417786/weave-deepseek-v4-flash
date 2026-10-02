@@ -78,22 +78,51 @@ def validate_coverage_delta(before, after, *, require_graph):
             'graph_required': require_graph, 'ranks': evidence}
 
 
+class NumericalComparisonError(ValueError):
+    """A failed numerical gate with complete, serializable comparison evidence."""
+    def __init__(self, message, diagnostics):
+        super().__init__(message)
+        self.diagnostics = diagnostics
+
+
 def compare_first_token(native, weave, *, logprob_atol=.1):
     if native.get('input_sha256') != weave.get('input_sha256') or not native.get('input_sha256'):
         raise ValueError('native and Weave must use the same prompt token IDs')
     a, b = [v['response']['meta_info'] for v in (native, weave)]
     av, aid, *_ = a['output_token_logprobs'][0]
     bv, bid, *_ = b['output_token_logprobs'][0]
-    if aid != bid:
-        raise ValueError(f'first token differs: native={aid} weave={bid}')
     atop = {v[1]: v[0] for v in a['output_top_logprobs'][0]}
     btop = {v[1]: v[0] for v in b['output_top_logprobs'][0]}
-    # An altered top-k support is evidence of a potentially changed next-token
-    # distribution. Fail explicitly; do not silently compare the intersection.
+    if not math.isfinite(logprob_atol) or logprob_atol < 0:
+        raise ValueError('logprob tolerance must be finite and nonnegative')
+    if any(not math.isfinite(v) or v > 0 for v in [av, bv, *atop.values(), *btop.values()]):
+        raise ValueError('first token logprobs must be finite and nonpositive')
+    common = sorted(set(atop) & set(btop))
+    deltas = [{'token_id': k, 'native_logprob': atop[k], 'weave_logprob': btop[k],
+               'abs_delta': abs(atop[k]-btop[k])} for k in common]
+    maximum = max((v['abs_delta'] for v in deltas), default=0.)
+    selected_delta = abs(av-bv)
+    failures = []
+    if aid != bid:
+        failures.append(f'first token differs: native={aid} weave={bid}')
     if set(atop) != set(btop) or not atop:
-        raise ValueError('first token top-logprob support differs or is empty')
-    deltas = [abs(av-bv)] + [abs(atop[k]-btop[k]) for k in atop]
-    if any(not math.isfinite(v) or v > logprob_atol for v in deltas):
-        raise ValueError(f'first token logprob difference exceeds {logprob_atol}: {deltas}')
-    return {'status': 'passed', 'scope': 'first_token_and_top_logprobs_only',
-            'token_id': aid, 'max_abs_logprob_delta': max(deltas), 'atol': logprob_atol}
+        failures.append('first token top-logprob support differs or is empty')
+    if selected_delta > logprob_atol or maximum > logprob_atol:
+        failures.append(f'first token logprob difference exceeds {logprob_atol}')
+    diagnostics = {
+        'status': 'failed' if failures else 'passed', 'scope': 'first_token_and_top_logprobs_only',
+        'token_id': aid, 'weave_token_id': bid, 'first_token_matches': aid == bid,
+        'first_token_logprob_delta': selected_delta,
+        'native_only_token_ids': sorted(set(atop)-set(btop)),
+        'weave_only_token_ids': sorted(set(btop)-set(atop)),
+        'common_logprob_deltas': deltas,
+        'max_abs_common_logprob_delta': maximum,
+        'max_abs_logprob_delta': max(selected_delta, maximum),
+        'common_tokens_exceeding_atol': sum(v['abs_delta'] > logprob_atol for v in deltas),
+        'atol': logprob_atol, 'failures': failures,
+    }
+    # Both criteria stay strict. Compute all diagnostics before rejecting so a
+    # changed support cannot hide numerical drift on the common tokens.
+    if failures:
+        raise NumericalComparisonError('; '.join(failures), diagnostics)
+    return diagnostics

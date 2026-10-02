@@ -31,11 +31,12 @@ def dequantize(packed, scales):
 
 
 def expert_reference(x, raw, local_id, clamp):
-    # FP32 accumulation, BF16 rounding at native gate/up/mid/down boundaries.
+    # FP32 matmul; native BF16 storage at gate/up/SiLU/product/down boundaries.
     w1, w3, w2 = [dequantize(raw[j][local_id], raw[j+3][local_id]) for j in range(3)]
     gate = (x.float() @ w1.T).bfloat16().float().clamp(max=clamp)
     up = (x.float() @ w3.T).bfloat16().float().clamp(-clamp, clamp)
-    mid = (torch.nn.functional.silu(gate)*up).bfloat16().float()
+    activation = torch.nn.functional.silu(gate.bfloat16())
+    mid = (activation * up.bfloat16()).float()
     return (mid @ w2.T).bfloat16().float()
 
 
@@ -51,11 +52,13 @@ def distributed_reference(all_inputs, raw, rank, clamp):
                 continue
             token, slot = torch.where(ids[:rows] == expert)
             outputs = expert_reference(x[token], raw, expert % 64, clamp)
-            result.index_add_(0, token.cuda(rank), outputs*routing[token, slot].cuda(rank).unsqueeze(1))
+            routed = (outputs.bfloat16() * routing[token, slot].cuda(rank).bfloat16().unsqueeze(1)).float()
+            result.index_add_(0, token.cuda(rank), routed)
         parts.append(result.cpu())
     gathered = [None] * 4
     dist.all_gather_object(gathered, parts)
-    # BF16 combine uses FP32 weighted contributions, rounded once after all EPs.
+    # Sum already-rounded BF16 contributions in FP32. This oracle checks the
+    # Weave global combine, not native per-rank/shared-expert all-reduce order.
     return sum((r[rank] for r in gathered), torch.zeros_like(parts[rank])).bfloat16().cuda(rank)
 
 

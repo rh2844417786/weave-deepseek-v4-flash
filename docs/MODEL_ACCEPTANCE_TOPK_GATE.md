@@ -67,7 +67,7 @@ top-10 列表（logprob, token id）：
 
 **待验证的推测**（不要当作结论）
 - 尾部近常数偏移可能来自 **top-k logprob 的报账口径差异**（例如是否对 top-k 子集重新归一化）——这是最便宜可验证的假设：单后端自比或打印原始 softmax 尾部即可判定。
-- 也可能是真实数值差：标量 MXFP4 专家路径 vs Marlin fp8 路径、MoE 归约顺序、fp8 KV cache 舍入等。
+- 也可能是真实数值差：Weave MXFP4 专家路径与原生 MXFP4/BF16 Marlin 路径的舍入、MoE 归约顺序等。本次验收入口默认使用 WMMA，须以原始运行记录确认具体 kernel；不能把原生 routed experts 描述成 FP8 路径。
 - 定位顺序建议：先排除报账口径（便宜）→ 再做逐层/单层差分（kernel 数值）。
 
 ## 建议
@@ -115,3 +115,19 @@ print('only native:', sorted(set(atop) - set(btop)))
 print('only weave :', sorted(set(btop) - set(atop)))
 print('max delta  :', max(abs(atop[k] - btop[k]) for k in set(atop) & set(btop)))
 ```
+
+## 本地源码复核与修正（2026-10-02）
+
+本地仅收到本文档，未收到所列 `work/` 原始 JSON。因此上文的服务器通过项、清理状态和数值属于回传说明，未升级为独立核验的原始证据。当前代码先比较八个输出 token，再比较首 token top-k；据此可推断本次八 token 检查已经通过，但仍待原始响应确认。
+
+按同一 SGLang commit `29481685462732237d80d86076d6563e1f658102` 核对：
+
+- `srt/layers/logits_processor.py` 将 logits 转成 FP32；greedy `sampler.py` 对全词表做 `log_softmax`；`logprob_processor.py` 从已有 logprob 中选 top-k。此路径没有针对 native/Weave 的 top-k 子集重新归一化。
+- `srt/layers/moe/fused_moe_triton/fused_marlin_moe.py::swiglu_limit_func` 在 BF16 张量上先 `F.silu(gate)`，再乘 `up`。旧 Weave 将这两步融合为 FP32 表达式，漏了 SiLU 输出的 BF16 舍入。
+- `kernels/jit/csrc/gemm/marlin_moe/marlin_template.h` 先将路由权重转为 BF16，对已舍入的 down 输出用 `__hmul2` 形成 BF16 贡献。旧 Weave 在 FP32 中使用原始路由权重，并在所有专家求和后才舍入。
+
+已修正后两项，scalar/WMMA 共用算术 helper；独立 PyTorch 参考也改为明确的 BF16 运算。CPU 反例 gate=0.0625、up=0.6875 的旧结果为 0.0220947265625，原生边界结果为 0.022216796875；down=1.0078125、route=0.1 的旧乘积为 0.10078125，原生边界结果为 0.10107421875。它们验证的是舍入顺序，不代表 H100 验收已经通过。
+
+top-k 支撑集条件和 atol=0.1 保持。新的失败报告会同时保存两项判定的完整诊断，避免支撑集失败遮蔽公共 token 上的 0.5 漂移。上述五个原生源码文件也加入版本哈希检查，服务器无需联网获取。
+
+仍有一个不同的归约边界：原生先形成每个 expert rank 的 BF16 部分和，再合并 routed scale/shared output 和 all-reduce；Weave 当前向 token owner 返回完整 routed sum。两处逐专家修正不能证明这一差异消失，也不能保证首 token 门必然通过。本轮先重新编译并执行完整 checkpoint 与服务门；旧源码的 core 报告不得复用。

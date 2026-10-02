@@ -1,6 +1,6 @@
 # 真实原始权重与 SGLang graph 验收
 
-本批代码由本地 Mac 编写。55 项 CPU 测试、Python/shell 语法检查已通过，代码复核已关闭发现的问题。新增 CUDA 源码与 WMMA 分支尚未在 H100 编译或运行；之前两轮小尺寸结果对应历史标量源码。执行以下 GPUQ 作业后，以生成的原始文件判断新门槛。
+本轮 BF16 舍入修正已在本地通过 60 项 CPU 测试和 Python 语法检查。服务器最新说明报告旧源码 checkpoint 门通过、Weave eager 数值门失败，graph 尚未执行；原始 JSON 尚未回传。修正后的 CUDA 源码须在 H100 重新编译并运行下列门槛。
 
 ## 保持的运行契约
 
@@ -8,7 +8,7 @@
 - `lmsysorg/sglang:v0.5.17`、Torch 2.11.0+cu130、nvcc 13.0、Python 3.12.3、Transformers 5.12.1。镜像 content ID 在每次运行中记录。
 - 模型为 `/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash` 原版混合精度 checkpoint，routed experts 使用其原始 MXFP4 bytes 与 E8M0 scales。
 - 所有产物写入绝对可写的 `WORK_ROOT`，默认 `<repo>/work`。
-- SGLang 源码锁定扩展到 graph runner、full graph backend、HTTP 输入输出与时间统计，共 15 个文件。原生和 Weave 都核对。
+- SGLang 源码锁定扩展到 graph runner、full graph backend、HTTP 输入输出与时间统计，以及专家舍入和 logprob 路径，共 20 个文件。原生和 Weave 都核对。
 
 ## 1. 只运行真实权重 CUDA 门槛
 
@@ -21,11 +21,11 @@ CHECKPOINT_TESTS=1 CHECKPOINT_LAYERS=all bash scripts/run_cuda_functional_gpuq.s
 先运行历史小尺寸测试，再用 `tests/gpu/check_checkpoint.py` 检查 H=4096、I=2048、experts=256、top6：
 
 - rank/expert 不同的随机原始格式权重；随后逐层读取原版 checkpoint，默认 0..42。
-- 参考路径独立解包 E2M1/E8M0、FP32 PyTorch matmul，gate/up/mid/down 边界按 BF16 舍入。
+- 参考路径独立解包 E2M1/E8M0、FP32 PyTorch matmul，gate/up、SiLU 输出、mid/down、路由权重及逐专家加权贡献分别按 BF16 舍入。
 - 同一层分别检查 scalar 与 WMMA、远程路由、空 rank、K2 和非零实际窃取。
 - 每个实现捕获一次 graph，修改路由与有效 token 数后重放两次。
 - CUDA 计数记录实际完成的 stolen tasks。仅设置 `steal > 0` 无法通过。
-- 相对 L2 ≤0.025，另有逐元素 rtol=0.03/atol=0.02 检查。原始误差写入每个 case；失败不会生成 passed rank report。
+- 相对 L2 ≤0.025，另有逐元素 rtol=0.03/atol=0.02 检查。原始误差写入每个 case；失败不会生成 passed rank report。该参考检查 Weave 全局 combine；原生每 rank 的 BF16 部分和及 shared-expert/all-reduce 顺序仍由服务门检查。
 
 `CHECKPOINT_LAYERS=0,3,42` 可以用于定位问题；完整模型流程要求全部 43 层报告。
 
@@ -75,3 +75,11 @@ python3 scripts/run_model_acceptance.py --core-run-dir /absolute/work/cuda-funct
 现有 `export_core_evidence.py` 会附带新的 checkpoint rank reports 和内容身份清单，并单独标记 checkpoint gate。导出仍是归档，不是新一次执行。
 
 真实权重与服务门槛通过后，再实现/校准高效专家 tile 路径、tile stealing 与成本曲线，并执行两组正式 GPQA 对照。当前脚本没有用 synthetic rates 冒充 measured calibration，也没有把这个 8-token 功能请求记为 GPQA 正式速度结果。
+
+## 2026-10-02 首 token 验收失败后的重跑
+
+服务器提交了 [失败分析](MODEL_ACCEPTANCE_TOPK_GATE.md)，报告旧源码 checkpoint/native 通过，Weave eager 数值门失败，graph 未运行；原始工作目录 JSON 尚未回传。本轮修正 SiLU 中间结果、路由权重与逐专家加权输出的 BF16 舍入。旧参考实现也缺少这些边界，因此旧 checkpoint 门通过不能替代本轮验收。
+
+新增 `expert_numerics.h` 已纳入扩展缓存和源码 SHA256。必须重新执行完整 `python3 scripts/run_model_acceptance.py`；不要用旧 `--core-run-dir`，其源码校验会拒绝复用。top-10 支撑集一致和 logprob atol=0.1 的严格条件保留，失败时 `native_comparison` 会同时记录支撑差异、逐项 delta、最大 delta、超差数量和已匹配的生成 token 数。
+
+两处修正尚未在 H100 编译/运行。EP rank 部分和与 shared-expert 合并的舍入顺序仍不同，不能据此保证端到端漂移已消失。若服务门继续失败，须先结合完整诊断定位此边界，再讨论有依据的验收方式。

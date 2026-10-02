@@ -14,11 +14,17 @@
 #include <string>
 #include <vector>
 #include "scheduler.h"
+#include "expert_numerics.h"
 
 #define CUDA_OK(call) do { cudaError_t result=(call); TORCH_CHECK(result==cudaSuccess, "CUDA failure: ", cudaGetErrorString(result)); } while(0)
 namespace {
 using U64 = unsigned long long;
 constexpr int MAX_EP = 4, MAX_K = 8, THREADS = 128;
+struct RoundBF16 {
+  __device__ __forceinline__ float operator()(float value) const {
+    return __bfloat162float(__float2bfloat16_rn(value));
+  }
+};
 struct alignas(256) Control {
   U64 ready, done, planned;
   int n, dispatch_next, dispatch_done, return_next, return_done, final_next, ctas_done;
@@ -173,8 +179,7 @@ __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
       if(lane<16) {
         g=__bfloat162float(__float2bfloat16_rn(g));
         u=__bfloat162float(__float2bfloat16_rn(u));
-        g=fminf(g,cfg.clamp); u=fminf(fmaxf(u,-cfg.clamp),cfg.clamp);
-        mid[row+lane]=__float2bfloat16_rn((g/(1.f+expf(-g)))*u);
+        mid[row+lane]=__float2bfloat16_rn(weave::swiglu_product(g,u,cfg.clamp,RoundBF16{}));
       }
     }
     __syncthreads();
@@ -194,8 +199,7 @@ __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
     if(lane==0) {
       g=__bfloat162float(__float2bfloat16_rn(g));
       u=__bfloat162float(__float2bfloat16_rn(u));
-      g=fminf(g,cfg.clamp); u=fminf(fmaxf(u,-cfg.clamp),cfg.clamp);
-      mid[row]=__float2bfloat16_rn((g/(1.f+expf(-g)))*u);
+      mid[row]=__float2bfloat16_rn(weave::swiglu_product(g,u,cfg.clamp,RoundBF16{}));
     }
   }
   __syncthreads();
@@ -312,7 +316,7 @@ __global__ void persistent(Config cfg) {
       float sum=0.;
       for(int slot=0;slot<cfg.topk;++slot) {
         size_t pos=size_t(job)*cfg.topk+slot;
-        sum+=v.returned[pos*cfg.h+col]*v.routing[pos];
+        sum+=weave::routed_product(v.returned[pos*cfg.h+col],v.routing[pos],RoundBF16{});
       }
       v.output[size_t(job)*cfg.h+col]=__float2bfloat16_rn(sum);
     }

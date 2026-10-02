@@ -13,39 +13,42 @@
     "gpu_joint_cost_model": "implemented_synthetic_device_selection_verified_measured_profile_pending",
     "chunk_pipeline": "implemented_small_shape_K1_K2_checks_passed",
     "bubble_stealing": "whole_token_expert_work_with_completed_device_counters_real_shape_gate_pending",
-    "sglang_adapter": "eager_and_opt_in_batch1_graph_candidate_15_source_files_locked",
+    "sglang_adapter": "eager_and_opt_in_batch1_graph_candidate_20_source_files_locked",
     "native_fallback": "not_provided",
     "tensor_core": "experimental_single_token_bf16_wmma_implemented_not_compiled_on_h100",
     "real_checkpoint_gate": "all_43_layers_scalar_wmma_reference_graph_and_nonzero_steal_tests_implemented",
-    "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented"
+    "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented",
+    "expert_rounding": "native_silu_and_routed_product_bf16_boundaries_corrected_gpu_rerun_pending"
   },
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 55,
+      "tests": 60,
       "skipped": 0,
       "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "historical_scalar_passed_new_source_not_compiled",
+    "cuda_build": "historical_scalar_verified_old_wmma_server_reported_passed_corrected_source_not_compiled",
     "multi_gpu_correctness": "passed_small_synthetic_fixture_twice",
     "core_graph_replay": "passed_small_synthetic_fixture_twice",
-    "sglang_integration": "server_reported_ready_and_short_request_raw_log_pending",
+    "sglang_integration": "native_and_weave_eager_reported_ready_eager_strict_numerical_comparison_failed",
     "full_model_generation": "not_independently_verified",
     "performance": "not_run",
     "normal_container_exit": "passed_exit0_no_signal",
     "gpuq_sigterm_cleanup": "not_verified_on_server",
     "new_source_checkpoint": "not_run_on_h100",
     "new_source_sglang_graph": "not_run_on_h100",
-    "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending"
+    "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending",
+    "shared_expert_numerics_header_host_compile": "passed_bf16_silu_and_route_product_counterexamples"
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",
     "bringup": "docs/GPUQ_CANCEL_CONTAINER_CLEANUP.md; work/native-ep-26fad58797ce4c9ebdbd3dbd6b926310/server.log",
-    "cancel_cleanup_fix_on_server": "normal_exit_observed_sigterm_branch_not_exercised",
+    "cancel_cleanup_fix_on_server": "service_SIGTERM_cleanup_reported_absent_raw_lifecycle_not_in_git",
     "original_core_run_files_in_git": true,
-    "original_bringup_log_in_git": false
+    "original_bringup_log_in_git": false,
+    "model_acceptance": "docs/MODEL_ACCEPTANCE_TOPK_GATE.md; raw work/model-acceptance-d4773fb0c91f JSON not in Git"
   },
   "remaining_acceptance": [
     "Real model dimensions and checkpoint expert-weight correctness",
@@ -53,6 +56,7 @@
     "Tensor Core expert tiles and matching tile stealing",
     "Measured calibration profiles",
     "Full model and SGLang graph correctness",
-    "Matched native EP4 and Weave performance runs"
+    "Matched native EP4 and Weave performance runs",
+    "Native per-rank BF16 partial sums and shared-expert reduction order versus Weave global combine"
   ]
 }
