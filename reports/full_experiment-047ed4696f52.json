@@ -1,0 +1,147 @@
+{
+ "schema_version": 1,
+ "scope": "formal_gpqa_budgeted_comparison",
+ "evidence": {
+  "kind": "server_run_raw_json_read_on_host",
+  "work_directories": {
+   "experiment": "work/full-experiment-047ed4696f52",
+   "core": "work/cuda-functional.047ed4696f52",
+   "calibration": "work/calibration.047ed4696f52"
+  },
+  "raw_work_json_in_git": false,
+  "values_from": "experiment.json, calibration timings/progress rank JSON, container_lifecycle.json",
+  "gpu_execution_independently_verified": false
+ },
+ "run": {
+  "date": "2026-10-03",
+  "job_id": "job-20261003-095433-46cf54c3",
+  "run_id": "047ed4696f52",
+  "physical_gpus": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "entrypoint": "scripts/run_full_experiment.py",
+  "gpuq_timeout_seconds": 18000,
+  "started_utc": "2026-10-03T09:54:38.057524+00:00",
+  "finished_utc": "2026-10-03T10:20:03.942577+00:00",
+  "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+  "timing_source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155"
+ },
+ "status": "failed",
+ "performance": "not_run",
+ "raw_content_exported": false,
+ "stages": {
+  "core": {
+   "status": "passed",
+   "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623"
+  },
+  "calibration": {
+   "status": "failed",
+   "invocation_id": "047ed4696f52-0",
+   "budget_seconds": 1200.0,
+   "completed_points_per_rank": {
+    "0": 285,
+    "1": 285,
+    "2": 285,
+    "3": 285
+   },
+   "terminal_status_per_rank": {
+    "0": "partial",
+    "1": "partial",
+    "2": "partial",
+    "3": "partial"
+   },
+   "last_completed_point_rank0": {
+    "K": 8,
+    "c": 131,
+    "completed_before_deadline": true,
+    "dispatch_bytes": 8388608,
+    "groups": 384,
+    "logical_flops": 309237645312,
+    "mode": "communication",
+    "padded_flops": 309237645312,
+    "remote_bytes": 109051904,
+    "return_bytes": 100663296,
+    "samples_ms": [
+     255.14976501464844,
+     250.77200317382812,
+     248.74896240234375
+    ],
+    "tile_counters": [
+     36864,
+     0
+    ],
+    "tile_jobs": 36864,
+    "tokens": 1024,
+    "warmups": 1,
+    "workload": [
+     0,
+     6144,
+     1024,
+     1024,
+     6144,
+     384,
+     36864
+    ]
+   },
+   "error_first_line": "RuntimeError: collective calibration failure: [\"AcceleratorError: CUDA error: unspecified launch failure\\nSearch for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\\n\", \"AcceleratorError: CUDA error: unspecified launch failure\\nSearch for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\\n\", \"AcceleratorError: CUDA error: unspecified launch failure\\nSearch for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\\n\", \"AcceleratorError: CUDA error: unspecified launch failure\\nSearch for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.\\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\\n\"]"
+  },
+  "model_acceptance": {
+   "status": "not_run"
+  },
+  "native_formal": {
+   "status": "not_run"
+  },
+  "weave_formal": {
+   "status": "not_run"
+  },
+  "comparison": {
+   "status": "not_run"
+  }
+ },
+ "error": "CalledProcessError: Command '['/usr/bin/python3', '/home/jovyan/wangtonghan/weave-deepseek-v4-flash/scripts/run_calibration_job.py', '--model-path', '/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash', '--work-root', '/home/jovyan/wangtonghan/weave-deepseek-v4-flash/work', '--core-run-dir', '/home/jovyan/wangtonghan/weave-deepseek-v4-flash/work/cuda-functional.047ed4696f52', '--output-dir', '/home/jovyan/wangtonghan/weave-deepseek-v4-flash/work/calibration.047ed4696f52', '--lifecycle-path', '/home/jovyan/wangtonghan/weave-deepseek-v4-flash/work/full-experiment-047ed4696f52/calibration-0-lifecycle.json', '--invocation-id', '047ed4696f52-0']' returned non-zero exit status 1.",
+ "diagnosis": {
+  "class": "device_side_cuda_fault",
+  "cuda_error": "cudaErrorLaunchFailure (unspecified launch failure)",
+  "first_observed_rank_reported": 1,
+  "oom": false,
+  "location": "calibrate_weave.py collective_action after 285 completed points per rank (late scan points)",
+  "suggested_localization": "rerun the calibration with CUDA_LAUNCH_BLOCKING=1 (and TORCH_USE_CUDA_DSA=1) to pin the failing kernel call; consider whether a single transient device fault should be retried with --resume"
+ },
+ "retry_policy_gap": {
+  "allowed_exit_codes_for_calibration": [
+   0,
+   124
+  ],
+  "observed_exit_code": 1,
+  "effect": "run_full_experiment.py aborts the whole experiment instead of using the remaining calibration invocations or --resume"
+ },
+ "cleanup": {
+  "core_container": {
+   "container_name": "weave-cuda-functional-047ed4696f52",
+   "termination_signal": null,
+   "exit_code": 0,
+   "cleanup_status": "not_required"
+  },
+  "calibration_container": {
+   "container_name": "weave-calibration-f7cd131436b7",
+   "termination_signal": null,
+   "exit_code": 1,
+   "cleanup_status": "absent"
+  },
+  "calibration_container_gone_before_cleanup": true,
+  "no_weave_containers_after_run": true
+ },
+ "export": {
+  "performed": false,
+  "reason": "export runs after comparison; the experiment stopped at calibration",
+  "reports_server_acl_ready_for_next_run": true
+ },
+ "followup": {
+  "blocking_issue": "tiled calibration kernel device fault",
+  "unblocked_stages": "model acceptance, both formal GPQA groups and the comparison never ran; the measured profile bank does not exist yet for this source"
+ }
+}
