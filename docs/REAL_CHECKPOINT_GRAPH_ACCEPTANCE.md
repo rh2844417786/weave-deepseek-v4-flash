@@ -1,6 +1,6 @@
 # 真实原始权重与 SGLang graph 验收
 
-本轮 BF16 舍入修正已在本地通过 60 项 CPU 测试和 Python 语法检查。服务器最新说明报告旧源码 checkpoint 门通过、Weave eager 数值门失败，graph 尚未执行；原始 JSON 尚未回传。修正后的 CUDA 源码须在 H100 重新编译并运行下列门槛。
+最新回传 [model-acceptance-0c508db6a19e 摘要](../reports/model_acceptance-0c508db6a19e.json) 报告修正后的 checkpoint、native、Weave eager 和 Weave graph 四阶段通过，8 个生成 token 一致。测试版本为 e59e064，报告中的 CUDA 源码 SHA256 与本地当前源码一致。该文件由服务器读取原始 JSON 生成，原始 rank/coverage/request 文件尚未回传，因此 GPU 执行目前为服务器报告级证据。
 
 ## 保持的运行契约
 
@@ -82,6 +82,14 @@ python3 scripts/run_model_acceptance.py --core-run-dir /absolute/work/cuda-funct
 
 新增 `expert_numerics.h` 已纳入扩展缓存和源码 SHA256。a934293 回传中使用的旧 CUDA 报告不能用于舍入修正后的源码；若尚未执行修正后的 checkpoint 门，需完整运行 `python3 scripts/run_model_acceptance.py`。按用户后续指示，logprob 和 top-k 支撑集比较已改为仅记录，不再阻断 eager 或 graph 阶段。`native_comparison` 使用 `status=recorded/unavailable`、`used_for_acceptance=false` 标识，保留差值明细与已匹配的生成 token 数。
 
-两处修正尚未在 H100 编译/运行。EP rank 部分和与 shared-expert 合并的舍入顺序仍不同，不能据此保证端到端漂移已消失。这些数值差异继续作为诊断数据。当前服务门检查实际生成 token、输入与源码/权重身份、43 层执行、graph replay 及容器清理。单纯 logprob 差异不会导致失败。
+此前两处舍入修正已在本次服务器报告中完成 H100 编译与功能验收。EP rank 部分和与 shared-expert 合并的舍入顺序仍不同，记录中的最大公共候选 logprob 差值仍为 0.875；尾部漂移尚未消失。这些数值差异继续作为诊断数据。当前服务门检查实际生成 token、输入与源码/权重身份、43 层执行、graph replay 及容器清理。单纯 logprob 差异不会导致失败。
 
-本次 logprob 策略调整只涉及 Python 验收与记录，没有改变 CUDA 源码。已有与当前源码和 checkpoint 身份一致的全 43 层通过报告时，可使用上文 `--core-run-dir` 复用；历史失败作业的状态不因规则调整而改写，未执行的 graph 仍须实际运行。
+本次 logprob 策略调整只涉及 Python 验收与记录，没有改变 CUDA 源码。已有与当前源码和 checkpoint 身份一致的全 43 层通过报告时，可使用上文 `--core-run-dir` 复用；历史失败作业的状态不因规则调整而改写；本次新作业已报告 graph 实际执行通过。
+
+## 最新功能验收记录
+
+作业 `job-20261002-114252-def89f4e` 使用 GPU 4–7 和 WMMA，在 e59e064 上从新 core 开始执行，四阶段均报告 passed。服务器记录的总用时为 2676 秒（44 分 36 秒）；JSON 中的 core 开始/结束时间相差 229.831652 秒。总用时包含准备与服务生命周期，不能作为两组推理速度比较。
+
+三个后端的 8 个实际生成 token 一致；首 token 为 2581。文档回传的 graph 计数为 python_decode_delta=0、graph_replay_lower_bound=8。eager 与 graph 的 logprob diagnostics 相同；其对 native 的首 token logprob 差值约为 5.96e-7，公共候选最大差值为 0.875，均按 record_only 保存。
+
+三个服务的生命周期均记录 SIGTERM/143/absent，core 正常退出。仍需归档原始 runtime、checkpoint-rank0..3、四 rank/43 层 coverage 前后矩阵和生命周期文件，以便独立核验。GPUQ 外部取消与物理显存释放不由本次正常阶段清理证明。下一步为高效 tile 实现、实测校准与正式 GPQA 性能对照。
