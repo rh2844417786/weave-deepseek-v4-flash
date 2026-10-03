@@ -12,6 +12,7 @@ from urllib.request import ProxyHandler, Request, build_opener
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.weave.service_acceptance import validate_coverage_delta, compare_first_token
+from src.weave.gpqa import load_prepared_records
 
 DIRECT = build_opener(ProxyHandler({}))
 
@@ -48,16 +49,8 @@ def wait_ready(url, *, timeout=1800, process=None):
 
 def check_service(url, records_path, output, *, weave=False, graph=False, evidence_port=30110, native=None,
                   expected_source=None, expected_kernel=None):
-    prepared = json.loads((records_path.parent/'manifest.json').read_text())
-    pinned = json.loads((ROOT/'data/gpqa/deepseek_model_manifest.json').read_text())
-    if (prepared.get('record_sha256') != hashlib.sha256(records_path.read_bytes()).hexdigest()
-            or prepared.get('count') != 448 or prepared.get('reasoning_mode') != 'Think High'
-            or prepared.get('max_new_tokens') != 32768 or prepared.get('normal_eos_allowed') is not True
-            or prepared.get('model_revision') != pinned['revision']
-            or prepared.get('pinned_model_metadata_sha256') != pinned['sha256']):
-        raise ValueError('pinned 448-row Think High GPQA manifest required')
-    with records_path.open() as stream:
-        record = json.loads(stream.readline())
+    records,prepared=load_prepared_records(records_path)
+    record=records[0]
     ids = record['input_token_ids']
     input_sha = hashlib.sha256(json.dumps(ids, separators=(',', ':')).encode()).hexdigest()
     before = coverage(evidence_port) if weave else None

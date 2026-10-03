@@ -10,35 +10,37 @@
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
     "cuda_ipc_epoch_protocol": "implemented_small_synthetic_gpu_checks_passed",
-    "gpu_joint_cost_model": "implemented_synthetic_device_selection_verified_measured_profile_pending",
+    "gpu_joint_cost_model": "route_group_histogram_padded_work_and_measured_profile_bank_pipeline_implemented_gpu_data_pending",
     "chunk_pipeline": "implemented_small_shape_K1_K2_checks_passed",
-    "bubble_stealing": "real_checkpoint_gate_reported_passed_with_completed_nonzero_steal_requirement_raw_counts_pending",
+    "bubble_stealing": "tile_work_unit_implemented_new_source_gpu_validation_pending",
     "sglang_adapter": "eager_and_batch1_graph_server_reported_passed_20_source_files_locked",
     "native_fallback": "not_provided",
-    "tensor_core": "experimental_single_token_bf16_wmma_server_reported_compiled_functional_passed_efficient_tiles_pending",
-    "real_checkpoint_gate": "all_43_layers_scalar_wmma_reference_graph_and_nonzero_steal_tests_implemented",
+    "tensor_core": "grouped_M16_N64_tiled_implemented_host_reviewed_new_cuda_not_compiled",
+    "real_checkpoint_gate": "all_43_layers_scalar_wmma_tiled_reference_graph_and_nonzero_steal_tests_implemented",
     "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented",
-    "expert_rounding": "corrected_source_server_reported_functional_passed_tail_logprob_drift_persists"
+    "expert_rounding": "corrected_source_server_reported_functional_passed_tail_logprob_drift_persists",
+    "formal_gpqa": "shared_server_output_timing_budgeted_common_completed_comparison_implemented",
+    "full_experiment_entry": "scripts/run_full_experiment.py"
   },
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 60,
+      "tests": 115,
       "skipped": 0,
       "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "corrected_source_server_reported_passed_source_digest_verified_locally",
+    "cuda_build": "historical_wmma_reported_passed_new_tiled_source_not_compiled",
     "multi_gpu_correctness": "passed_small_synthetic_fixture_twice",
     "core_graph_replay": "passed_small_synthetic_fixture_twice",
     "sglang_integration": "server_reported_native_eager_graph_passed_eight_generated_tokens_match",
     "full_model_generation": "single_gpqa_input_eight_tokens_reported_matched_full_gpqa_not_run",
-    "performance": "not_run",
+    "performance": "formal_runner_implemented_not_run",
     "normal_container_exit": "passed_exit0_no_signal",
     "gpuq_sigterm_cleanup": "not_verified_on_server",
-    "new_source_checkpoint": "server_reported_all43_layers_scalar_wmma_passed_raw_rank_reports_pending",
-    "new_source_sglang_graph": "server_reported_batch1_43_layer_execution_and_replay_passed_raw_coverage_pending",
+    "new_source_checkpoint": "new_tiled_all43_three_kernel_gate_implemented_not_run",
+    "new_source_sglang_graph": "new_tiled_measured_profile_model_gate_implemented_not_run",
     "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending",
     "shared_expert_numerics_header_host_compile": "passed_bf16_silu_and_route_product_counterexamples",
     "last_reported_model_acceptance": {
@@ -46,7 +48,7 @@
       "evidence_kind": "server_generated_summary_of_raw_json",
       "tested_git_revision": "e59e064",
       "source_sha256": "7ab80db83a4ac72c2867e3283899783a93dbd1105b055daf9470a8a4c0f2c283",
-      "local_source_sha256_matches": true,
+      "local_source_sha256_matches": false,
       "checkpoint": "reported_passed",
       "native": "reported_passed",
       "weave_eager": "reported_passed",
@@ -55,8 +57,10 @@
       "logprob": "record_only",
       "max_abs_common_logprob_delta": 0.875,
       "gpu_execution_independently_verified": false,
-      "raw_work_json_in_git": false
-    }
+      "raw_work_json_in_git": false,
+      "source_match_checked_against": "historical e59e064; new tiled source differs"
+    },
+    "measured_calibration": "script_implemented_real_cuda_event_samples_not_run"
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",
@@ -69,12 +73,12 @@
     "previous_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293"
   },
   "remaining_acceptance": [
-    "Archive and independently verify corrected checkpoint rank reports and full 43-layer/four-rank coverage matrices",
-    "Tensor Core grouped expert tiles and matching tile stealing",
-    "Measured calibration profiles matched to the implementation and device",
-    "Matched native EP4 and Weave full GPQA performance runs",
-    "Diagnose recorded tail logprob drift and native EP partial-sum/shared-expert reduction order",
-    "Verify external GPUQ cancellation and physical GPU memory release"
+    "Compile/run new tiled all43layer/three-kernel/steal/graph GPU gate",
+    "Produce identity-bound real CUDA-event calibration banks",
+    "Run new measured tiled eager/fullgraph model gates",
+    "Execute and archive native/Weave budgeted formal GPQA comparison",
+    "Record long-output quality diagnostics and tail drift",
+    "Verify external GPUQ cancellation/physical GPU release on server"
   ],
   "acceptance_policy": {
     "logprob": "record_only",

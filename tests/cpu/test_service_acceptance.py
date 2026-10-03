@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from src.weave.service_acceptance import validate_coverage_delta, compare_first_token, validate_checkpoint_gate
 from scripts.check_sglang_service import check_service, ROOT
+from src.weave.gpqa import ordered_indices
 
 
 def snapshot():
@@ -22,13 +23,28 @@ class ServiceAcceptanceTest(unittest.TestCase):
             root = Path(folder)
             records = root/'main.jsonl'
             records.write_text(''.join(json.dumps({'row_index': i, 'input_token_ids': [1,2,3]})+'\n'
-                                       for i in range(448)))
+                                       for i in ordered_indices(448)))
             pinned = json.loads((ROOT/'data/gpqa/deepseek_model_manifest.json').read_text())
+            source=json.loads((ROOT/'data/gpqa/source_manifest.json').read_text())
+            main=next(row for row in source['records'] if Path(row['path']).name=='gpqa_main.csv')
             (root/'manifest.json').write_text(json.dumps({
                 'record_sha256': hashlib.sha256(records.read_bytes()).hexdigest(),
                 'count': 448, 'reasoning_mode': 'Think High', 'max_new_tokens': 32768,
                 'normal_eos_allowed': True, 'model_revision': pinned['revision'],
-                'pinned_model_metadata_sha256': pinned['sha256']}))
+                'pinned_model_metadata_sha256': pinned['sha256'], 'model_id':pinned['model_id'],
+                'observed_model_metadata_sha256':pinned['sha256'], 'config_matches_pinned':True,
+                'gpqa_main_sha256':main['sha256'], 'order_seed':42,
+                'thinking_mode':'thinking', 'reasoning_effort':'high'}))
+            original_manifest=json.loads((root/'manifest.json').read_text())
+            for changes in ({'gpqa_main_sha256':'0'*64},{'reasoning_effort':'low'},
+                            {'observed_model_metadata_sha256':{}}):
+                with self.subTest(invalid_provenance=changes):
+                    (root/'manifest.json').write_text(json.dumps(dict(original_manifest,**changes)))
+                    with patch('scripts.check_sglang_service.http_json') as http:
+                        with self.assertRaises(ValueError):
+                            check_service('http://127.0.0.1:1',records,root/'invalid.json')
+                        http.assert_not_called()
+            (root/'manifest.json').write_text(json.dumps(original_manifest))
             response = {'output_ids': [12]*8, 'meta_info': {
                 'output_token_logprobs': [[-.4,12,None]],
                 'output_top_logprobs': [[[-.4,12,None],[-2.,9,None]]]}}
@@ -92,12 +108,16 @@ class ServiceAcceptanceTest(unittest.TestCase):
         runtime = {'runtime_status': 'passed', 'checkpoint_validation_status': 'passed',
                    'child_exit_code': 0, 'resolved_image_id': 'sha256:image', 'kernel_source_sha256': 'new'}
         rank = {'status': 'checkpoint_checks_passed', 'rank': 0, 'layers': list(range(43)),
-                'kernels': ['scalar', 'wmma'], 'architecture': [4096, 2048, 256, 6, 43],
+                'kernels': ['scalar', 'wmma', 'tiled'], 'architecture': [4096, 2048, 256, 6, 43],
                 'source_sha256': 'new', 'checkpoint_index_sha256': 'model', 'cases': [
                     {'layer': layer, 'kernel': kernel, 'case': case, 'completed_stolen': 1,
-                     'metrics': {'relative_l2': .001}} for layer in [-1]+list(range(43))
-                    for kernel in ['scalar', 'wmma']
+                     'metrics': {'relative_l2': .001},
+                     'workload': [32,0,0,32,32,2,192], 'tile_counters': [192,1]} for layer in [-1]+list(range(43))
+                    for kernel in ['scalar', 'wmma', 'tiled']
                     for case in ['remote_K2', 'steal_K2', 'graph_replay0', 'graph_replay1']]}
+        rank['cases'] += [{'layer': -1, 'kernel': 'tiled', 'case': f'grouped_rows_K{k}',
+                          'metrics': {'relative_l2': .001}, 'workload': [32,0,0,32,32,2,192],
+                          'tile_counters': [192,1]} for k in (1,2,4,8)]
         rank['checkpoint_content_sha256'] = 'content'
         ranks = [dict(copy.deepcopy(rank), rank=i) for i in range(4)]
         self.assertEqual(validate_checkpoint_gate(runtime, ranks, source_sha256='new', index_sha256='model', checkpoint_sha256='content')['status'], 'passed')
@@ -105,6 +125,10 @@ class ServiceAcceptanceTest(unittest.TestCase):
             validate_checkpoint_gate(runtime, ranks, source_sha256='old', index_sha256='model', checkpoint_sha256='content')
         with self.assertRaisesRegex(ValueError, 'stale'):
             validate_checkpoint_gate(runtime, ranks, source_sha256='new', index_sha256='model', checkpoint_sha256='different')
+        broken = copy.deepcopy(ranks)
+        broken[0]['cases'][8]['tile_counters'][0] = 1
+        with self.assertRaisesRegex(ValueError, 'tile'):
+            validate_checkpoint_gate(runtime, broken, source_sha256='new', index_sha256='model', checkpoint_sha256='content')
         ranks[0]['cases'].pop()
         with self.assertRaisesRegex(ValueError, 'incomplete'):
             validate_checkpoint_gate(runtime, ranks, source_sha256='new', index_sha256='model', checkpoint_sha256='content')

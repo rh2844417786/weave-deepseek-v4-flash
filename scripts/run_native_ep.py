@@ -40,9 +40,14 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
         '-e', f'WEAVE_HOST_HOSTNAME={os.uname().nodename}', '-e', 'WEAVE_HOST_ALLOCATION=4,5,6,7',
     ]
     functional = args.backend == 'weave_functional'
+    if args.checkpoint_content_sha256:
+        docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
+    if args.request_timing:
+        docker += ['-e','WEAVE_REQUEST_TIMING=1','-e','PYTHONPATH=/workspace/timing_hooks:/workspace/src']
+    elif functional:
+        docker += ['-e','PYTHONPATH=/workspace/src']
     if functional:
         docker += [
-            '-e', 'PYTHONPATH=/workspace/src',
             '-e', 'SGLANG_EXTERNAL_MODEL_PACKAGE=weave.sglang_ext.models',
             '-e', 'WEAVE_MODEL_PATH=/model', '-e', 'WEAVE_CAPACITY=2048',
             '-e', f'WEAVE_FIXED_PLAN={args.fixed_plan}', '-e', 'TORCH_EXTENSIONS_DIR=/work/torch_extensions',
@@ -52,7 +57,7 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
         if args.profile:
             relative = args.profile.relative_to(args.work_root)
             docker += ['-e', f'WEAVE_PROFILE=/work/{relative}']
-    return docker + [image, args.runtime_python, '/workspace/scripts/check_runtime.py',
+    command = docker + [image, args.runtime_python, '/workspace/scripts/check_runtime.py',
         '--stage', 'adapter' if functional else 'native', '--output-dir', f'/work/{run_name}',
         '--exec-command', args.runtime_python, '-m', 'sglang.launch_server',
         '--model-path', '/model', '--trust-remote-code',
@@ -67,6 +72,9 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
         '--disable-shared-experts-fusion', '--reasoning-parser', 'deepseek-v4',
         '--decode-log-interval', '10', '--enable-metrics',
     ]
+    if args.request_timing:
+        command += ['--stream-interval','1','--incremental-streaming-output']
+    return command
 
 
 def main() -> int:
@@ -77,14 +85,18 @@ def main() -> int:
     parser.add_argument('--runtime-python', default=os.environ.get('RUNTIME_PYTHON', CONTRACT['python_executable']))
     parser.add_argument('--port', type=int, default=30001)
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
-    parser.add_argument('--kernel', choices=['scalar', 'wmma'], default='scalar')
+    parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
     parser.add_argument('--fixed-plan', default='1,1,0', help='explicit c,K,completed-task steal budget per comm worker')
     parser.add_argument('--evidence-port-base', type=int, default=30110)
     parser.add_argument('--run-name', help='fresh native-ep-* directory name, for acceptance orchestration')
     parser.add_argument('--profile', type=Path, help='measured profile JSON under WORK_ROOT; otherwise functional fixed plan')
+    parser.add_argument('--request-timing', action='store_true', help='shared native token-ready timing for formal groups')
+    parser.add_argument('--checkpoint-content-sha256', help='verified original checkpoint digest for measured tiled profiles')
     parser.add_argument('--execute', action='store_true', help='launch Docker; default only prints the candidate command')
     args = parser.parse_args()
+    if args.checkpoint_content_sha256 and not re.fullmatch(r'[0-9a-f]{64}', args.checkpoint_content_sha256):
+        parser.error('checkpoint-content-sha256 must be a full SHA256 digest')
     args.decode_graph = args.decode_graph or ('disabled' if args.backend == 'weave_functional' else 'full')
     if args.run_name and not re.fullmatch(r'native-ep-[A-Za-z0-9_.-]+', args.run_name):
         parser.error('run-name must be a safe native-ep-* basename')
@@ -112,6 +124,8 @@ def main() -> int:
             args.profile.relative_to(args.work_root)
         except ValueError:
             parser.error('profile must be under WORK_ROOT')
+    if args.profile and args.kernel == 'tiled' and not args.checkpoint_content_sha256:
+        parser.error('measured tiled profile requires checkpoint-content-sha256 from the passed core gate')
     name = 'weave-native-ep-' + uuid.uuid4().hex[:12]
     if not args.execute:
         print(json.dumps({'status': 'preview_not_executed', 'docker_argv': docker_command(args, args.image, name)}, indent=2))

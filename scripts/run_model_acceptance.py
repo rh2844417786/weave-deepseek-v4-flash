@@ -29,7 +29,8 @@ def assert_ports_free(ports):
 
 class OwnedChild:
     """Register a private process group before allowing cancellation to unwind."""
-    def __init__(self):
+    def __init__(self, cleanup_timeout=8):
+        self.cleanup_timeout=cleanup_timeout
         self.process = self.lifecycle = None
         self.protected = False
         self.requested = None
@@ -63,7 +64,7 @@ class OwnedChild:
             return
         self.protected = True
         try:
-            deadline = time.monotonic()+8
+            deadline = time.monotonic()+self.cleanup_timeout
             # The core bash and manager share this owned group. The Docker
             # client itself has a different session; its manager stops Docker.
             if process.poll() is None or not self.lifecycle.exists():
@@ -100,7 +101,9 @@ def main():
     parser.add_argument('--core-run-dir', type=Path, help='reuse a passed current-source all-43 checkpoint run')
     parser.add_argument('--port', type=int, default=30001)
     parser.add_argument('--evidence-port-base', type=int, default=30110)
-    parser.add_argument('--kernel', choices=['scalar', 'wmma'], default='wmma')
+    parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='wmma')
+    parser.add_argument('--controller-lifecycle', type=Path, help='outer orchestrator cleanup handshake file')
+    parser.add_argument('--profile', type=Path, help='measured profile bank for dynamic tiled model validation')
     args = parser.parse_args()
     if os.environ.get('CUDA_VISIBLE_DEVICES') != '4,5,6,7':
         parser.error('GPUQ allocation must be 4,5,6,7')
@@ -113,6 +116,18 @@ def main():
     if args.port in range(args.evidence_port_base, args.evidence_port_base+4):
         parser.error('serving/evidence port ranges must be distinct')
     args.work_root = args.work_root.resolve()
+    if args.controller_lifecycle:
+        if not args.controller_lifecycle.is_absolute(): parser.error('controller lifecycle must be absolute')
+        args.controller_lifecycle=args.controller_lifecycle.resolve()
+        try: args.controller_lifecycle.relative_to(args.work_root)
+        except ValueError: parser.error('controller lifecycle must be under work-root')
+        if args.controller_lifecycle.exists(): parser.error('fresh controller lifecycle path required')
+    if args.profile:
+        args.profile = args.profile.resolve()
+        if args.kernel != 'tiled' or not args.profile.is_dir():
+            parser.error('profile requires tiled and an existing profile-bank directory')
+        try: args.profile.relative_to(args.work_root)
+        except ValueError: parser.error('profile must be under work-root')
     args.work_root.mkdir(parents=True, exist_ok=True)
     run_id = uuid.uuid4().hex[:12]
     out = args.work_root/f'model-acceptance-{run_id}'
@@ -161,6 +176,8 @@ def main():
                        '--model-path', str(args.model_path), '--work-root', str(args.work_root),
                        '--backend', backend, '--kernel', args.kernel, '--decode-graph', graph,
                        '--port', str(args.port), '--evidence-port-base', str(args.evidence_port_base), '--run-name', name]
+            if args.profile and backend == 'weave_functional':
+                command += ['--profile', str(args.profile), '--checkpoint-content-sha256', identity['sha256']]
             report['server_runs'][label] = str(args.work_root/name)
             report_path.write_text(json.dumps(report, indent=2)+'\n')
             with (out/f'{label}-launcher.log').open('w') as log:
@@ -202,6 +219,11 @@ def main():
             for sig, handler in previous.items():
                 signal.signal(sig, handler)
             report_path.write_text(json.dumps(report, indent=2)+'\n')
+            if args.controller_lifecycle:
+                args.controller_lifecycle.parent.mkdir(parents=True,exist_ok=True)
+                args.controller_lifecycle.write_text(json.dumps({
+                    'cleanup_status':'not_required' if child.process is None else 'unknown',
+                    'controller_status':report['status'],'evidence':str(report_path)})+'\n')
     print(json.dumps({'status': report['status'], 'evidence': str(report_path)}), flush=True)
 
 

@@ -10,7 +10,7 @@ class ExtensionIdentityTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root/'csrc').mkdir()
-            for name in ('megakernel.cu', 'scheduler.h', 'expert_numerics.h'):
+            for name in ('megakernel.cu', 'scheduler.h', 'expert_numerics.h', 'tile_scheduler.h'):
                 (root/'csrc'/name).write_text(name)
             with patch('src.weave.ops.__file__', str(root/'src/weave/ops.py')):
                 before = (kernel_source_sha256(), extension_name('torch', 'cuda'))

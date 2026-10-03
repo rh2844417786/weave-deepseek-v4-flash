@@ -15,6 +15,7 @@
 #include <vector>
 #include "scheduler.h"
 #include "expert_numerics.h"
+#include "tile_scheduler.h"
 
 #define CUDA_OK(call) do { cudaError_t result=(call); TORCH_CHECK(result==cudaSuccess, "CUDA failure: ", cudaGetErrorString(result)); } while(0)
 namespace {
@@ -31,10 +32,13 @@ struct alignas(256) Control {
   int npayloads, ntasks, local_pairs, remote_pairs, remote_unique;
   int c, k, steal;
   int actual_stolen, actual_computed;
+  int actual_tiles, actual_stolen_tiles, ngroups, tile_cursor;
+  int workload[7], groups_by_chunks[MAX_K];
   int starts[MAX_K], ends[MAX_K], next[MAX_K], computed[MAX_K];
 };
 struct Payload { int origin, token; };
 struct Task { int origin, token, slot, expert, payload, chunk; };
+struct Group { int expert,chunk,rows,tasks[weave::TILE_ROWS]; };
 struct View {
   Control* ctl;
   __nv_bfloat16* x;
@@ -48,13 +52,17 @@ struct View {
   float* returned;
   U64* returned_ready;
   __nv_bfloat16* output;
+  Group* groups;
+  weave::TileState* tile_states;
+  int* group_heads;
+  __nv_bfloat16* group_mid;
 };
 struct Config {
   View peers[MAX_EP];
   int rank, ep, capacity, h, i, topk, experts, workers;
   const unsigned char *w1, *w3, *w2, *s1, *s3, *s2;
   const double* profile;
-  int nprofile, fixed_c, fixed_k, fixed_steal, tensor_core;
+  int nprofile, fixed_c, fixed_k, fixed_steal, tensor_core, calibration, max_groups;
   float clamp;
   U64 timeout;
 };
@@ -62,7 +70,8 @@ struct Config {
 struct Layout {
   size_t bytes = 0, control, x, ids, routing, payloads, tasks, cache, cache_ready, task_out, returned, returned_ready, output;
   size_t take(size_t n) { size_t p = (bytes+255)&~size_t(255); bytes=p+n; return p; }
-  Layout(int ep, int cap, int h, int topk) {
+  size_t groups, tile_states, group_heads, group_mid;
+  Layout(int ep, int cap, int h, int i, int topk, int local_experts) {
     size_t tokens=size_t(ep)*cap, pairs=tokens*topk;
     control=take(sizeof(Control)); x=take(size_t(cap)*h*2);
     ids=take(size_t(cap)*topk*4); routing=take(size_t(cap)*topk*4);
@@ -70,6 +79,10 @@ struct Layout {
     cache=take(tokens*h*2); cache_ready=take(tokens*sizeof(U64));
     task_out=take(pairs*h*4); returned=take(size_t(cap)*topk*h*4);
     returned_ready=take(size_t(cap)*topk*sizeof(U64)); output=take(size_t(cap)*h*2);
+    size_t max_groups=weave::tile_group_capacity(int(pairs),local_experts,MAX_K);
+    groups=take(max_groups*sizeof(Group)); tile_states=take(max_groups*sizeof(weave::TileState));
+    group_heads=take(size_t(local_experts)*MAX_K*sizeof(int));
+    group_mid=take(max_groups*weave::TILE_ROWS*i*sizeof(__nv_bfloat16));
   }
   View view(void* ptr) const {
     auto p=static_cast<char*>(ptr);
@@ -78,7 +91,9 @@ struct Layout {
       reinterpret_cast<Payload*>(p+payloads), reinterpret_cast<Task*>(p+tasks),
       reinterpret_cast<__nv_bfloat16*>(p+cache), reinterpret_cast<U64*>(p+cache_ready),
       reinterpret_cast<float*>(p+task_out), reinterpret_cast<float*>(p+returned),
-      reinterpret_cast<U64*>(p+returned_ready), reinterpret_cast<__nv_bfloat16*>(p+output)};
+      reinterpret_cast<U64*>(p+returned_ready), reinterpret_cast<__nv_bfloat16*>(p+output),
+      reinterpret_cast<Group*>(p+groups), reinterpret_cast<weave::TileState*>(p+tile_states),
+      reinterpret_cast<int*>(p+group_heads), reinterpret_cast<__nv_bfloat16*>(p+group_mid)};
   }
 };
 
@@ -108,6 +123,9 @@ __global__ void prepare(Control* p,int capacity) {
   p->dispatch_next=p->dispatch_done=p->return_next=p->return_done=p->final_next=p->ctas_done=0;
   p->npayloads=p->ntasks=p->local_pairs=p->remote_pairs=p->remote_unique=0;
   p->actual_stolen=p->actual_computed=0;
+  p->actual_tiles=p->actual_stolen_tiles=p->ngroups=p->tile_cursor=0;
+  for(int j=0;j<7;++j) p->workload[j]=0;
+  for(int j=0;j<MAX_K;++j) p->groups_by_chunks[j]=0;
   for(int k=0;k<MAX_K;++k) p->starts[k]=p->ends[k]=p->next[k]=p->computed[k]=0;
   __threadfence_system();
   release(&p->ready,acquire(&p->ready)+1);
@@ -217,12 +235,111 @@ __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
   __syncthreads();
 }
 
+struct DeviceLoad {
+  __device__ int operator()(int* ptr) const { return load_i(ptr); }
+};
+struct DeviceAdd {
+  __device__ int operator()(int* ptr,int value) const { return add_i(ptr,value); }
+};
+
+// Four warps cover M16 x N64; weights are reused across all valid expert rows.
+// The original packed MXFP4 and E8M0 arrays are decoded directly in the load.
+__device__ void group_mma(Config cfg,int group_id,const Group& group,int projection,
+                          int first_column,__nv_bfloat16* scratch) {
+  using namespace nvcuda;
+  View view=cfg.peers[cfg.rank];
+  int lane=threadIdx.x%32;
+  int width=projection==2?cfg.i:cfg.h;
+  int outputs=projection==2?cfg.h:cfg.i;
+  const unsigned char* weights=projection==1?cfg.w1:projection==2?cfg.w2:cfg.w3;
+  const unsigned char* scales=projection==1?cfg.s1:projection==2?cfg.s2:cfg.s3;
+  auto a=scratch; auto b=a+256;
+  auto result=reinterpret_cast<float*>(b+256);
+  wmma::fragment<wmma::matrix_a,16,16,16,__nv_bfloat16,wmma::row_major> af;
+  wmma::fragment<wmma::matrix_b,16,16,16,__nv_bfloat16,wmma::col_major> bf;
+  wmma::fragment<wmma::accumulator,16,16,16,float> accum;
+  wmma::fill_fragment(accum,0.f);
+  for(int column=0;column<width;column+=16) {
+    for(int j=lane;j<256;j+=32) {
+      int row=j/16, k=j%16;
+      __nv_bfloat16 value=__float2bfloat16_rn(0.f);
+      if(row<group.rows) {
+        if(projection==2) value=view.group_mid[(size_t(group_id)*16+row)*cfg.i+column+k];
+        else {
+          int payload=view.tasks[group.tasks[row]].payload;
+          value=view.cache[size_t(payload)*cfg.h+column+k];
+        }
+      }
+      a[j]=value;
+      int output=first_column+j/16;
+      b[j]=output<outputs ? __float2bfloat16_rn(weight(weights,scales,
+                    size_t(group.expert)*outputs+output,column+j%16,width)) : __float2bfloat16_rn(0.f);
+    }
+    __syncwarp();
+    wmma::load_matrix_sync(af,a,16); wmma::load_matrix_sync(bf,b,16);
+    wmma::mma_sync(accum,af,bf,accum);
+    __syncwarp();
+  }
+  wmma::store_matrix_sync(result,accum,16,wmma::mem_row_major);
+  __syncwarp();
+}
+
+__device__ void compute_tile(Config cfg,weave::TileClaim claim,U64 epoch,__nv_bfloat16* mid) {
+  View view=cfg.peers[cfg.rank]; Group group=view.groups[claim.group];
+  int lane=threadIdx.x%32,warp=threadIdx.x/32;
+  int first=claim.column*weave::TILE_COLUMNS+warp*16;
+  auto scratch=mid+cfg.i+warp*1024;
+  auto result=reinterpret_cast<float*>(scratch+512);
+  if(threadIdx.x==0 && claim.stage==0)
+    for(int row=0;row<group.rows;++row)
+      wait_epoch(&view.cache_ready[view.tasks[group.tasks[row]].payload],epoch,cfg.timeout);
+  __syncthreads();
+  if(claim.stage==0) {
+    float gate[8];
+    if(cfg.calibration!=1) {
+      group_mma(cfg,claim.group,group,1,first,scratch);
+      for(int q=0;q<8;++q) gate[q]=result[lane+32*q];
+      group_mma(cfg,claim.group,group,3,first,scratch);
+    }
+    for(int q=0;q<8;++q) {
+      int j=lane+32*q,row=j/16,column=first+j%16;
+      if(row<group.rows && column<cfg.i) {
+        float value=0.f;
+        if(cfg.calibration!=1) {
+          float g=RoundBF16{}(gate[q]),u=RoundBF16{}(result[j]);
+          value=weave::swiglu_product(g,u,cfg.clamp,RoundBF16{});
+        }
+        view.group_mid[(size_t(claim.group)*16+row)*cfg.i+column]=__float2bfloat16_rn(value);
+      }
+    }
+  } else {
+    if(cfg.calibration!=1) group_mma(cfg,claim.group,group,2,first,scratch);
+    for(int j=lane;j<256;j+=32) {
+      int row=j/16,column=first+j%16;
+      if(row<group.rows && column<cfg.h)
+        view.task_out[size_t(group.tasks[row])*cfg.h+column]=cfg.calibration==1?0.f:RoundBF16{}(result[j]);
+    }
+  }
+  __syncthreads(); __threadfence();
+  if(threadIdx.x==0) {
+    add_i(&view.ctl->actual_tiles,1);
+    auto state=&view.tile_states[claim.group];
+    if(claim.stage==0) add_i(&state->gate_done,1);
+    else if(add_i(&state->down_done,1)+1==weave::tile_columns(cfg.h)) {
+      add_i(&view.ctl->computed[group.chunk],group.rows);
+      add_i(&view.ctl->actual_computed,group.rows);
+    }
+  }
+  __syncthreads();
+}
+
 __global__ void persistent(Config cfg) {
   View v=cfg.peers[cfg.rank]; Control* p=v.ctl;
   U64 epoch=acquire(&p->ready);
   extern __shared__ __align__(32) unsigned char shared_bytes[];
   auto mid=reinterpret_cast<__nv_bfloat16*>(shared_bytes);
   __shared__ int job;
+  __shared__ weave::TileClaim tile_job;
   if(blockIdx.x==0 && threadIdx.x==0) {
     for(int origin=0;origin<cfg.ep;++origin) {
       View from=cfg.peers[origin]; wait_epoch(&from.ctl->ready,epoch,cfg.timeout);
@@ -245,13 +362,33 @@ __global__ void persistent(Config cfg) {
         }
       }
     }
+    if(cfg.tensor_core==2 && cfg.fixed_c<0 && p->ntasks>0) {
+      if(p->npayloads==1) p->groups_by_chunks[0]=p->ntasks;
+      else for(int chunks=1;chunks<=MAX_K;++chunks) {
+        if(chunks>p->npayloads) break;
+        bool requested=false;
+        for(int j=0;j<cfg.nprofile;++j) if(cfg.profile[j*6+1]==chunks) requested=true;
+        if(!requested) continue;
+        for(int expert=0;expert<cfg.experts/cfg.ep;++expert)
+          for(int k=0;k<chunks;++k) v.group_heads[expert*MAX_K+k]=0;
+        for(int task=0;task<p->ntasks;++task) {
+          Task t=v.tasks[task]; int k=t.payload*chunks/p->npayloads;
+          v.group_heads[t.expert*MAX_K+k]++;
+        }
+        int groups=0;
+        for(int expert=0;expert<cfg.experts/cfg.ep;++expert)
+          for(int k=0;k<chunks;++k) groups+=(v.group_heads[expert*MAX_K+k]+15)/16;
+        p->groups_by_chunks[chunks-1]=groups;
+      }
+    }
     weave::Schedule s;
     if(cfg.fixed_c>=0) {
       s={cfg.fixed_c,cfg.fixed_k,cfg.fixed_steal,0.};
       if(p->npayloads<s.k) s.k=p->npayloads>0?p->npayloads:1;
       check(s.c>0 || p->remote_pairs==0);
     } else s=weave::choose_schedule(cfg.profile,cfg.nprofile,cfg.workers,p->local_pairs,
-                                     p->remote_pairs,p->remote_unique,p->npayloads,cfg.h,cfg.i);
+                                     p->remote_pairs,p->remote_unique,p->npayloads,cfg.h,cfg.i,
+                                     cfg.tensor_core==2?p->groups_by_chunks:nullptr);
     check(s.c>=0 && s.c<cfg.workers && s.k>=1 && s.k<=MAX_K);
     p->c=s.c; p->k=s.k; p->steal=s.steal;
     for(int task=0;task<p->ntasks;++task) {
@@ -260,6 +397,29 @@ __global__ void persistent(Config cfg) {
     }
     int start=0;
     for(int k=0;k<s.k;++k) { int count=p->ends[k]; p->starts[k]=p->next[k]=start; start+=count; p->ends[k]=start; }
+    check(cfg.calibration!=2 || p->remote_pairs==0);
+    if(cfg.tensor_core==2) {
+      for(int expert=0;expert<cfg.experts/cfg.ep;++expert)
+        for(int k=0;k<s.k;++k) v.group_heads[expert*MAX_K+k]=-1;
+      for(int task=0;task<p->ntasks;++task) {
+        Task t=v.tasks[task]; int bucket=t.expert*MAX_K+t.chunk;
+        int group=v.group_heads[bucket];
+        if(group<0 || v.groups[group].rows==weave::TILE_ROWS) {
+          group=p->ngroups++; check(group<cfg.max_groups);
+          v.group_heads[bucket]=group;
+          v.groups[group].expert=t.expert; v.groups[group].chunk=t.chunk;
+          v.groups[group].rows=0; v.tile_states[group]={0,0,0,0};
+        }
+        int row=v.groups[group].rows++;
+        v.groups[group].tasks[row]=task;
+      }
+      if(cfg.fixed_c<0 && p->ngroups>0) check(p->ngroups==p->groups_by_chunks[p->k-1]);
+
+    }
+    p->workload[0]=p->local_pairs; p->workload[1]=p->remote_pairs;
+    p->workload[2]=p->remote_unique; p->workload[3]=p->npayloads;
+    p->workload[4]=p->ntasks; p->workload[5]=p->ngroups;
+    p->workload[6]=p->ngroups*(weave::tile_columns(cfg.i)+weave::tile_columns(cfg.h));
     release(&p->planned,epoch);
   }
   if(threadIdx.x==0) wait_epoch(&p->planned,epoch,cfg.timeout);
@@ -282,11 +442,30 @@ __global__ void persistent(Config cfg) {
   }
   // One consecutive steal window immediately after dispatch.
   int budget=comm?p->steal:0x7fffffff;
-  for(int stolen=0;stolen<budget;++stolen) {
-    if(threadIdx.x==0) job=claim_task(p);
-    __syncthreads(); if(job<0) break;
-    compute_task(cfg,job,epoch,mid);
-    if(comm && threadIdx.x==0) add_i(&p->actual_stolen,1);
+  if(cfg.tensor_core==2) {
+    U64 start=clock64();
+    for(int completed=0;completed<budget;) {
+      if(threadIdx.x==0) tile_job=weave::claim_tile(v.tile_states,p->ngroups,
+          weave::tile_columns(cfg.i),weave::tile_columns(cfg.h),DeviceLoad{},DeviceAdd{},&p->tile_cursor);
+      __syncthreads();
+      if(tile_job.group==-1) break;
+      if(tile_job.group==-2) {
+        check(clock64()-start<cfg.timeout); __nanosleep(64);
+        // All warps must finish reading this shared claim before thread0
+        // publishes the next one; a warp-only sleep is not convergence.
+        __syncthreads(); continue;
+      }
+      compute_tile(cfg,tile_job,epoch,mid);
+      if(comm && threadIdx.x==0) { add_i(&p->actual_stolen,1); add_i(&p->actual_stolen_tiles,1); }
+      ++completed;
+    }
+  } else {
+    for(int stolen=0;stolen<budget;++stolen) {
+      if(threadIdx.x==0) job=claim_task(p);
+      __syncthreads(); if(job<0) break;
+      compute_task(cfg,job,epoch,mid);
+      if(comm && threadIdx.x==0) add_i(&p->actual_stolen,1);
+    }
   }
   // Chunk combine can overlap subsequent chunks' computation. Compute workers
   // join the tail after exhausting the shared compute queue.
@@ -337,7 +516,7 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
   void* pointers[MAX_EP]{};
   bool connected=false;
   Workspace(int rank_,int ep_,int cap_,int h_,int i_,int topk_,int experts_)
-    : rank(rank_),ep(ep_),cap(cap_),h(h_),i(i_),topk(topk_),experts(experts_),layout(ep_,cap_,h_,topk_) {
+    : rank(rank_),ep(ep_),cap(cap_),h(h_),i(i_),topk(topk_),experts(experts_),layout(ep_,cap_,h_,i_,topk_,experts_/(ep_>0?ep_:1)) {
     TORCH_CHECK(ep>=1 && ep<=MAX_EP && rank>=0 && rank<ep && cap>0 && cap<=8192);
     TORCH_CHECK(h>0 && h%32==0 && i>0 && i%32==0 && i<=8192 && h<=8192);
     TORCH_CHECK(topk>0 && topk<=16 && experts>=topk && experts%ep==0);
@@ -385,11 +564,14 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
   torch::Tensor output() { return tensor(layout.output,{cap,h},torch::kBFloat16); }
   torch::Tensor schedule() { return tensor(layout.control+offsetof(Control,c),{3},torch::kInt32); }
   torch::Tensor work_counters() { return tensor(layout.control+offsetof(Control,actual_stolen),{2},torch::kInt32); }
-  void run(const std::vector<torch::Tensor>& w,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp,int tensor_core) {
+  torch::Tensor workload() { return tensor(layout.control+offsetof(Control,workload),{7},torch::kInt32); }
+  torch::Tensor tile_counters() { return tensor(layout.control+offsetof(Control,actual_tiles),{2},torch::kInt32); }
+  void run(const std::vector<torch::Tensor>& w,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp,int tensor_core,int calibration) {
     c10::cuda::CUDAGuard guard(device);
     TORCH_CHECK(connected && w.size()==6 && timeout_seconds>0 && clamp>0);
     TORCH_CHECK(c>=-1 && c<workers && k>=1 && k<=8 && steal>=0);
-    TORCH_CHECK(tensor_core==0 || tensor_core==1,"unknown expert compute implementation");
+    TORCH_CHECK(tensor_core>=0 && tensor_core<=2,"unknown expert compute implementation");
+    TORCH_CHECK(calibration>=0 && calibration<=2 && (!calibration || (tensor_core==2 && c>=0)),"calibration requires tiled fixed-plan execution");
     std::vector<std::vector<int64_t>> shapes={{experts/ep,i,h/2},{experts/ep,i,h/2},{experts/ep,h,i/2},
                                             {experts/ep,i,h/32},{experts/ep,i,h/32},{experts/ep,h,i/32}};
     for(int j=0;j<6;++j) TORCH_CHECK(w[j].is_cuda() && w[j].get_device()==device && w[j].is_contiguous() && w[j].scalar_type()==torch::kUInt8 && w[j].sizes().vec()==shapes[j],"bad raw MXFP4 weight tensor ",j);
@@ -408,7 +590,8 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     cfg.w1=w[0].data_ptr<unsigned char>(); cfg.w3=w[1].data_ptr<unsigned char>(); cfg.w2=w[2].data_ptr<unsigned char>();
     cfg.s1=w[3].data_ptr<unsigned char>(); cfg.s3=w[4].data_ptr<unsigned char>(); cfg.s2=w[5].data_ptr<unsigned char>();
     cfg.profile=profile.data_ptr<double>(); cfg.nprofile=profile.size(0); cfg.fixed_c=c; cfg.fixed_k=k; cfg.fixed_steal=steal;
-    cfg.tensor_core=tensor_core;
+    cfg.tensor_core=tensor_core; cfg.calibration=calibration;
+    cfg.max_groups=weave::tile_group_capacity(ep*cap*topk,experts/ep,MAX_K);
     cfg.timeout=U64(timeout_seconds*clock_khz*1000.); cfg.clamp=clamp;
     auto stream=at::cuda::getCurrentCUDAStream(device).stream();
     prepare<<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap);
@@ -426,5 +609,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME,m) {
     .def_property_readonly("routing",&Workspace::routing).def_property_readonly("n",&Workspace::n)
     .def_property_readonly("output",&Workspace::output).def_property_readonly("schedule",&Workspace::schedule)
     .def_property_readonly("work_counters",&Workspace::work_counters)
+    .def_property_readonly("workload",&Workspace::workload)
+    .def_property_readonly("tile_counters",&Workspace::tile_counters)
     .def("run",&Workspace::run);
 }

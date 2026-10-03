@@ -12,23 +12,33 @@ def validate_checkpoint_gate(runtime, ranks, *, source_sha256, index_sha256, che
         raise ValueError('four checkpoint rank reports required')
     for r in ranks:
         if (r.get('status') != 'checkpoint_checks_passed' or r.get('layers') != list(range(43))
-                or r.get('kernels') != ['scalar', 'wmma'] or r.get('architecture') != [4096, 2048, 256, 6, 43]):
-            raise ValueError('all 43 real layers and both kernels must have passed')
+                or r.get('kernels') != ['scalar', 'wmma', 'tiled'] or r.get('architecture') != [4096, 2048, 256, 6, 43]):
+            raise ValueError('all 43 real layers and all three kernels must have passed')
         if (r.get('source_sha256') != source_sha256 or r.get('checkpoint_index_sha256') != index_sha256
                 or r.get('checkpoint_content_sha256') != checkpoint_sha256 or not checkpoint_sha256):
             raise ValueError('checkpoint evidence is stale for this source/checkpoint')
         cases = {(v['layer'], v['kernel'], v['case']): v for v in r['cases']}
         expected = {(layer, kernel, case) for layer in [-1]+list(range(43))
-                    for kernel in ['scalar', 'wmma']
+                    for kernel in ['scalar', 'wmma', 'tiled']
                     for case in ['remote_K2', 'steal_K2', 'graph_replay0', 'graph_replay1']}
+        expected |= {(-1, 'tiled', f'grouped_rows_K{k}') for k in (1,2,4,8)}
         if set(cases) != expected or len(r['cases']) != len(expected):
             raise ValueError('checkpoint cases are incomplete or duplicated')
         for v in cases.values():
             error = v['metrics']['relative_l2']
             if not math.isfinite(error) or error > .025:
                 raise ValueError('checkpoint numerical gate failed')
+            if v['kernel'] == 'tiled' and not v['case'].startswith('graph_replay'):
+                workload, tiles = v.get('workload', []), v.get('tile_counters', [])
+                if (len(workload)!=7 or len(tiles)!=2 or
+                        any(type(n) is not int or n<0 for n in workload+tiles) or
+                        tiles[0]!=workload[6] or workload[6]!=workload[5]*96 or
+                        tiles[1]>tiles[0]):
+                    raise ValueError('tiled completion evidence is inconsistent')
+                if v['case'].startswith('grouped_rows') and (workload[5]==0 or workload[5]>=workload[4]):
+                    raise ValueError('full row grouping evidence is required')
     for layer in [-1]+list(range(43)):
-        for kernel in ['scalar', 'wmma']:
+        for kernel in ['scalar', 'wmma', 'tiled']:
             stolen = sum(v['completed_stolen'] for r in ranks for v in r['cases']
                          if v['layer'] == layer and v['kernel'] == kernel and v['case'] == 'steal_K2')
             if stolen < 1:
@@ -46,7 +56,7 @@ def validate_coverage_delta(before, after, *, require_graph):
     before, after = ranks(before), ranks(after)
     evidence = {}
     identity = (before[0].get('kernel'), before[0].get('source_sha256'))
-    if identity[0] not in ('scalar', 'wmma') or not identity[1]:
+    if identity[0] not in ('scalar', 'wmma', 'tiled') or not identity[1]:
         raise ValueError('kernel/source provenance required')
     for rank in range(4):
         a, b = before[rank], after[rank]

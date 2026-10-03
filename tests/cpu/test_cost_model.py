@@ -3,6 +3,12 @@ from src.weave.cost_model import Workload, Candidate, select_plan
 
 
 class CostModelTest(unittest.TestCase):
+    def test_padded_group_work_changes_sparse_chunk_choice(self):
+        work=Workload(7,1,1,8,32,32)
+        rows=[Candidate(1,1,1e9,1e12,1,0),Candidate(1,2,1.5e9,1e12,1,0)]
+        self.assertEqual(select_plan(work,4,rows).chunks,2)
+        self.assertEqual(select_plan(work,4,rows,groups_by_chunks=(1,2,0,0,0,0,0,0)).chunks,1)
+
     def test_joint_search_balances_chunk_efficiency_and_tail(self):
         work = Workload(6, 4, 2, 10, 2, 2)
         candidates = [Candidate(1, 1, 120, 20, 1, .5),

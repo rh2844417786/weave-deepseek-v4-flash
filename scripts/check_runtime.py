@@ -137,7 +137,7 @@ def main():
                 data = json.loads((args.output_dir/f'checkpoint-rank{rank}.json').read_text())
                 expected_layers = list(range(43)) if args.checkpoint_layers == 'all' else [int(v) for v in args.checkpoint_layers.split(',')]
                 ranks.append(data.get('status') == 'checkpoint_checks_passed' and data['layers'] == expected_layers
-                             and data['kernels'] == ['scalar', 'wmma'])
+                             and data['kernels'] == ['scalar', 'wmma', 'tiled'])
             except (OSError, ValueError, KeyError):
                 ranks.append(False)
         observed['checkpoint_validation_status'] = 'passed' if code == 0 and all(ranks) else 'failed'

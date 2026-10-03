@@ -76,14 +76,14 @@ def main():
     parser.add_argument('--model-path', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--layers', default='all', help='all 43, or comma-separated checkpoint layer IDs')
-    parser.add_argument('--kernels', default='scalar,wmma')
+    parser.add_argument('--kernels', default='scalar,wmma,tiled')
     args = parser.parse_args()
     layers = list(range(43)) if args.layers == 'all' else [int(v) for v in args.layers.split(',')]
     kernels = args.kernels.split(',')
     if not layers or len(set(layers)) != len(layers) or any(v not in range(43) for v in layers):
         parser.error('layers must be distinct IDs in 0..42')
-    if not kernels or any(v not in ('scalar', 'wmma') for v in kernels):
-        parser.error('kernels must be scalar,wmma or a subset')
+    if not kernels or any(v not in ('scalar', 'wmma', 'tiled') for v in kernels):
+        parser.error('kernels must be scalar,wmma,tiled or a subset')
     rank = int(os.environ['LOCAL_RANK'])
     torch.cuda.set_device(rank)
     torch.backends.cuda.matmul.allow_tf32 = False
@@ -100,9 +100,10 @@ def main():
         (args.output_dir/'checkpoint_identity.json').write_text(json.dumps(identity[0], indent=2)+'\n')
     dist.broadcast_object_list(identity, src=0)
     device = torch.device('cuda', rank)
-    runtime = PeerRuntime(None, 8, H, I, TOPK, E)
+    runtime = PeerRuntime(None, 32, H, I, TOPK, E)
     gen = torch.Generator(device=device).manual_seed(542 + rank)
-    x = (torch.randn((8, H), generator=gen, device=device)*.125).bfloat16()
+    x_all = (torch.randn((32, H), generator=gen, device=device)*.125).bfloat16()
+    x = x_all[:8]
     ids = torch.tensor([[((rank+s)%4)*64+(t*7+s*9)%64 for s in range(TOPK)]
                         for t in range(8)], device=device, dtype=torch.int32)
     routing = torch.tensor([[.1, .15, .2, .1, .25, .2]]*8, device=device)
@@ -149,12 +150,19 @@ def main():
                 torch.cuda.synchronize()
                 metrics = compare(expected, rows, f'layer{layer}/{kernel}/{label}')
                 stolen, computed = runtime.ws.work_counters.cpu().tolist()
+                workload = runtime.ws.workload.cpu().tolist()
+                tile_counts = runtime.ws.tile_counters.cpu().tolist()
+                if computed != workload[4]:
+                    raise AssertionError('not every expert task completed')
+                if kernel == 'tiled' and (tile_counts[0] != workload[6] or tile_counts[1] != stolen):
+                    raise AssertionError('tile completion/stealing counters differ from planned work')
                 actual_counts = [None]*4
                 dist.all_gather_object(actual_counts, (stolen, computed))
                 if label == 'steal_K2' and sum(v[0] for v in actual_counts) == 0:
                     raise AssertionError('nonzero stealing budget did not produce any completed stolen task')
                 records.append({'layer': layer, 'kernel': kernel, 'case': label, 'metrics': metrics,
-                                'completed_stolen': stolen, 'completed_tasks': computed})
+                                'completed_stolen': stolen, 'completed_tasks': computed,
+                                'workload': workload, 'tile_counters': tile_counts})
             # Capture once, then replay with changed routes/counts. Some ranks
             # become empty; other ranks' expert identities change between runs.
             dist.barrier()
@@ -177,6 +185,28 @@ def main():
             ids.copy_(original)
             rows = 8 if rank != 1 else 0
             valid.fill_(rows)
+        if layer == -1 and 'tiled' in kernels:
+            # Exercise full M16 groups, not just padded decode-sized rows.
+            grouped_ids = ids[:1].repeat(32, 1)
+            grouped_routing = routing[:1].repeat(32, 1)
+            grouped_rows = 32 if rank != 1 else 0
+            grouped_valid = torch.tensor([grouped_rows], device=device, dtype=torch.int32)
+            grouped_inputs = [None]*4
+            dist.all_gather_object(grouped_inputs, (x_all.cpu(), grouped_ids.cpu(), grouped_routing.cpu(), grouped_rows))
+            grouped_expected = distributed_reference(grouped_inputs, raw, rank, clamp)
+            runtime.kernel = 'tiled'
+            for chunks in (1, 2, 4, 8):
+                runtime.run(x_all, grouped_ids, grouped_routing, raw, valid_count=grouped_valid,
+                            fixed_plan=(1, chunks, 1), timeout_seconds=120, clamp=clamp)
+                torch.cuda.synchronize()
+                metrics = compare(grouped_expected, grouped_rows, f'full_group_rows/K{chunks}')
+                workload = runtime.ws.workload.cpu().tolist()
+                completed, stolen = runtime.ws.tile_counters.cpu().tolist()
+                if completed != workload[6] or workload[5] == 0 or workload[5] >= workload[4]:
+                    raise AssertionError('same-expert tokens were not grouped into shared tiles')
+                records.append({'layer': -1, 'kernel': 'tiled', 'case': f'grouped_rows_K{chunks}',
+                                'metrics': metrics, 'workload': workload,
+                                'tile_counters': [completed, stolen]})
         del raw
         torch.cuda.synchronize()
         print(json.dumps({'rank': rank, 'checkpoint_layer': layer, 'checks': 'passed'}), flush=True)

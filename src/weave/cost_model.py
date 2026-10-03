@@ -1,7 +1,7 @@
 """Weave equations 1-16, with explicit units and measured-profile inputs.
 
-The functional MXFP4 kernel uses a whole token/expert forward as its steal work
-unit. Dispatch is BF16 and return slots are FP32; the different byte widths are
+Legacy kernels use whole token/expert steal units; tiled profiles use the
+actual padded M16 group count and N64 tile work units. Dispatch is BF16 and return slots are FP32; the different byte widths are
 explicit here instead of silently reusing the paper's single B value.
 """
 from dataclasses import dataclass
@@ -38,7 +38,7 @@ class Plan:
     seconds: float
 
 
-def select_plan(work: Workload, workers: int, candidates) -> Plan:
+def select_plan(work: Workload, workers: int, candidates, *, groups_by_chunks=None) -> Plan:
     for name in ('local_pairs', 'remote_pairs', 'remote_unique_tokens', 'unique_tokens'):
         value = getattr(work, name)
         if type(value) is not int or value < 0:
@@ -50,8 +50,12 @@ def select_plan(work: Workload, workers: int, candidates) -> Plan:
     pairs = work.local_pairs + work.remote_pairs
     if pairs == 0:
         return Plan(0, 1, 0, 0.)
-    tile_flops = 6 * work.hidden_size * work.intermediate_size
-    compute = pairs * tile_flops
+    expert_flops = 6 * work.hidden_size * work.intermediate_size
+    if groups_by_chunks is not None and (len(groups_by_chunks)!=8 or
+            any(type(v) is not int or v<0 for v in groups_by_chunks)):
+        raise ValueError('eight nonnegative group counts required')
+    tile_flops = (16*expert_flops / ((work.hidden_size+63)//64+(work.intermediate_size+63)//64)
+                  if groups_by_chunks is not None else expert_flops)
     dispatch = work.remote_unique_tokens * work.hidden_size * work.dispatch_bytes
     combine = work.remote_pairs * work.hidden_size * work.return_bytes
     plans = []
@@ -66,6 +70,9 @@ def select_plan(work: Workload, workers: int, candidates) -> Plan:
         if row.compute_flops_s <= 0 or not 0 < row.chunk_efficiency <= 1 or not 0 <= row.overlap < 1:
             continue
         if row.bandwidth_bytes_s < 0 or (c > 0 and row.bandwidth_bytes_s == 0):
+            continue
+        compute = groups_by_chunks[k-1]*16*expert_flops if groups_by_chunks is not None else pairs*expert_flops
+        if compute<=0:
             continue
         communication = (dispatch + combine) / row.bandwidth_bytes_s if c else 0.
         tail = (1 - row.overlap) * combine / (row.bandwidth_bytes_s * k) if c else 0.

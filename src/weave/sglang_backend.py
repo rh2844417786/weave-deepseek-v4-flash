@@ -6,6 +6,7 @@ target; graph replay of the core has its own GPU test and is not automatically
 equivalent to SGLang's variable batch graph lifecycle.
 """
 import copy
+import os
 import importlib.metadata
 import torch
 
@@ -116,14 +117,19 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         layer.mlp.experts = RoutedExperts(layer.mlp.experts, runtime, raw, profile, fixed_plan, config.swiglu_limit)
     model.weave_runtime = runtime
     return {'backend': 'weave_functional', 'kernel': kernel, 'layers': len(layers),
-            'graph_status': 'batch1_candidate_unvalidated' if allow_decode_graph else 'disabled',
-            'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed'}
+            'graph_status': 'batch1_requires_source_specific_validation' if allow_decode_graph else 'disabled',
+            'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed',
+            'tile_rows': 16 if kernel=='tiled' else 1,
+            'tile_columns': 64 if kernel=='tiled' else None}
 
 
 def coverage(model):
     return {'rank': model.weave_runtime.rank, 'kernel': model.weave_runtime.kernel,
             'source_sha256': model.weave_runtime.source_sha256,
             'graph_enabled': model.weave_runtime.allow_decode_graph,
+            'schedule_mode': 'measured_dynamic' if model.model.layers[0].mlp.experts.profile is not None else 'explicit_fixed',
+            'profile_checkpoint_content_sha256': os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
+            'profile_bank_sha256': getattr(model.model.layers[0].mlp.experts.profile,'sha256',None),
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
                 'capture_calls': layer.mlp.experts.capture_calls,

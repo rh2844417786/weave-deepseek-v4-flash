@@ -12,6 +12,26 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class NativeEPLaunchTest(unittest.TestCase):
+    def test_tiled_profile_and_timing_are_explicit_in_formal_launch(self):
+        env={**os.environ,'CUDA_VISIBLE_DEVICES':'4,5,6,7'}
+        for backend in ('native','weave_functional'):
+            command=[sys.executable,'scripts/run_native_ep.py','--backend',backend,
+                     '--work-root','/tmp/weave-work','--request-timing','--decode-graph','full']
+            if backend=='weave_functional':
+                command += ['--kernel','tiled','--profile','/tmp/weave-work/profiles',
+                            '--checkpoint-content-sha256','a'*64]
+            result=subprocess.run(command,cwd=ROOT,env=env,capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            args=json.loads(result.stdout)['docker_argv']
+            self.assertIn('WEAVE_REQUEST_TIMING=1',args)
+            self.assertIn('PYTHONPATH=/workspace/timing_hooks:/workspace/src',args)
+            self.assertIn('--incremental-streaming-output',args)
+            self.assertEqual(args[args.index('--stream-interval')+1],'1')
+            if backend=='weave_functional':
+                self.assertIn('WEAVE_KERNEL=tiled',args)
+                self.assertIn('WEAVE_PROFILE=/work/profiles',args)
+                self.assertIn('WEAVE_CHECKPOINT_CONTENT_SHA256='+'a'*64,args)
+
     def test_wmma_graph_candidate_keeps_ep4_and_uses_explicit_graph_opt_in(self):
         env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7'}
         run = subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--backend', 'weave_functional',
