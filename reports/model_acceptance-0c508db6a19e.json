@@ -1,0 +1,235 @@
+{
+ "schema_version": 1,
+ "scope": "functional_model_acceptance_not_gpqa_performance",
+ "evidence": {
+  "kind": "server_run_raw_json_read_on_host",
+  "work_directory": "work/model-acceptance-0c508db6a19e",
+  "core_run_directory": "work/cuda-functional.0c508db6a19e",
+  "raw_work_json_in_git": false,
+  "values_from": "acceptance.json, *-request.json (native_comparison), container_lifecycle.json",
+  "gpu_execution_independently_verified": false
+ },
+ "run": {
+  "date": "2026-10-02",
+  "job_id": "job-20261002-114252-def89f4e",
+  "physical_gpus": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "entrypoint": "scripts/run_model_acceptance.py",
+  "tested_git_revision": "e59e064",
+  "source_sha256": "7ab80db83a4ac72c2867e3283899783a93dbd1105b055daf9470a8a4c0f2c283",
+  "kernel": "wmma",
+  "core_started_utc": "2026-10-02T11:42:56.522375+00:00",
+  "core_finished_utc": "2026-10-02T11:46:46.354027+00:00",
+  "gpuq_timeout_seconds": 10800
+ },
+ "acceptance_policy": {
+  "logprob": "record_only",
+  "top_logprob_support": "record_only"
+ },
+ "stages": {
+  "checkpoint": {
+   "status": "passed",
+   "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+   "checkpoint_index_sha256": "7e975ba3bef8947a94e7da0abd60888375b232b4dfad883d59653e65c6ba522a",
+   "evidence": "work/cuda-functional.0c508db6a19e/checkpoint-rank0..3.json"
+  },
+  "native": {
+   "status": "passed",
+   "graph": "full",
+   "evidence": "work/model-acceptance-0c508db6a19e/native-request.json"
+  },
+  "weave_eager": {
+   "status": "passed",
+   "graph": "disabled",
+   "evidence": "work/model-acceptance-0c508db6a19e/weave_eager-request.json"
+  },
+  "weave_graph": {
+   "status": "passed",
+   "graph": "full",
+   "evidence": "work/model-acceptance-0c508db6a19e/weave_graph-request.json"
+  }
+ },
+ "first_token_comparison": {
+  "status": "recorded",
+  "used_for_acceptance": false,
+  "scope": "first_token_and_top_logprobs_only",
+  "token_id": 2581,
+  "weave_token_id": 2581,
+  "first_token_matches": true,
+  "first_token_logprob_delta": 5.960450835118536e-07,
+  "top_logprob_support_matches": false,
+  "native_only_token_ids": [
+   2337,
+   4823
+  ],
+  "weave_only_token_ids": [
+   9832,
+   92341
+  ],
+  "common_logprob_deltas": [
+   {
+    "token_id": 201,
+    "native_logprob": -17.250001907348633,
+    "weave_logprob": -17.625001907348633,
+    "abs_delta": 0.375
+   },
+   {
+    "token_id": 666,
+    "native_logprob": -18.125001907348633,
+    "weave_logprob": -18.500001907348633,
+    "abs_delta": 0.375
+   },
+   {
+    "token_id": 671,
+    "native_logprob": -14.25000286102295,
+    "weave_logprob": -14.875001907348633,
+    "abs_delta": 0.6249990463256836
+   },
+   {
+    "token_id": 1350,
+    "native_logprob": -16.000001907348633,
+    "weave_logprob": -16.125001907348633,
+    "abs_delta": 0.125
+   },
+   {
+    "token_id": 2581,
+    "native_logprob": -2.622600959512056e-06,
+    "weave_logprob": -2.0265558760002023e-06,
+    "abs_delta": 5.960450835118536e-07
+   },
+   {
+    "token_id": 5718,
+    "native_logprob": -15.00000286102295,
+    "weave_logprob": -15.000001907348633,
+    "abs_delta": 9.5367431640625e-07
+   },
+   {
+    "token_id": 10318,
+    "native_logprob": -13.50000286102295,
+    "weave_logprob": -13.625001907348633,
+    "abs_delta": 0.1249990463256836
+   },
+   {
+    "token_id": 11428,
+    "native_logprob": -17.500001907348633,
+    "weave_logprob": -18.375001907348633,
+    "abs_delta": 0.875
+   }
+  ],
+  "max_abs_common_logprob_delta": 0.875,
+  "max_abs_logprob_delta": 0.875,
+  "matched_generated_tokens": 8,
+  "values_from": "weave_eager-request.json native_comparison (raw JSON)",
+  "recorded_diagnostics_identical_between_eager_and_graph": true
+ },
+ "cleanup": {
+  "core_container": {
+   "container_name": "weave-cuda-functional-0c508db6a19e",
+   "termination_signal": null,
+   "exit_code": 0,
+   "cleanup_status": "not_required"
+  },
+  "native": {
+   "container_name": "weave-native-ep-d72ac693f1ec",
+   "termination_signal": 15,
+   "exit_code": 143,
+   "cleanup_status": "absent"
+  },
+  "weave_eager": {
+   "container_name": "weave-native-ep-3a35379d504c",
+   "termination_signal": 15,
+   "exit_code": 143,
+   "cleanup_status": "absent"
+  },
+  "weave_graph": {
+   "container_name": "weave-native-ep-050f2c080714",
+   "termination_signal": 15,
+   "exit_code": 143,
+   "cleanup_status": "absent"
+  },
+  "forced_cleanup_chain": "docker stop --timeout 2 timed out (3 s) -> docker rm --force rc=0 -> docker inspect rc=1 no such object",
+  "no_weave_containers_after_run": true
+ },
+ "performance": {
+  "status": "not_measured",
+  "gpqa_full_comparison": "not_run"
+ },
+ "previous_run_comparison": {
+  "run_job_id": "job-20261002-092219-69d97c32",
+  "work_directory": "work/model-acceptance-d4773fb0c91f",
+  "values_from": "recomputed from that run raw meta_info",
+  "weave_eager_diagnostics": {
+   "first_token_matches": true,
+   "top_logprob_support_matches": false,
+   "native_only_token_ids": [
+    2337,
+    9832
+   ],
+   "weave_only_token_ids": [
+    1124,
+    92341
+   ],
+   "common_count": 8,
+   "common_logprob_deltas": [
+    {
+     "token_id": 201,
+     "native_logprob": -17.125001907348633,
+     "weave_logprob": -16.625003814697266,
+     "abs_delta": 0.4999980926513672
+    },
+    {
+     "token_id": 666,
+     "native_logprob": -18.125001907348633,
+     "weave_logprob": -18.250003814697266,
+     "abs_delta": 0.1250019073486328
+    },
+    {
+     "token_id": 671,
+     "native_logprob": -14.25000286102295,
+     "weave_logprob": -13.875003814697266,
+     "abs_delta": 0.3749990463256836
+    },
+    {
+     "token_id": 1350,
+     "native_logprob": -15.87500286102295,
+     "weave_logprob": -15.625003814697266,
+     "abs_delta": 0.2499990463256836
+    },
+    {
+     "token_id": 2581,
+     "native_logprob": -2.7418097943154862e-06,
+     "weave_logprob": -3.6954811548639555e-06,
+     "abs_delta": 9.536713605484692e-07
+    },
+    {
+     "token_id": 5718,
+     "native_logprob": -14.75000286102295,
+     "weave_logprob": -14.875003814697266,
+     "abs_delta": 0.1250009536743164
+    },
+    {
+     "token_id": 10318,
+     "native_logprob": -13.37500286102295,
+     "weave_logprob": -13.125003814697266,
+     "abs_delta": 0.2499990463256836
+    },
+    {
+     "token_id": 11428,
+     "native_logprob": -17.875001907348633,
+     "weave_logprob": -17.750003814697266,
+     "abs_delta": 0.12499809265136719
+    }
+   ],
+   "max_abs_common_logprob_delta": 0.4999980926513672
+  }
+ },
+ "followup": {
+  "prior_fix_commit": "af447d6977b5374ef57a61f7c5433d87b6badf94",
+  "prior_fix_validated_in_tail_diagnostics": false,
+  "remaining": "tail logprob drift persists (k=10 near-ties flip; max common delta grew 0.500 -> 0.875); first token and all 8 generated tokens match on all three backends"
+ }
+}

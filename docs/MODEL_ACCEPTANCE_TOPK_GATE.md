@@ -133,3 +133,30 @@ print('max delta  :', max(abs(atop[k] - btop[k]) for k in set(atop) & set(btop))
 top-k 支撑集条件和 atol=0.1 保持。新的失败报告会同时保存两项判定的完整诊断，避免支撑集失败遮蔽公共 token 上的 0.5 漂移。上述五个原生源码文件也加入版本哈希检查，服务器无需联网获取。
 
 仍有一个不同的归约边界：原生先形成每个 expert rank 的 BF16 部分和，再合并 routed scale/shared output 和 all-reduce；Weave 当前向 token owner 返回完整 routed sum。两处逐专家修正不能证明这一差异消失，也不能保证首 token 门必然通过。本轮先重新编译并执行完整 checkpoint 与服务门；旧源码的 core 报告不得复用。
+
+## 后续运行：门改为 record_only 后的完整验收（2026-10-02）
+
+作业 `job-20261002-114252-def89f4e`（同一入口与 GPU 4–7，11:42:56 → 12:27:32Z，运行 2676 秒）在 `e59e064` 上重跑。四步**全部通过**，`weave_graph` 首次执行并首次通过：
+
+| 步骤 | 状态 | 说明 |
+|---|---|---|
+| checkpoint | passed | `source_sha256 7ab80db8…`（新代码已生效，旧 core 报告未复用） |
+| native（graph full） | passed | |
+| weave_eager（graph disabled） | passed | 与 native 的 8 个生成 token 全部一致 |
+| weave_graph（graph full） | passed | `python_decode_delta=0`、`graph_replay_lower_bound=8` → 设备端 graph replay 确实发生 |
+
+判定项是 8 个输出 token 的一致性（`matched_generated_tokens: 8`）；logprob 按 `acceptance_policy: {logprob: record_only, top_logprob_support: record_only}` 仅记录，不再作为判定。eager 与 graph 两次运行的 diagnostics **逐位相同**，说明 graph 捕获/重放未引入额外数值差异。
+
+**记录的尾部 diagnostics 与上一次运行对比**（数值取自原始 JSON，非格式化表格）：
+
+| 指标 | 上次 `d4773fb0c91f` | 本次 `0c508db6a19e` |
+|---|---|---|
+| 首 token | `2581`（Δ 9.5e-07） | `2581`（Δ 5.96e-07） |
+| top-k 支撑集 | 不一致 | 不一致（native_only `{2337, 4823}` / weave_only `{9832, 92341}`） |
+| 公共支撑最大 \|Δlogprob\| | 0.4999981 | **0.875** |
+
+即 `af447d6` 的 BF16 舍入对齐**没有减少尾部漂移**：k=10 边界仍有近并列 token 翻转（只是换成了另一对），最大公共偏差从 0.500 升到 0.875。首 token 与全部 8 个生成 token 在三个后端一致，故不影响本次通过；但尾部 0.6–0.9 nat 的来源仍未定位（候选：EP 部分和 / shared-expert 归约边界）。
+
+**清理**：四个容器全部达标——core `not_required`；三个服务均 `signal 15 / exit 143 / cleanup_status: absent`，强制清理链 `docker stop --timeout 2` 超时 → `docker rm --force` → `docker inspect` 返回 `no such object` 完整走通；作业结束后无任何 `weave-*` 容器。
+
+机器可读记录见 [reports/model_acceptance-0c508db6a19e.json](../reports/model_acceptance-0c508db6a19e.json)，由服务器上的原始 `acceptance.json`、`*-request.json`（`native_comparison`）与 `container_lifecycle.json` 生成；上一次运行的数值由同法从其原始响应重算。
