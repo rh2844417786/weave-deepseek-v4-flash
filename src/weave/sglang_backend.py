@@ -8,6 +8,7 @@ equivalent to SGLang's variable batch graph lifecycle.
 import copy
 import os
 import importlib.metadata
+from dataclasses import asdict
 import torch
 
 from .ops import PeerRuntime
@@ -16,12 +17,13 @@ from .runtime_contract import load_contract, verify_adapter_sources
 
 
 class RoutedExperts(torch.nn.Module):
-    def __init__(self, native, runtime, raw, profile, fixed_plan, clamp):
+    def __init__(self, native, runtime, raw, profile, fixed_plan, clamp,layer_id):
         super().__init__()
         self.runtime = runtime
         for j, tensor in enumerate(raw):
             self.register_buffer(f'raw_{j}', tensor)
         self.profile, self.fixed_plan, self.clamp = profile, fixed_plan, clamp
+        self.layer_id=layer_id
         self.quant_method = native.quant_method
         self.moe_runner_config = copy.copy(native.moe_runner_config)
         self.moe_runner_config.inplace = False
@@ -50,7 +52,8 @@ class RoutedExperts(torch.nn.Module):
         end = min(n, start + chunk)
         raw = tuple(getattr(self, f'raw_{j}') for j in range(6))
         own = self.runtime.run(hidden_states[start:end], ids[start:end], weights[start:end],
-                               raw, profile=self.profile, fixed_plan=self.fixed_plan, clamp=self.clamp)
+                               raw, profile=self.profile, fixed_plan=self.fixed_plan, clamp=self.clamp,
+                               trace_layer=self.layer_id)
         # Attention TP has replicated token rows. Each origin returns its owned
         # rows only; the native outer all-reduce restores replicated routed output.
         partial = torch.zeros_like(hidden_states)
@@ -71,7 +74,7 @@ class RoutedExperts(torch.nn.Module):
 
 
 def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None, fixed_plan=(1, 1, 0),
-                          kernel='scalar', allow_decode_graph=False):
+                          kernel='scalar', allow_decode_graph=False,execution_profile=None):
     expected_version = load_contract()['sglang_version']
     if importlib.metadata.version('sglang') != expected_version:
         raise RuntimeError(f'adapter requires the source-audited SGLang {expected_version}')
@@ -111,16 +114,29 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256, kernel=kernel)
     runtime.allow_decode_graph = allow_decode_graph
     profile = runtime.profile_from_file(profile_path) if profile_path else None
+    if execution_profile is not None: runtime.enable_execution_profile(execution_profile)
     for layer in layers:
         raw = load_raw_experts(model_path, layer.mlp.layer_id, runtime.rank, runtime.ep,
                                device=torch.device('cuda', runtime.device))
-        layer.mlp.experts = RoutedExperts(layer.mlp.experts, runtime, raw, profile, fixed_plan, config.swiglu_limit)
+        layer.mlp.experts = RoutedExperts(layer.mlp.experts, runtime, raw, profile, fixed_plan, config.swiglu_limit,layer.mlp.layer_id)
     model.weave_runtime = runtime
     return {'backend': 'weave_functional', 'kernel': kernel, 'layers': len(layers),
             'graph_status': 'batch1_requires_source_specific_validation' if allow_decode_graph else 'disabled',
             'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed',
             'tile_rows': 16 if kernel=='tiled' else 1,
             'tile_columns': 64 if kernel=='tiled' else None}
+
+
+def execution_profile(model):
+    runtime=model.weave_runtime
+    profile=model.model.layers[0].mlp.experts.profile
+    prop=runtime.torch.cuda.get_device_properties(runtime.device)
+    return runtime.execution_profile_snapshot({'rank':runtime.rank,'kernel':runtime.kernel,
+        'source_sha256':runtime.source_sha256,'graph_enabled':runtime.allow_decode_graph,
+        'profile_bank_sha256':getattr(profile,'sha256',None),
+        'checkpoint_content_sha256':os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
+        'image_id':os.environ.get('WEAVE_IMAGE_ID'),'host_gpu_allocation':os.environ.get('WEAVE_HOST_ALLOCATION'),
+        'device_key':f'{prop.name};sm{prop.major}{prop.minor};{prop.multi_processor_count}'})
 
 
 def coverage(model):
@@ -130,6 +146,7 @@ def coverage(model):
             'schedule_mode': 'measured_dynamic' if model.model.layers[0].mlp.experts.profile is not None else 'explicit_fixed',
             'profile_checkpoint_content_sha256': os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
             'profile_bank_sha256': getattr(model.model.layers[0].mlp.experts.profile,'sha256',None),
+            'execution_profile_configuration':asdict(model.weave_runtime.trace_config) if model.weave_runtime.trace_config else None,
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
                 'capture_calls': layer.mlp.experts.capture_calls,

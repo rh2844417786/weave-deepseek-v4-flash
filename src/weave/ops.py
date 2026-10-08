@@ -11,7 +11,7 @@ import sys
 def _kernel_source_bytes():
     root = Path(__file__).resolve().parents[2]
     return b''.join((root/'csrc'/name).read_bytes() for name in
-                    ('megakernel.cu', 'scheduler.h', 'expert_numerics.h', 'tile_scheduler.h'))
+                    ('megakernel.cu', 'scheduler.h', 'expert_numerics.h', 'tile_scheduler.h','execution_trace.h'))
 
 
 def kernel_source_sha256():
@@ -121,6 +121,43 @@ class PeerRuntime:
         self.empty_profile = local_stage('IPC profile allocation', lambda:torch.empty(
             (0,6),dtype=torch.float64,device=f'cuda:{self.device}'))
         self.phase = 'other'
+        self.trace_config=None
+        self.trace_buffers=None
+
+    def enable_execution_profile(self,config):
+        """Allocate immutable buffer addresses before any graph capture."""
+        if self.kernel!='tiled' or self.trace_config is not None or self.torch.cuda.is_current_stream_capturing():
+            raise ValueError('configure tiled execution profiling before graph capture')
+        self.trace_workers=self.torch.cuda.get_device_properties(self.device).multi_processor_count
+        self.trace_buffers=tuple(self.torch.zeros(shape,dtype=self.torch.int64,
+            device=f'cuda:{self.device}') for shape in config.shapes(self.trace_workers))
+        self.ws.configure_trace(*self.trace_buffers,config.layers,config.stride,config.capacity)
+        self.trace_config=config
+
+    def reset_execution_profile(self):
+        if self.trace_buffers is None: raise ValueError('execution profiling is disabled')
+        self.torch.cuda.synchronize(self.device)
+        for buffer in self.trace_buffers: buffer.zero_()
+        self.torch.cuda.synchronize(self.device)
+
+    def execution_profile_snapshot(self,identity):
+        """Idle only; detect forwards interleaved with the multi-buffer copy."""
+        from .execution_profile import summarize_profile
+        if self.trace_buffers is None: raise ValueError('execution profiling is disabled')
+        heads,totals,records=self.trace_buffers
+        error=None
+        for _ in range(3):
+            self.torch.cuda.synchronize(self.device)
+            before=heads.cpu().tolist()
+            values=(totals.cpu().tolist(),records.cpu().tolist())
+            after=heads.cpu().tolist()
+            if before!=after:
+                error=ValueError('service is active during execution profile snapshot')
+                continue
+            try:
+                return summarize_profile(self.trace_config,identity,before,*values,workers=self.trace_workers)
+            except ValueError as exc: error=exc
+        raise error
 
     def profile_from_file(self, path):
         """Only consume measured profiles tied to this kernel and device shape."""
@@ -164,7 +201,7 @@ class PeerRuntime:
         return torch.tensor(rows, dtype=torch.float64, device=f'cuda:{self.device}')
 
     def run(self, x, ids, weights, raw_weights, *, valid_count=None, profile=None,
-            fixed_plan=(1, 1, 0), timeout_seconds=60., clamp=10., calibration_mode=None):
+            fixed_plan=(1, 1, 0), timeout_seconds=60., clamp=10., calibration_mode=None,trace_layer=None):
         torch = self.torch
         n = x.shape[0]
         modes={None: 0, 'communication': 1, 'compute': 2}
@@ -193,6 +230,8 @@ class PeerRuntime:
         else:
             if isinstance(profile, ProfileBank): profile = profile.for_tokens(n)
             c, k, steal = -1, 1, 0
+        traced=self.trace_config is not None and trace_layer is not None and self.phase in ('prefill','decode')
         self.ws.run(list(raw_weights), profile, c, k, steal, timeout_seconds, clamp,
-                    {'scalar': 0, 'wmma': 1, 'tiled': 2}[self.kernel], modes[calibration_mode])
+                    {'scalar': 0, 'wmma': 1, 'tiled': 2}[self.kernel], modes[calibration_mode],
+                    trace_layer if traced else -1,('prefill','decode').index(self.phase) if traced else -1)
         return self.ws.output[:n]

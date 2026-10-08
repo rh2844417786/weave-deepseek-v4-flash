@@ -1,11 +1,13 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-本项目使用原版 DeepSeek-V4-Flash 混合精度权重。交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口。诊断-2已通过宿主读取及导出；最新a57baec归档了四rank各362/374点，随后2048/c131/K1/compute在首个正式迭代发生CUDA故障，模型验收及正式GPQA未运行。当前提供同case异步诊断、显式等待保护、逐调用wall时间与本地盘导出，保留已有合法点；根因和H100修复结果待复测。当前core原始四rank/全43层/三kernel报告已回传并校验。GPQA官方数据已用锁定的DeepSeek tokenizer/编码器完成本地输入长度审计。历史e59e064的原生EP4与Weave eager/graph八token验收不能代替当前tiled实测profile的模型gate；正式速度结果仍未产生。
+本项目使用原版 DeepSeek-V4-Flash 混合精度权重，routed专家保留MXFP4/E8M0。服务器提交2910864已回传完整374点校准、native/Weave eager/graph验收和两组各1200秒的GPQA预算对照。共同完成4题上，SGLang为107.64 tokens/s，当前Weave为11.31 tokens/s，约0.1051倍；全448题未完成，Weave另有6次cache_flush_error。原始42文件摘要已核对。当前增加设备端阶段采样与c/K/steal记录，诊断源码的H100 gate及数据待服务器执行。
 
 ## 入口
 
 - [分组 tile、实测校准与正式 GPQA 统一入口](docs/FORMAL_GPQA_EXPERIMENT.md)
 - [GPU编号动态读取调度器分配](docs/GPU_ALLOCATION.md)
+- [当前GPQA的设备端阶段诊断与服务器命令](docs/DECODE_EXECUTION_PROFILE.md)
+- [已返回的预算GPQA性能结果](reports/server/full-experiment-9d9ee0d02724/comparison.json)
 - [校准 CUDA 故障：单点定位与285点恢复](docs/CALIBRATION_FAULT_RECOVERY.md)
 - [最新2048故障：362点恢复、异步诊断与本地盘导出](docs/CALIBRATION_2048_RECOVERY.md)
 
@@ -13,7 +15,8 @@
 - [服务器仅访问 GitHub：数据与依赖离线准备](docs/RUNTIME_0517.md#服务器网络与离线准备)
 - [真实 43 层 checkpoint、WMMA 与 SGLang graph 验收入口](docs/REAL_CHECKPOINT_GRAPH_ACCEPTANCE.md)
 - [最新模型验收：四阶段通过、8 token 一致（服务器生成摘要）](reports/model_acceptance-0c508db6a19e.json)
-- [最新完整作业：core通过、校准285点后CUDA故障](reports/full_experiment-047ed4696f52.json)
+- [最新完整作业：374点、模型验收与预算GPQA](reports/server/full-experiment-9d9ee0d02724/experiment.json)
+- [历史285点后CUDA故障](reports/full_experiment-047ed4696f52.json)
 - [单点诊断：四rank通过，驱动被JSON权限阻塞](reports/calibration_diagnostic-047ed4696f52-1_operation_record.json)
 - [前一轮 a934293 验收记录（旧 logprob 门导致停止）](reports/model_acceptance.json)
 - [CUDA 功能核心、动态调度与 SGLang adapter](docs/CUDA_FUNCTIONAL_CORE.md)
@@ -26,13 +29,13 @@
 - [GPQA 数据、长度与复核方法](data/gpqa/README.md)
 - [DeepSeek GPQA 输入长度审计](data/gpqa/deepseek_length_audit.json)
 
-当前目标：原版 DeepSeek-V4-Flash 混合精度权重，在调度器分配的四张 H100 上以 EP=4 比较原生 SGLang 与完整 Weave。两组采用相同的专家划分和 attention/dense 并行布局；原生运行时对 MXFP4 专家 EP 路径的支持须先验证。SGLang 的 TP 参数可与 EP 参数同时使用，不能把 `--tp-size 4` 等同于 MoE 只使用 TP。GPQA Main、batch=1、Think High、最多生成 32K（32768）tokens，每组服务 ready 后预热与测量共最多20分钟。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
+当前目标：原版 DeepSeek-V4-Flash 混合精度权重，在调度器分配的四张 H100 上以 EP=4 比较原生 SGLang 与完整 Weave。两组采用相同的专家划分和 attention/dense 并行布局；原生Marlin专家EP4已在服务器验收中执行。SGLang 的 TP 参数可与 EP 参数同时使用，不能把 `--tp-size 4` 等同于 MoE 只使用 TP。GPQA Main、batch=1、Think High、最多生成 32K（32768）tokens，每组服务 ready 后预热与测量共最多20分钟。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
 
-已有代码包括：只读预检、DeepSeek GPQA token ID 准备、decode 计数、EP 路由去重/合并 CPU 参考，以及原生 EP4 Docker 启动入口。现已加入 CUDA IPC persistent 功能核心、GPU 端 c/K 选择和连续 stealing、raw MXFP4 专家加载器，以及源码核对后的 SGLang 0.5.17 eager adapter。默认使用当前服务器已有的 `lmsysorg/sglang:v0.5.17`，工作目录为 `<repo>/work`。后端名为 `weave_functional`：历史 H100 CUDA 编译、两轮四卡小张量功能与 core graph replay 已通过并核对原始报告；修正后的 BF16 WMMA、真实 checkpoint 与 batch=1 SGLang graph 在 e59e064 的服务器摘要中报告通过。完整原始 rank/coverage 报告待回传；本轮分组 Tensor Core tile、实测校准和正式性能入口已实现，当前源码的 H100 验收与测量待执行。证据见 `reports/core_acceptance.json`，状态见 `reports/implementation_status.json`。
+已有代码包括：只读预检、DeepSeek GPQA token ID 准备、decode 计数、EP 路由去重/合并 CPU 参考，以及原生 EP4 Docker 启动入口。现已加入 CUDA IPC persistent 功能核心、GPU 端 c/K 选择和连续 stealing、raw MXFP4 专家加载器，以及源码核对后的 SGLang 0.5.17 eager adapter。默认使用当前服务器已有的 `lmsysorg/sglang:v0.5.17`，工作目录为 `<repo>/work`。后端名为 `weave_functional`：历史 H100 CUDA 编译、两轮四卡小张量功能与 core graph replay 已通过并核对原始报告；修正后的 BF16 WMMA、真实 checkpoint 与 batch=1 SGLang graph 在 e59e064 的服务器摘要中报告通过。9906ca7c源码的完整rank/coverage、实测bank及GPQA报告已回传；新增诊断源码需要重新执行源码绑定的H100 gates。证据见 `reports/core_acceptance.json`，状态见 `reports/implementation_status.json`。
 
 当前服务验收中，logprob 和 top-k 候选集合仅保存诊断，不作为通过/失败门限；实际生成 token 一致性、checkpoint、43 层执行与 graph replay 按验收入口检查。
 
-`tests/gpu/check_checkpoint.py` 覆盖全部 43 层 scalar/WMMA/tiled 差分、实际窃取设备计数和 core graph；另有分组 K=1/2/4/8 检查。`python3 scripts/run_full_experiment.py` 在 GPUQ 分配内串起新源码 gate、校准、原生 EP4、Weave eager/graph 验收以及正式两组 GPQA。当前 CUDA 源码 digest 已变化，e59e064 的通过摘要不能替代本轮 gate；实测 profile 及 GPQA 速度对照仍待服务器生成。
+`tests/gpu/check_checkpoint.py` 覆盖全部 43 层 scalar/WMMA/tiled 差分、实际窃取设备计数和 core graph；另有分组 K=1/2/4/8 检查。`python3 scripts/run_full_experiment.py` 在 GPUQ 分配内串起新源码 gate、校准、原生 EP4、Weave eager/graph 验收以及正式两组 GPQA。新增诊断改变CUDA源码digest，旧profile和验收不能代替新gate；使用 --execution-profile 运行时，计时结果明确标为instrumented_diagnostic。
 
 旧 Qwen 输入长度审计的本地复核（不适用于 DeepSeek）：
 
@@ -49,4 +52,4 @@ python3 -m pip install -r requirements-data.txt
 python3 scripts/audit_gpqa_lengths.py --tokenizer-dir /mnt/public_data/Qwen/Qwen3.5-35B-A3B
 ```
 
-DeepSeek Think High 输入审计覆盖 GPQA Main 448 题：中位数 191、最长 2550 tokens，无 8K prefill 样本。用 `python3 scripts/prepare_gpqa.py --model-dir <DeepSeek模型目录>` 生成两组共用的 token ID 清单；清单位于 Git 忽略目录。上述数字是 CPU 编码结果，不是 GPU 生成或速度结果。原始数据与生成文本不加入 Git；同步来源和下载脚本。[私有 GitHub 仓库](https://github.com/rh2844417786/weave-deepseek-v4-flash) 已创建，DeepSeek 实际 SGLang EP 启动配置尚待核验。
+DeepSeek Think High 输入审计覆盖 GPQA Main 448 题：中位数 191、最长 2550 tokens，无 8K prefill 样本。用 `python3 scripts/prepare_gpqa.py --model-dir <DeepSeek模型目录>` 生成两组共用的 token ID 清单；清单位于 Git 忽略目录。上述数字是 CPU 编码结果，不是 GPU 生成或速度结果。原始数据与生成文本不加入 Git；同步来源和下载脚本。[私有 GitHub 仓库](https://github.com/rh2844417786/weave-deepseek-v4-flash) 已创建，DeepSeek 原生与自研后端的EP4实际启动记录已随服务器报告归档。

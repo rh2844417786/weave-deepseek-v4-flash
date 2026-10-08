@@ -16,6 +16,7 @@
 #include "scheduler.h"
 #include "expert_numerics.h"
 #include "tile_scheduler.h"
+#include "execution_trace.h"
 
 #define CUDA_OK(call) do { cudaError_t result=(call); TORCH_CHECK(result==cudaSuccess, "CUDA failure: ", cudaGetErrorString(result)); } while(0)
 namespace {
@@ -35,6 +36,8 @@ struct alignas(256) Control {
   int actual_tiles, actual_stolen_tiles, ngroups, tile_cursor;
   int workload[7], groups_by_chunks[MAX_K];
   int starts[MAX_K], ends[MAX_K], next[MAX_K], computed[MAX_K];
+  U64 trace_sequence;
+  int trace_slot;
 };
 struct Payload { int origin, token; };
 struct Task { int origin, token, slot, expert, payload, chunk; };
@@ -65,6 +68,46 @@ struct Config {
   int nprofile, fixed_c, fixed_k, fixed_steal, tensor_core, calibration, max_groups;
   float clamp;
   U64 timeout;
+  U64 *trace_heads, *trace_totals, *trace_records;
+  int trace_stride, trace_capacity, trace_phase, trace_layer;
+};
+
+// Disabled specialization carries no timer array or probe instructions.
+template<bool Enabled> struct DeviceTrace;
+template<> struct DeviceTrace<false> {
+  __device__ DeviceTrace(bool) {}
+  __device__ U64 now() const { return 0; }
+  __device__ void stamp(int) {}
+  __device__ void elapsed(int,U64) {}
+  __device__ void count(int,int=1) {}
+  __device__ void finish(Config) {}
+};
+template<> struct DeviceTrace<true> {
+  U64 row[weave::trace::FIELDS];
+  bool active;
+  __device__ DeviceTrace(bool sample):active(sample && threadIdx.x==0) {
+    if(active) {
+      for(int j=0;j<weave::trace::FIELDS;++j) row[j]=0;
+      row[weave::trace::Begin]=now(); row[weave::trace::Samples]=1;
+    }
+  }
+  __device__ U64 now() const {
+    U64 value=0;
+    if(active) asm volatile("mov.u64 %0, %%globaltimer;" : "=l"(value) :: "memory");
+    return value;
+  }
+  __device__ void stamp(int field) { if(active) row[field]=now(); }
+  __device__ void elapsed(int field,U64 start) { if(active) row[field]+=now()-start; }
+  __device__ void count(int field,int value=1) { if(active) row[field]+=value; }
+  __device__ void finish(Config cfg) {
+    if(!active) return;
+    row[weave::trace::End]=now();
+    row[weave::trace::Total]=row[weave::trace::End]-row[weave::trace::Begin];
+    auto ctl=cfg.peers[cfg.rank].ctl;
+    size_t offset=(size_t(ctl->trace_slot)*(cfg.workers+1)+blockIdx.x)*weave::trace::FIELDS;
+    for(int j=0;j<weave::trace::FIELDS;++j) cfg.trace_records[offset+j]=row[j];
+    weave::trace::accumulate(cfg.trace_totals+size_t(blockIdx.x)*weave::trace::FIELDS,row);
+  }
 };
 
 struct Layout {
@@ -118,7 +161,7 @@ __device__ void wait_count(int* p,int n,U64 timeout) {
   U64 start=clock64();
   while(load_i(p)<n) { check(clock64()-start<timeout); __nanosleep(64); }
 }
-__global__ void prepare(Control* p,int capacity) {
+template<bool Profile> __global__ void prepare(Control* p,int capacity,U64* heads,int stride,int ring_capacity) {
   check(p->n>=0 && p->n<=capacity);
   p->dispatch_next=p->dispatch_done=p->return_next=p->return_done=p->final_next=p->ctas_done=0;
   p->npayloads=p->ntasks=p->local_pairs=p->remote_pairs=p->remote_unique=0;
@@ -127,6 +170,11 @@ __global__ void prepare(Control* p,int capacity) {
   for(int j=0;j<7;++j) p->workload[j]=0;
   for(int j=0;j<MAX_K;++j) p->groups_by_chunks[j]=0;
   for(int k=0;k<MAX_K;++k) p->starts[k]=p->ends[k]=p->next[k]=p->computed[k]=0;
+  if constexpr(Profile) {
+    p->trace_sequence=heads[0]++;
+    p->trace_slot=weave::trace::sample_slot(p->trace_sequence,stride,ring_capacity);
+    if(p->trace_slot>=0) ++heads[1];
+  }
   __threadfence_system();
   release(&p->ready,acquire(&p->ready)+1);
 }
@@ -181,10 +229,12 @@ __device__ float wmma_dot(const __nv_bfloat16* x,const unsigned char* w,
   __syncwarp();
   return result;
 }
-__device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
+template<bool Profile> __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid,DeviceTrace<Profile>& trace) {
   View v=cfg.peers[cfg.rank]; Task t=v.tasks[idx];
+  U64 start=trace.now();
   if(threadIdx.x==0) wait_epoch(&v.cache_ready[t.payload],epoch,cfg.timeout);
   __syncthreads();
+  trace.elapsed(weave::trace::InputWait,start); start=trace.now();
   int lane=threadIdx.x%32, warp=threadIdx.x/32;
   const __nv_bfloat16* x=v.cache+size_t(t.payload)*cfg.h;
   if(cfg.tensor_core) {
@@ -233,6 +283,7 @@ __device__ void compute_task(Config cfg,int idx,U64 epoch,__nv_bfloat16* mid) {
   __threadfence();
   if(threadIdx.x==0) { add_i(&v.ctl->computed[t.chunk],1); add_i(&v.ctl->actual_computed,1); }
   __syncthreads();
+  trace.elapsed(weave::trace::ComputeWork,start);
 }
 
 struct DeviceLoad {
@@ -284,16 +335,18 @@ __device__ void group_mma(Config cfg,int group_id,const Group& group,int project
   __syncwarp();
 }
 
-__device__ void compute_tile(Config cfg,weave::TileClaim claim,U64 epoch,__nv_bfloat16* mid) {
+template<bool Profile> __device__ void compute_tile(Config cfg,weave::TileClaim claim,U64 epoch,__nv_bfloat16* mid,DeviceTrace<Profile>& trace) {
   View view=cfg.peers[cfg.rank]; Group group=view.groups[claim.group];
   int lane=threadIdx.x%32,warp=threadIdx.x/32;
   int first=claim.column*weave::TILE_COLUMNS+warp*16;
   auto scratch=mid+cfg.i+warp*1024;
   auto result=reinterpret_cast<float*>(scratch+512);
+  U64 start=trace.now();
   if(threadIdx.x==0 && claim.stage==0)
     for(int row=0;row<group.rows;++row)
       wait_epoch(&view.cache_ready[view.tasks[group.tasks[row]].payload],epoch,cfg.timeout);
   __syncthreads();
+  trace.elapsed(weave::trace::InputWait,start); start=trace.now();
   if(claim.stage==0) {
     float gate[8];
     if(cfg.calibration!=1) {
@@ -331,15 +384,19 @@ __device__ void compute_tile(Config cfg,weave::TileClaim claim,U64 epoch,__nv_bf
     }
   }
   __syncthreads();
+  trace.elapsed(weave::trace::ComputeWork,start);
+  trace.count(weave::trace::Tiles);
 }
 
-__global__ void persistent(Config cfg) {
+template<bool Profile> __global__ void persistent(Config cfg) {
   View v=cfg.peers[cfg.rank]; Control* p=v.ctl;
   U64 epoch=acquire(&p->ready);
   extern __shared__ __align__(32) unsigned char shared_bytes[];
   auto mid=reinterpret_cast<__nv_bfloat16*>(shared_bytes);
   __shared__ int job;
   __shared__ weave::TileClaim tile_job;
+  DeviceTrace<Profile> trace(Profile && p->trace_slot>=0);
+  U64 phase_start=trace.now();
   if(blockIdx.x==0 && threadIdx.x==0) {
     for(int origin=0;origin<cfg.ep;++origin) {
       View from=cfg.peers[origin]; wait_epoch(&from.ctl->ready,epoch,cfg.timeout);
@@ -420,13 +477,25 @@ __global__ void persistent(Config cfg) {
     p->workload[2]=p->remote_unique; p->workload[3]=p->npayloads;
     p->workload[4]=p->ntasks; p->workload[5]=p->ngroups;
     p->workload[6]=p->ngroups*(weave::tile_columns(cfg.i)+weave::tile_columns(cfg.h));
+    if constexpr(Profile) if(p->trace_slot>=0) {
+      auto metadata=cfg.trace_records+(size_t(p->trace_slot)*(cfg.workers+1)+cfg.workers)*weave::trace::FIELDS;
+      for(int j=0;j<weave::trace::FIELDS;++j) metadata[j]=0;
+      U64 values[]={p->trace_sequence,epoch,U64(p->n),U64(p->c),U64(p->k),U64(p->steal),
+        U64(p->npayloads),U64(p->local_pairs),U64(p->remote_pairs),U64(p->remote_unique),
+        U64(p->ntasks),U64(p->ngroups),U64(p->workload[6]),U64(cfg.trace_phase),U64(cfg.trace_layer)};
+      for(int j=0;j<15;++j) metadata[j]=values[j];
+      ++cfg.trace_heads[2+p->c*MAX_K+p->k-1];
+    }
+    trace.elapsed(weave::trace::PlanWork,phase_start);
     release(&p->planned,epoch);
   }
   if(threadIdx.x==0) wait_epoch(&p->planned,epoch,cfg.timeout);
   __syncthreads();
+  trace.elapsed(weave::trace::PlanWait,phase_start); trace.stamp(weave::trace::Planned);
   bool comm=blockIdx.x<unsigned(p->c);
   // Dispatch is not chunked: pull each unique inbound token exactly once.
   if(comm || p->c==0) {
+    trace.stamp(weave::trace::DispatchBegin); phase_start=trace.now();
     while(true) {
       if(threadIdx.x==0) job=add_i(&p->dispatch_next,1);
       __syncthreads(); if(job>=p->npayloads) break;
@@ -437,60 +506,78 @@ __global__ void persistent(Config cfg) {
       if(threadIdx.x==0) { release(&v.cache_ready[job],epoch); add_i(&p->dispatch_done,1); }
       __syncthreads();
     }
+    trace.elapsed(weave::trace::DispatchWork,phase_start); phase_start=trace.now();
     if(threadIdx.x==0) wait_count(&p->dispatch_done,p->npayloads,cfg.timeout);
     __syncthreads();
+    trace.elapsed(weave::trace::DispatchWait,phase_start); trace.stamp(weave::trace::DispatchEnd);
   }
   // One consecutive steal window immediately after dispatch.
   int budget=comm?p->steal:0x7fffffff;
+  trace.stamp(weave::trace::ComputeBegin);
   if(cfg.tensor_core==2) {
     U64 start=clock64();
     for(int completed=0;completed<budget;) {
+      phase_start=trace.now();
       if(threadIdx.x==0) tile_job=weave::claim_tile(v.tile_states,p->ngroups,
           weave::tile_columns(cfg.i),weave::tile_columns(cfg.h),DeviceLoad{},DeviceAdd{},&p->tile_cursor);
       __syncthreads();
-      if(tile_job.group==-1) break;
+      if(tile_job.group==-1) { trace.elapsed(weave::trace::ComputeQueue,phase_start); break; }
       if(tile_job.group==-2) {
         check(clock64()-start<cfg.timeout); __nanosleep(64);
         // All warps must finish reading this shared claim before thread0
         // publishes the next one; a warp-only sleep is not convergence.
-        __syncthreads(); continue;
+        __syncthreads(); trace.elapsed(weave::trace::ComputeQueue,phase_start); continue;
       }
-      compute_tile(cfg,tile_job,epoch,mid);
+      trace.elapsed(weave::trace::ComputeQueue,phase_start);
+      compute_tile(cfg,tile_job,epoch,mid,trace);
       if(comm && threadIdx.x==0) { add_i(&p->actual_stolen,1); add_i(&p->actual_stolen_tiles,1); }
+      if(comm) trace.count(weave::trace::Stolen);
       ++completed;
     }
   } else {
     for(int stolen=0;stolen<budget;++stolen) {
+      phase_start=trace.now();
       if(threadIdx.x==0) job=claim_task(p);
-      __syncthreads(); if(job<0) break;
-      compute_task(cfg,job,epoch,mid);
+      __syncthreads(); trace.elapsed(weave::trace::ComputeQueue,phase_start); if(job<0) break;
+      compute_task(cfg,job,epoch,mid,trace);
       if(comm && threadIdx.x==0) add_i(&p->actual_stolen,1);
     }
   }
+  trace.stamp(weave::trace::ComputeEnd); trace.stamp(weave::trace::ReturnBegin);
   // Chunk combine can overlap subsequent chunks' computation. Compute workers
   // join the tail after exhausting the shared compute queue.
   while(true) {
+    phase_start=trace.now();
     if(threadIdx.x==0) job=add_i(&p->return_next,1);
-    __syncthreads(); if(job>=p->ntasks) break;
+    __syncthreads(); trace.elapsed(weave::trace::ReturnQueue,phase_start); if(job>=p->ntasks) break;
     Task task=v.tasks[job];
+    phase_start=trace.now();
     if(threadIdx.x==0) wait_count(&p->computed[task.chunk],p->ends[task.chunk]-p->starts[task.chunk],cfg.timeout);
-    __syncthreads(); View to=cfg.peers[task.origin];
+    __syncthreads(); trace.elapsed(weave::trace::ReturnWait,phase_start);
+    phase_start=trace.now(); View to=cfg.peers[task.origin];
     size_t slot=size_t(task.token)*cfg.topk+task.slot;
     for(int col=threadIdx.x;col<cfg.h;col+=blockDim.x)
       to.returned[slot*cfg.h+col]=v.task_out[size_t(job)*cfg.h+col];
     __syncthreads(); __threadfence_system();
     if(threadIdx.x==0) { release(&to.returned_ready[slot],epoch); add_i(&p->return_done,1); }
     __syncthreads();
+    trace.elapsed(weave::trace::ReturnWork,phase_start); trace.count(weave::trace::Returns);
   }
   // No CTA may wait for remote returns while this rank still owes a return.
+  phase_start=trace.now();
   if(threadIdx.x==0) wait_count(&p->return_done,p->ntasks,cfg.timeout);
   __syncthreads();
+  trace.elapsed(weave::trace::ReturnWait,phase_start);
+  trace.stamp(weave::trace::ReturnEnd); trace.stamp(weave::trace::ReduceBegin);
   while(true) {
+    phase_start=trace.now();
     if(threadIdx.x==0) job=add_i(&p->final_next,1);
-    __syncthreads(); if(job>=p->n) break;
+    __syncthreads(); trace.elapsed(weave::trace::ReduceWork,phase_start); if(job>=p->n) break;
+    phase_start=trace.now();
     if(threadIdx.x==0) for(int slot=0;slot<cfg.topk;++slot)
       wait_epoch(&v.returned_ready[size_t(job)*cfg.topk+slot],epoch,cfg.timeout);
     __syncthreads();
+    trace.elapsed(weave::trace::ReduceWait,phase_start); phase_start=trace.now();
     for(int col=threadIdx.x;col<cfg.h;col+=blockDim.x) {
       float sum=0.;
       for(int slot=0;slot<cfg.topk;++slot) {
@@ -500,12 +587,16 @@ __global__ void persistent(Config cfg) {
       v.output[size_t(job)*cfg.h+col]=__float2bfloat16_rn(sum);
     }
     __syncthreads();
+    trace.elapsed(weave::trace::ReduceWork,phase_start); trace.count(weave::trace::Rows);
   }
+  trace.stamp(weave::trace::ReduceEnd); trace.stamp(weave::trace::EndWaitBegin);
+  phase_start=trace.now();
   __threadfence_system();
   if(threadIdx.x==0) {
     if(add_i(&p->ctas_done,1)==cfg.workers-1) release(&p->done,epoch);
     for(int peer=0;peer<cfg.ep;++peer) wait_epoch(&cfg.peers[peer].ctl->done,epoch,cfg.timeout);
   }
+  trace.elapsed(weave::trace::EndWait,phase_start); trace.finish(cfg);
 }
 
 class Workspace : public std::enable_shared_from_this<Workspace> {
@@ -515,6 +606,8 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
   void* base=nullptr;
   void* pointers[MAX_EP]{};
   bool connected=false;
+  torch::Tensor trace_heads,trace_totals,trace_records;
+  int trace_layers=0,trace_stride=0,trace_capacity=0;
   Workspace(int rank_,int ep_,int cap_,int h_,int i_,int topk_,int experts_)
     : rank(rank_),ep(ep_),cap(cap_),h(h_),i(i_),topk(topk_),experts(experts_),layout(ep_,cap_,h_,i_,topk_,experts_/(ep_>0?ep_:1)) {
     TORCH_CHECK(ep>=1 && ep<=MAX_EP && rank>=0 && rank<ep && cap>0 && cap<=8192);
@@ -566,7 +659,18 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
   torch::Tensor work_counters() { return tensor(layout.control+offsetof(Control,actual_stolen),{2},torch::kInt32); }
   torch::Tensor workload() { return tensor(layout.control+offsetof(Control,workload),{7},torch::kInt32); }
   torch::Tensor tile_counters() { return tensor(layout.control+offsetof(Control,actual_tiles),{2},torch::kInt32); }
-  void run(const std::vector<torch::Tensor>& w,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp,int tensor_core,int calibration) {
+  void configure_trace(torch::Tensor heads,torch::Tensor totals,torch::Tensor records,int layers,int stride,int capacity) {
+    TORCH_CHECK(!trace_heads.defined(),"execution profile buffers are already configured; graph addresses must remain stable");
+    TORCH_CHECK(layers>=1 && layers<=43 && stride>=1 && stride<=65536 && capacity>=1 && capacity<=64);
+    std::vector<torch::Tensor> buffers={heads,totals,records};
+    for(auto& t:buffers) TORCH_CHECK(t.is_cuda() && t.get_device()==device && t.is_contiguous() && t.scalar_type()==torch::kInt64,"bad trace buffer");
+    TORCH_CHECK(heads.sizes().vec()==std::vector<int64_t>({layers*2,2+workers*MAX_K}));
+    TORCH_CHECK(totals.sizes().vec()==std::vector<int64_t>({layers*2,workers,weave::trace::FIELDS}));
+    TORCH_CHECK(records.sizes().vec()==std::vector<int64_t>({layers*2,capacity,workers+1,weave::trace::FIELDS}));
+    trace_heads=heads; trace_totals=totals; trace_records=records;
+    trace_layers=layers; trace_stride=stride; trace_capacity=capacity;
+  }
+  void run(const std::vector<torch::Tensor>& w,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp,int tensor_core,int calibration,int trace_layer,int trace_phase) {
     c10::cuda::CUDAGuard guard(device);
     TORCH_CHECK(connected && w.size()==6 && timeout_seconds>0 && clamp>0);
     TORCH_CHECK(c>=-1 && c<workers && k>=1 && k<=8 && steal>=0);
@@ -578,7 +682,11 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     TORCH_CHECK(profile.is_cuda() && profile.get_device()==device && profile.is_contiguous() && profile.scalar_type()==torch::kFloat64 && profile.dim()==2 && profile.size(1)==6);
     TORCH_CHECK(c>=0 || profile.size(0)>0,"dynamic scheduling requires measured profile rows");
     int shared_bytes=i*2+(tensor_core?8192:0);
-    int occupancy=0; CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&occupancy,persistent,THREADS,shared_bytes));
+    bool tracing=trace_layer>=0;
+    TORCH_CHECK(!tracing || (trace_heads.defined() && trace_layer<trace_layers && trace_phase>=0 && trace_phase<=1 && tensor_core==2 && calibration==0),"invalid configured tiled trace layer/phase");
+    int occupancy=0;
+    if(tracing) CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&occupancy,persistent<true>,THREADS,shared_bytes));
+    else CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&occupancy,persistent<false>,THREADS,shared_bytes));
     TORCH_CHECK(occupancy>=1,"persistent worker cannot reside on an SM");
     // cudaDeviceProp::clockRate was removed in CUDA 13; the driver attribute
     // returns the same kHz value.
@@ -593,9 +701,21 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     cfg.tensor_core=tensor_core; cfg.calibration=calibration;
     cfg.max_groups=weave::tile_group_capacity(ep*cap*topk,experts/ep,MAX_K);
     cfg.timeout=U64(timeout_seconds*clock_khz*1000.); cfg.clamp=clamp;
+    if(tracing) {
+      int plane=trace_phase*trace_layers+trace_layer;
+      cfg.trace_heads=reinterpret_cast<U64*>(trace_heads.data_ptr<int64_t>())+size_t(plane)*(2+workers*MAX_K);
+      cfg.trace_totals=reinterpret_cast<U64*>(trace_totals.data_ptr<int64_t>())+size_t(plane)*workers*weave::trace::FIELDS;
+      cfg.trace_records=reinterpret_cast<U64*>(trace_records.data_ptr<int64_t>())+size_t(plane)*trace_capacity*(workers+1)*weave::trace::FIELDS;
+      cfg.trace_stride=trace_stride;cfg.trace_capacity=trace_capacity;cfg.trace_phase=trace_phase;cfg.trace_layer=trace_layer;
+    }
     auto stream=at::cuda::getCurrentCUDAStream(device).stream();
-    prepare<<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap);
-    persistent<<<workers,THREADS,shared_bytes,stream>>>(cfg);
+    if(tracing) {
+      prepare<true><<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap,cfg.trace_heads,trace_stride,trace_capacity);
+      persistent<true><<<workers,THREADS,shared_bytes,stream>>>(cfg);
+    } else {
+      prepare<false><<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap,nullptr,0,0);
+      persistent<false><<<workers,THREADS,shared_bytes,stream>>>(cfg);
+    }
     CUDA_OK(cudaGetLastError());
   }
 };
@@ -611,5 +731,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME,m) {
     .def_property_readonly("work_counters",&Workspace::work_counters)
     .def_property_readonly("workload",&Workspace::workload)
     .def_property_readonly("tile_counters",&Workspace::tile_counters)
+    .def("configure_trace",&Workspace::configure_trace)
     .def("run",&Workspace::run);
 }

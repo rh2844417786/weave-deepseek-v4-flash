@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT))
 from src.weave.runtime_contract import load_contract
 from src.weave.container_lifecycle import run_container
 from src.weave.gpu_allocation import allocated_gpus
+from src.weave.execution_profile import add_profile_arguments,profile_options,profile_configuration
 CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
@@ -59,6 +60,10 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         if args.profile:
             relative = args.profile.relative_to(args.work_root)
             docker += ['-e', f'WEAVE_PROFILE=/work/{relative}']
+        if args.execution_profile:
+            docker += ['-e','WEAVE_EXECUTION_PROFILE=1',
+                       '-e',f'WEAVE_EXECUTION_PROFILE_STRIDE={args.execution_profile_stride}',
+                       '-e',f'WEAVE_EXECUTION_PROFILE_CAPACITY={args.execution_profile_capacity}']
     command = docker + [image, args.runtime_python, '/workspace/scripts/check_runtime.py',
         '--stage', 'adapter' if functional else 'native', '--output-dir', f'/work/{run_name}',
         '--exec-command', args.runtime_python, '-m', 'sglang.launch_server',
@@ -96,7 +101,14 @@ def main() -> int:
     parser.add_argument('--request-timing', action='store_true', help='shared native token-ready timing for formal groups')
     parser.add_argument('--checkpoint-content-sha256', help='verified original checkpoint digest for measured tiled profiles')
     parser.add_argument('--execute', action='store_true', help='launch Docker; default only prints the candidate command')
+    add_profile_arguments(parser)
     args = parser.parse_args()
+    try: profile_options(args)
+    except ValueError as error: parser.error(str(error))
+    if args.execution_profile and (args.backend!='weave_functional' or args.kernel!='tiled'):
+        parser.error('execution-profile requires weave_functional and tiled kernel')
+    if args.execution_profile and args.execute and args.profile is None:
+        parser.error('execution-profile execution requires a measured profile bank and checkpoint identity')
     if args.checkpoint_content_sha256 and not re.fullmatch(r'[0-9a-f]{64}', args.checkpoint_content_sha256):
         parser.error('checkpoint-content-sha256 must be a full SHA256 digest')
     args.decode_graph = args.decode_graph or ('disabled' if args.backend == 'weave_functional' else 'full')
@@ -152,6 +164,7 @@ def main() -> int:
         'gpuq_job_id': os.environ.get('GPUQ_JOB_ID'),
         'docker_argv': command, 'generation_status': 'not_verified',
         'backend': args.backend,
+        'execution_profile_configuration':profile_configuration(args),
         'runtime_contract': CONTRACT, 'runtime_report': str(run_dir/'runtime.json'),
         'ep_correctness_status': 'not_verified', 'performance_status': 'not_run',
         'exit_code': None,

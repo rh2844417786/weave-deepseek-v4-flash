@@ -19,6 +19,7 @@ from src.weave.service_acceptance import validate_checkpoint_gate
 from src.weave.checkpoint_identity import checkpoint_identity, checkpoint_stats
 from scripts.check_sglang_service import wait_ready, check_service
 from src.weave.gpu_allocation import allocated_gpus
+from src.weave.execution_profile import add_profile_arguments,profile_options,profile_configuration
 
 
 def assert_ports_free(ports):
@@ -105,7 +106,12 @@ def main():
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='wmma')
     parser.add_argument('--controller-lifecycle', type=Path, help='outer orchestrator cleanup handshake file')
     parser.add_argument('--profile', type=Path, help='measured profile bank for dynamic tiled model validation')
+    add_profile_arguments(parser)
     args = parser.parse_args()
+    try: profiling_options=profile_options(args)
+    except ValueError as error: parser.error(str(error))
+    if args.execution_profile and (args.kernel!='tiled' or args.profile is None):
+        parser.error('execution-profile requires tiled and a measured profile bank')
     try: allocation=allocated_gpus()
     except ValueError as error: parser.error(str(error))
     os.environ['CUDA_VISIBLE_DEVICES']=allocation.csv
@@ -137,6 +143,7 @@ def main():
     report = {'status': 'running', 'source_sha256': kernel_source_sha256(),
               'physical_gpus':list(allocation.ids),'host_gpu_allocation':allocation.csv,
               'kernel': args.kernel, 'scope': 'correctness_and_graph_acceptance', 'performance': 'not_run',
+              'execution_profile_configuration':profile_configuration(args),
               'steps': {}, 'server_runs': {},
               'acceptance_policy': {'logprob': 'record_only', 'top_logprob_support': 'record_only'}}
     report_path = out/'acceptance.json'
@@ -181,6 +188,7 @@ def main():
                        '--port', str(args.port), '--evidence-port-base', str(args.evidence_port_base), '--run-name', name]
             if args.profile and backend == 'weave_functional':
                 command += ['--profile', str(args.profile), '--checkpoint-content-sha256', identity['sha256']]
+            if backend=='weave_functional': command+=profiling_options
             report['server_runs'][label] = str(args.work_root/name)
             report_path.write_text(json.dumps(report, indent=2)+'\n')
             with (out/f'{label}-launcher.log').open('w') as log:
