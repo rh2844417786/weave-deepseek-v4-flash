@@ -41,6 +41,7 @@ def export_run(run_dir,destination):
         if source.is_file(): files[name]=source.read_bytes()
     add(run_dir/'comparison.json','comparison.json')
     for group in ('native','weave'): add(run_dir/group/'summary.json',f'{group}/summary.json')
+    for file in run_dir.glob('calibration-*-lifecycle.json'): add(file,'lifecycle/'+file.name)
     if report.get('core_run_dir'):
         core=Path(report['core_run_dir'])
         for name in ('runtime.json','checkpoint_identity.json','container_lifecycle.json'):
@@ -54,6 +55,8 @@ def export_run(run_dir,destination):
             for prefix in ('profile-bank-rank','timings-rank','calibration-rank','progress-rank','diagnostic-rank'):
                 add(cal/f'{prefix}{rank}.json',f'calibration/{prefix}{rank}.json')
         for file in cal.glob('failure-rank*.json'): add(file,'calibration/'+file.name)
+        for name in ('launch.json','gpu-before.json','gpu-after.json'):
+            add(cal/name,'calibration/'+name)
     if report.get('model_acceptance_dir'):
         model=Path(report['model_acceptance_dir'])
         for label in ('weave_eager','weave_graph'):

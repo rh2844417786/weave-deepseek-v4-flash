@@ -2,6 +2,8 @@
 import hashlib
 import json
 from pathlib import Path
+import os
+import tempfile
 
 from .calibration import load_verified_profile_bundle
 from .runtime_contract import load_contract
@@ -12,6 +14,31 @@ ALLOWED={'core':{'passed'},'calibration':{'measured'},'model_acceptance':{'passe
          'native_formal':{'complete','deadline','incomplete'},
          'weave_formal':{'complete','deadline','incomplete'},
          'comparison':{'compared','no_common_completed'}}
+
+
+def prepare_export_directory(work_root,run_name,export_root=None):
+    """Probe the selected disk before GPU work; publish into a fresh directory.
+
+    Default to the working disk because the checkout may be a full/read-only
+    NAS. The caller copies only the public export to a writable Git clone.
+    """
+    root=Path(export_root) if export_root is not None else Path(work_root)/'public-reports'
+    if not root.is_absolute(): raise ValueError('absolute export-root required')
+    if Path(run_name).name!=run_name or run_name in ('','.','..'):
+        raise ValueError('fresh export run basename required')
+    root=root.resolve();destination=root/run_name
+    private_run=Path(work_root).resolve()/run_name
+    if (destination==private_run or destination.is_relative_to(private_run)
+            or private_run.is_relative_to(destination)):
+        raise ValueError('export destination must not overlap the private run directory')
+    if destination.exists(): raise FileExistsError('fresh export destination required')
+    try:
+        root.mkdir(parents=True,exist_ok=True)
+        with tempfile.NamedTemporaryFile(dir=root,prefix='.weave-export-probe-') as stream:
+            stream.write(b'export preflight\n');stream.flush();os.fsync(stream.fileno())
+    except OSError as error:
+        raise RuntimeError(f'export-root is not writable: {root}; select a writable local disk with --export-root: {error}') from error
+    return destination
 
 
 class ExperimentLedger:

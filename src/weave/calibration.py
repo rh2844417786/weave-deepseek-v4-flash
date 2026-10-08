@@ -12,6 +12,9 @@ import tempfile
 import time
 import traceback
 import re
+import subprocess
+from datetime import datetime,timezone
+import xml.etree.ElementTree as ET
 
 KERNEL = 'tiled_mxfp4_tile_v1'
 BUCKETS = (1, 64, 256, 1024, 2048)
@@ -62,6 +65,34 @@ def atomic_json(path, value):
             temporary.unlink(missing_ok=True)
 
 
+def capture_gpu_snapshot():
+    """Optional host-driver context for the four leased physical devices.
+
+    Select only hardware fields; do not publish unrelated process inventories.
+    Missing tools/fields are explicit and never become an acceptance gate.
+    """
+    value={'captured_utc':datetime.now(timezone.utc).isoformat(),'physical_gpus':[4,5,6,7]}
+    try:
+        output=subprocess.run(['nvidia-smi','-q','-x','-i','4,5,6,7'],
+            capture_output=True,text=True,timeout=10,check=True)
+        xml=ET.fromstring(output.stdout)
+        devices=[]
+        for gpu in xml.findall('gpu'):
+            ecc=gpu.find('ecc_errors')
+            devices.append({'pci_bus_id':gpu.get('id'),'uuid':gpu.findtext('uuid'),
+                'name':gpu.findtext('product_name'),'sm_clock':gpu.findtext('clocks/sm_clock'),
+                'max_sm_clock':gpu.findtext('max_clocks/sm_clock'),
+                'temperature':gpu.findtext('temperature/gpu_temp'),
+                'ecc':ET.tostring(ecc,encoding='unicode') if ecc is not None else None})
+        if not devices: raise ValueError('nvidia-smi returned no selected devices')
+        return dict(value,status='captured',devices=devices)
+    except (OSError,subprocess.SubprocessError,ET.ParseError,ValueError) as error:
+        stderr=getattr(error,'stderr',None)
+        if isinstance(stderr,bytes): stderr=stderr.decode('utf-8',errors='replace')
+        return dict(value,status='unavailable',error=f'{type(error).__name__}: {error}',
+                    stderr=stderr[-1000:] if isinstance(stderr,str) else None)
+
+
 class CalibrationJournal:
     """Durable active-case marker; GPU stages stay local until success/failure.
 
@@ -69,7 +100,8 @@ class CalibrationJournal:
     rank launches CUDA. Failure recording uses CPU-only I/O after a poisoned
     CUDA context and retains the first local traceback.
     """
-    def __init__(self,directory,identity,invocation,start,budget,*,clock=time.monotonic):
+    def __init__(self,directory,identity,invocation,start,budget,*,clock=time.monotonic,
+                 initial_completed_cases=0):
         if not re.fullmatch(r'[A-Za-z0-9_.-]{1,128}',invocation):
             raise ValueError('safe calibration invocation ID required')
         self.directory=Path(directory)
@@ -77,33 +109,56 @@ class CalibrationJournal:
         self.value={'status':'measuring','rank':identity['rank'],'invocation_id':invocation,
                     'measuring_started_monotonic':start,'budget_seconds':budget,
                     'source_sha256':identity['source_sha256'],'identity':identity,
-                    'active_case':None,'iteration':None,'gpu_stage':'ready','completed_cases':0}
+                    'active_case':None,'iteration':None,'gpu_stage':'ready',
+                    'initial_completed_cases':initial_completed_cases,
+                    'completed_cases':initial_completed_cases,'committed_this_invocation':0,'iterations':[]}
         self.path=self.directory/f'progress-rank{identity["rank"]}.json'
         self.failure_path=self.directory/f'failure-rank{identity["rank"]}-{invocation}.json'
 
     def save(self): atomic_json(self.path,self.value)
 
-    def begin(self,case,iteration,*,elapsed_seconds,completed_cases):
+    def begin(self,case,iteration,*,elapsed_seconds,completed_cases,kernel_timeout_seconds=None):
+        if self.value['active_case']!=case: self.value['iterations']=[]
         self.value.update(active_case=dict(case),iteration=iteration,gpu_stage='before_kernel_iteration',
                           elapsed_seconds=elapsed_seconds,completed_cases=completed_cases,
+                          committed_this_invocation=completed_cases-self.value['initial_completed_cases'],
+                          gpu_iteration_started_monotonic=None,gpu_iteration_finished_monotonic=None,
+                          gpu_iteration_elapsed_seconds=None,kernel_timeout_seconds=kernel_timeout_seconds,
+                          launch_blocking=os.environ.get('CUDA_LAUNCH_BLOCKING','0')=='1',
                           remaining_seconds=self.value['budget_seconds']-elapsed_seconds)
         self.save()
 
     def stage(self,name): self.value['gpu_stage']=name
 
+    def iteration_record(self):
+        names=('iteration','gpu_stage','gpu_iteration_started_monotonic',
+               'gpu_iteration_finished_monotonic','gpu_iteration_elapsed_seconds',
+               'kernel_timeout_seconds','launch_blocking')
+        return {name:self.value.get(name) for name in names}
+
+    def record_completed_iteration(self):
+        self.value['iterations'].append(self.iteration_record())
+        self.save()
+
     def fail(self,error):
         if self.failed: return
         self.failed=True
         elapsed=self.clock()-self.start
+        iteration_start=self.value.get('gpu_iteration_started_monotonic')
+        iteration_end=self.value.get('gpu_iteration_finished_monotonic')
         self.value.update(status='failed',elapsed_seconds=elapsed,
             remaining_seconds=self.value['budget_seconds']-elapsed,
+            gpu_iteration_elapsed_seconds=(iteration_end if iteration_end is not None else self.clock())-iteration_start if iteration_start is not None else None,
             error=f'{type(error).__name__}: {error}',
             traceback=''.join(traceback.format_exception(type(error),error,error.__traceback__)))
+        if iteration_start is not None and iteration_end is None:
+            self.value['iterations'].append(self.iteration_record())
         atomic_json(self.failure_path,self.value)
         self.save()
 
     def committed(self,count):
-        self.value.update(completed_cases=count,gpu_stage='case_committed')
+        self.value.update(completed_cases=count,gpu_stage='case_committed',
+                          committed_this_invocation=count-self.value['initial_completed_cases'])
         self.save()
 
 
@@ -133,11 +188,19 @@ def execute_gpu_iteration(launch,synchronize,*,journal=None,kernel_timeout_secon
     try:
         if begin_event:
             stage('begin_event_record');begin_event()
+        if journal is not None:
+            journal.value.update(gpu_iteration_started_monotonic=journal.clock(),
+                gpu_iteration_finished_monotonic=None,
+                kernel_timeout_seconds=kernel_timeout_seconds,
+                launch_blocking=os.environ.get('CUDA_LAUNCH_BLOCKING','0')=='1')
         stage('kernel_launch');launch(kernel_timeout_seconds)
         if end_event:
             stage('end_event_record');end_event()
         stage('cuda_synchronize');synchronize()
         stage('iteration_synchronized')
+        if journal is not None:
+            journal.value['gpu_iteration_finished_monotonic']=journal.clock()
+            journal.value['gpu_iteration_elapsed_seconds']=journal.value['gpu_iteration_finished_monotonic']-journal.value['gpu_iteration_started_monotonic']
     except Exception as error:
         if journal is not None:
             try: journal.fail(error)

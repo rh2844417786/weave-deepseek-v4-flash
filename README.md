@@ -1,11 +1,12 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-本项目使用原版 DeepSeek-V4-Flash 混合精度权重。交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口。最新服务器记录d4275c0：同步单点诊断四rank通过、容器退出0，宿主驱动因root-owned JSON的0600权限屏蔽继承ACL而退出1，完整校准尚未恢复。当前修正原子JSON发布权限为0664，新`-2`作业需验证宿主读取和导出链路。此前9228519报告core通过、校准四rank各完成285点后CUDA故障；本次同步重放未复现该故障，完整扫描仍待恢复。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史ced332b报告在e59e064上完成修正后全43层checkpoint、原生EP4、Weave eager和Weave graph功能验收，8个生成token一致。原始工作目录证据待归档，正式速度结果仍未产生。
+本项目使用原版 DeepSeek-V4-Flash 混合精度权重。交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口。诊断-2已通过宿主读取及导出；最新a57baec归档了四rank各362/374点，随后2048/c131/K1/compute在首个正式迭代发生CUDA故障，模型验收及正式GPQA未运行。当前提供同case异步诊断、显式等待保护、逐调用wall时间与本地盘导出，保留已有合法点；根因和H100修复结果待复测。当前core原始四rank/全43层/三kernel报告已回传并校验。GPQA官方数据已用锁定的DeepSeek tokenizer/编码器完成本地输入长度审计。历史e59e064的原生EP4与Weave eager/graph八token验收不能代替当前tiled实测profile的模型gate；正式速度结果仍未产生。
 
 ## 入口
 
 - [分组 tile、实测校准与正式 GPQA 统一入口](docs/FORMAL_GPQA_EXPERIMENT.md)
 - [校准 CUDA 故障：单点定位与285点恢复](docs/CALIBRATION_FAULT_RECOVERY.md)
+- [最新2048故障：362点恢复、异步诊断与本地盘导出](docs/CALIBRATION_2048_RECOVERY.md)
 
 - [当前服务器镜像、版本与工作目录契约](docs/RUNTIME_0517.md)
 - [服务器仅访问 GitHub：数据与依赖离线准备](docs/RUNTIME_0517.md#服务器网络与离线准备)

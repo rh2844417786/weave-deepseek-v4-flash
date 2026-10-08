@@ -1,5 +1,7 @@
 # 校准 CUDA 故障定位与恢复
 
+当前2048/c131/K1/compute故障和NAS满盘按 [最新恢复说明](CALIBRATION_2048_RECOVERY.md) 执行。下面的1024单点与权限复测已通过，保留为前一阶段记录。
+
 适用报告：`reports/full_experiment-047ed4696f52.json`，作业 `job-20261003-095433-46cf54c3`。服务器摘要报告 core 通过、四 rank 各完成285点，随后 CUDA launch failure。原始工作 JSON 未进入 Git，具体失败调用尚未确认。
 
 固定扫描顺序下，已完成点索引0..284之后的下一点为 `tokens=1024,c=131,K=8,mode=mixed`。这是诊断入口默认建议重放的配置，不是已证实的设备故障位置。

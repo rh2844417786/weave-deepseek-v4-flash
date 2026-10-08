@@ -19,7 +19,8 @@ from scripts.check_sglang_service import wait_ready,coverage
 from scripts.calibrate_weave import validate_core_evidence
 from src.weave.checkpoint_identity import checkpoint_stats
 from src.weave.experiment_export import export_run
-from src.weave.experiment import ExperimentLedger,validate_profile_directory,validate_model_evidence,validate_tiled_snapshot_metadata
+from src.weave.experiment import (ExperimentLedger,validate_profile_directory,validate_model_evidence,
+                                  validate_tiled_snapshot_metadata,prepare_export_directory)
 from src.weave.ops import kernel_source_sha256
 from src.weave.performance import benchmark_group,compare_groups,_atomic_json,_load_records
 from src.weave.request_timing import source_sha256 as timing_source_sha256
@@ -34,8 +35,7 @@ def archive_evidence(report,run_dir,destination):
     return export_run(run_dir,destination)
 
 
-def main():
-    contract=load_contract()
+def parse_args(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model-path',type=Path,default=Path('/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash'))
     parser.add_argument('--work-root',type=Path,default=Path(os.environ.get('WORK_ROOT',ROOT/'work')))
@@ -44,10 +44,31 @@ def main():
     parser.add_argument('--calibration-dir',type=Path,help='reuse/resume matching raw event points under work-root')
     parser.add_argument('--model-acceptance-dir',type=Path,help='reuse matching measured-profile full-model evidence')
     parser.add_argument('--calibration-invocations',type=int,default=4,help='each measurement invocation capped at1200s')
+    parser.add_argument('--calibration-kernel-timeout-seconds',type=float,default=60.,
+                        help='device protocol wait guard, calibration only; does not change1200s budget')
+    parser.add_argument('--export-root',type=Path,
+                        help='writable public evidence disk; default WORK_ROOT/public-reports')
     parser.add_argument('--setup-timeout',type=float,default=3600.)
     parser.add_argument('--port',type=int,default=30001)
     parser.add_argument('--evidence-port-base',type=int,default=30110)
-    args=parser.parse_args()
+    args=parser.parse_args(argv)
+    if not 0<args.calibration_kernel_timeout_seconds<=1200:
+        parser.error('calibration kernel timeout must be finite in (0,1200]')
+    if args.export_root is not None and not args.export_root.is_absolute():
+        parser.error('absolute export-root required')
+    return args,parser
+
+
+def calibration_command(args,core,cal,lifecycle,invocation):
+    return [sys.executable,str(ROOT/'scripts/run_calibration_job.py'),'--model-path',str(args.model_path),
+        '--work-root',str(args.work_root),'--core-run-dir',str(core),'--output-dir',str(cal),
+        '--lifecycle-path',str(lifecycle),'--invocation-id',invocation,
+        '--kernel-timeout-seconds',str(args.calibration_kernel_timeout_seconds)]
+
+
+def main():
+    contract=load_contract()
+    args,parser=parse_args()
     if os.environ.get('CUDA_VISIBLE_DEVICES')!='4,5,6,7': parser.error('GPUQ allocation must be4,5,6,7')
     if not args.work_root.is_absolute() or not args.model_path.is_absolute(): parser.error('absolute model/work paths required')
     if not args.records.is_file(): parser.error('prepare pinned448-row Think High IDs offline before submitting')
@@ -66,12 +87,14 @@ def main():
             except ValueError: parser.error('all reuse paths must be under work-root')
             setattr(args,name,path)
     run_id=uuid.uuid4().hex[:12]
+    destination=prepare_export_directory(args.work_root,f'full-experiment-{run_id}',args.export_root)
     out=args.work_root/f'full-experiment-{run_id}';out.mkdir()
     ledger=ExperimentLedger();child=OwnedChild();benchmark_active=False
     source=kernel_source_sha256()
     report={'schema_version':1,'status':'running','scope':'formal_gpqa_budgeted_comparison',
             'run_id':run_id,'started_utc':datetime.now(timezone.utc).isoformat(),
             'kernel':'tiled','source_sha256':source,'timing_source_sha256':timing_source_sha256(),
+            'calibration_kernel_timeout_seconds':args.calibration_kernel_timeout_seconds,
             'steps':ledger.steps,'physical_gpus':[4,5,6,7],
             'acceptance_policy':{'logprob':'record_only','top_logprob_support':'record_only'},
             'performance':'not_run','raw_content_exported':False,
@@ -124,9 +147,7 @@ def main():
                 break
             except (OSError,ValueError,KeyError):
                 invocation=f'{run_id}-{attempt}'
-                command=[sys.executable,str(ROOT/'scripts/run_calibration_job.py'),'--model-path',str(args.model_path),
-                    '--work-root',str(args.work_root),'--core-run-dir',str(core),'--output-dir',str(cal),
-                    '--lifecycle-path',str(out/f'calibration-{attempt}-lifecycle.json'),'--invocation-id',invocation]
+                command=calibration_command(args,core,cal,out/f'calibration-{attempt}-lifecycle.json',invocation)
                 if cal.exists(): command.append('--resume')
                 execute(command,out/f'calibration-{attempt}-lifecycle.json',f'calibration-{attempt}',
                     calibration_marker=cal/'progress-rank0.json',invocation=invocation,allowed=(0,124))
@@ -210,13 +231,11 @@ def main():
         finally:
             for s,handler in previous.items(): signal.signal(s,handler)
             report['finished_utc']=datetime.now(timezone.utc).isoformat();checkpoint()
-            destination=ROOT/'reports/server'/out.name
             try: archive_evidence(report,out,destination)
             except Exception as export_error:
                 report['export_error']=f'{type(export_error).__name__}: {export_error}'
                 checkpoint()
                 if report['status']!='failed': raise
-    destination=ROOT/'reports/server'/out.name
     print(json.dumps({'status':report['status'],'evidence':str(path),'export_directory':str(destination),
                      'relative_decode_speed':report['steps']['comparison'].get('relative_decode_speed')}),flush=True)
 

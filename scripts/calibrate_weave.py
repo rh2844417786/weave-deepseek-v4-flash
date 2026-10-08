@@ -57,7 +57,7 @@ def parse_args(argv=None):
             parser.error('diagnostic case must use a required bucket/c/K/mode')
         if args.output_dir.exists() and any(args.output_dir.iterdir()):
             # Host launcher writes launch.json/log in its directory; checked there.
-            if any(p.name not in ('launch.json','calibration.log') for p in args.output_dir.iterdir()):
+            if any(p.name not in ('launch.json','calibration.log','gpu-before.json') for p in args.output_dir.iterdir()):
                 parser.error('diagnostics require a fresh evidence directory')
     return args
 
@@ -192,7 +192,8 @@ def main(argv=None):
     start = start[0]
     # The parent starts its CUDA-block watchdog from this exact clock marker.
     journal=collective_action(lambda:CalibrationJournal(args.output_dir,identity,args.invocation_id,
-                                                       start,args.budget_seconds))
+                                                       start,args.budget_seconds,
+                                                       initial_completed_cases=len(store.points)))
     collective_action(journal.save)
     control = {'remaining':args.budget_seconds,'reason':None}
 
@@ -220,7 +221,8 @@ def main(argv=None):
                 exclude_attempt()
                 return None
             collective_action(lambda:journal.begin(case,iteration,
-                elapsed_seconds=time.monotonic()-start,completed_cases=len(store.points)))
+                elapsed_seconds=time.monotonic()-start,completed_cases=len(store.points),
+                kernel_timeout_seconds=args.kernel_timeout_seconds))
             dist.barrier()
             timed = iteration >= args.warmups
             if timed:
@@ -234,6 +236,9 @@ def main(argv=None):
                     kernel_timeout_seconds=args.kernel_timeout_seconds,
                     begin_event=begin.record if timed else None,end_event=end.record if timed else None)
             collective_action(execute_iteration)
+            # All peers have synchronized before this CPU publication. It is
+            # outside CUDA begin/end events and cannot become a GPU duration.
+            collective_action(journal.record_completed_iteration)
             # Absolute deadline checked after events/synchronize too. A late
             # duration never becomes a completed measured timing point.
             if timed:
@@ -256,7 +261,8 @@ def main(argv=None):
         def validate_case():
             journal.stage('case_output_validation')
             value = dict(case,samples_ms=samples,warmups=args.warmups,workload=workload,
-                         tile_counters=tiles,completed_before_deadline=True)
+                         tile_counters=tiles,completed_before_deadline=True,
+                         host_iteration_timings=list(journal.value['iterations']))
             value.update(work_units(value,4096,2048))
             output = runtime.ws.output[:n]
             if not torch.isfinite(output).all().item():
@@ -277,11 +283,14 @@ def main(argv=None):
             return collective_action(append)
         store.append = append_point
         if args.diagnose_case:
-            if os.environ.get('CUDA_LAUNCH_BLOCKING')!='1':
-                raise ValueError('diagnostic case requires CUDA_LAUNCH_BLOCKING=1 from the host launcher')
+            if os.environ.get('CUDA_LAUNCH_BLOCKING') not in ('0','1'):
+                raise ValueError('diagnostic case requires explicit CUDA_LAUNCH_BLOCKING=0 or1')
             result=collective_action(lambda:run_diagnostic_case(store,args.diagnose_case,measure_case,should_stop))
             collective_action(lambda:atomic_json(args.output_dir/f'diagnostic-rank{rank}.json',
-                dict(result,rank=rank,identity=identity,invocation_id=args.invocation_id)))
+                dict(result,rank=rank,identity=identity,invocation_id=args.invocation_id,
+                     launch_blocking=os.environ['CUDA_LAUNCH_BLOCKING']=='1',
+                     host_iteration_timings=list(journal.value['iterations']),
+                     kernel_timeout_seconds=args.kernel_timeout_seconds)))
             return 0 if result['status']=='diagnostic_passed' else 124
         result = collective_action(lambda:run_calibration(store,measure_case,should_stop,
                                   lambda:args.budget_seconds-control['remaining'],args.budget_seconds))
@@ -294,6 +303,9 @@ def main(argv=None):
                 atomic_json(args.output_dir/f'profile-bank-rank{rank}.json',result['bundle'])
             collective_action(publish)
         summary = {'status':result['status'],'rank':rank,'completed_cases':result['completed_cases'],
+                   'initial_completed_cases':journal.value['initial_completed_cases'],
+                   'committed_this_invocation':len(store.points)-journal.value['initial_completed_cases'],
+                   'kernel_timeout_seconds':args.kernel_timeout_seconds,
                    'budget_seconds':args.budget_seconds,'elapsed_seconds':time.monotonic()-start,
                    'stop_reason':control['reason'],'identity':identity,'core_gate':setup['core_gate'],
                    'actual_runtime':setup['actual_runtime']}

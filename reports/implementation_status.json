@@ -5,7 +5,9 @@
     "torch": "2.11.0+cu130",
     "cuda": "13.0",
     "work_root_default": "<repo>/work",
-    "actual_current_server_validation": "isolated_case_reported_passed_all4_gpu_container0_host_driver1_due_json_acl_mask_full_calibration_not_resumed"
+    "actual_current_server_validation": "diagnostic2_passed_permission_export_fixed_raw_core_verified_resume_has362_points_failed2048_c131_K1_compute",
+    "server_work_root": "/srv/weave-work",
+    "export_root_default": "WORK_ROOT/public-reports"
   },
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
@@ -25,13 +27,13 @@
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 125,
+      "tests": 136,
       "skipped": 0,
       "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "tiled_core_server_reported_passed_raw_build_evidence_not_in_git",
+    "cuda_build": "tiled_core_passed_exported_runtime_and_rank_evidence_verified",
     "multi_gpu_correctness": "passed_small_synthetic_fixture_twice",
     "core_graph_replay": "passed_small_synthetic_fixture_twice",
     "sglang_integration": "server_reported_native_eager_graph_passed_eight_generated_tokens_match",
@@ -39,7 +41,7 @@
     "performance": "formal_runner_implemented_not_run",
     "normal_container_exit": "passed_exit0_no_signal",
     "gpuq_sigterm_cleanup": "not_verified_on_server",
-    "new_source_checkpoint": "core_server_reported_passed_raw_checkpoint_rank_evidence_pending",
+    "new_source_checkpoint": "four_exported_rank_reports_all43_layers_three_kernels_532_cases_per_rank_verified",
     "new_source_sglang_graph": "new_tiled_measured_profile_model_gate_implemented_not_run",
     "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending",
     "shared_expert_numerics_header_host_compile": "passed_bf16_silu_and_route_product_counterexamples",
@@ -60,34 +62,40 @@
       "raw_work_json_in_git": false,
       "source_match_checked_against": "historical e59e064; new tiled source differs"
     },
-    "measured_calibration": "server_reported_partial285_points_per_rank_device_fault_no_complete_bank",
-    "calibration_fault_recovery": "isolated_replay_reported_passed_json_acl_blocked_driver_atomic0664_fix_cpu_verified_linux_export_retest_pending",
+    "measured_calibration": "exported_partial362_of374_points_per_rank_verified_no_complete_bank",
+    "calibration_fault_recovery": "async_replay_explicit_guard_iteration_history_invocation_counts_driver_snapshots_local_export_preflight_implemented_gpu_diagnosis_pending",
     "last_reported_diagnostic": {
-      "job_id": "job-20261008-022747-b4d4db07",
-      "report_commit": "d4275c0",
-      "tested_git_revision": "6ae957f",
+      "job_id": "job-20261008-025825-5d48f7a2",
+      "report_commit": "99c1a25",
+      "tested_git_revision": "002c807",
       "case": {"tokens": 1024, "c": 131, "K": 8, "mode": "mixed"},
       "all_four_rank_status": "reported_diagnostic_passed",
       "used_for_calibration": false,
       "gpu_container_exit_code": 0,
-      "host_gpuq_exit_code": 1,
-      "host_error": "PermissionError_root0600_json_masks_inherited_gpuq_reader_acl",
+      "host_gpuq_exit_code": 0,
+      "export_sha256_files_verified": 24,
       "gpu_fault_reproduced": false,
-      "full_experiment_resumed": false,
-      "raw_work_json_in_git": false,
+      "full_experiment_resumed": true,
+      "raw_work_json_in_git": true,
       "gpu_execution_independently_verified": false
     },
     "last_reported_full_experiment": {
-      "job_id": "job-20261003-095433-46cf54c3",
-      "report_commit": "9228519",
+      "job_id": "job-20261008-032546-ffd17bea",
+      "report_commit": "a57baec",
       "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
       "local_cuda_source_matches": true,
-      "core": "reported_passed",
-      "calibration": "failed_unspecified_launch_failure_after285_points_per_rank",
+      "core": "exported_raw_evidence_verified_passed",
+      "calibration": "failed2048_c131_K1_compute_iteration1_cuda_synchronize",
+      "completed_points_per_rank": 362,
+      "required_points_per_rank": 374,
+      "missing_points_per_rank": 12,
+      "first_error_rank": 2,
+      "export_sha256_files_verified": 24,
       "model_acceptance": "not_run",
       "performance": "not_run",
-      "raw_work_json_in_git": false,
-      "historical_fault_root_cause": "unconfirmed_independent_guard_fix_requires_server_replay"
+      "raw_work_json_in_git": true,
+      "historical_fault_root_cause": "unconfirmed_legitimate_long_chunk_wait_guard_is_priority_hypothesis",
+      "storage_issue": "NAS_export_Errno122_operator_exported_to_local_disk"
     }
   },
   "server_report_sources": {
@@ -99,12 +107,11 @@
     "model_acceptance": "reports/model_acceptance-0c508db6a19e.json",
     "latest_model_acceptance_summary": "reports/model_acceptance-0c508db6a19e.json; added by ced332b",
     "previous_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293",
-    "full_experiment": "reports/full_experiment-047ed4696f52.json; added by 9228519",
-    "isolated_diagnostic": "reports/calibration_diagnostic-047ed4696f52-1_operation_record.json; operator record added by d4275c0"
+    "full_experiment": "reports/server/full-experiment-8c14e090e30e; added by a57baec",
+    "isolated_diagnostic": "reports/server/calibration-diagnostic-047ed4696f52-2; added by 99c1a25"
   },
   "remaining_acceptance": [
-    "Archive raw new tiled core/three-kernel/checkpoint/steal/graph evidence",
-    "Retest fresh diagnostic-2 host read_and_export_with_atomic0664_acl_mask",
+    "Diagnose2048_c131_K1_compute_in_async_mode_with_iteration_wall_times_and_guard_controls",
     "Produce identity-bound real CUDA-event calibration banks",
     "Run new measured tiled eager/fullgraph model gates",
     "Execute and archive native/Weave budgeted formal GPQA comparison",
