@@ -16,7 +16,7 @@
 
 JSON发布函数现会在fsync和原子replace前执行 `os.fchmod(fd, 0o664)`。临时文件默认0600会压掉继承ACL的mask；文件有扩展ACL时，group权限位对应mask，设置0664使named-user条目的读写权限可生效。[Linux ACL说明](https://man7.org/linux/man-pages/man5/acl.5.html) 此修复仅作用于校准JSON，不修改旧GPU记录、工作目录ACL或GPQA原始数据文件。Mac回归检查了受限umask下的新建与替换权限；Linux跨UID/ACL和真实导出链路由新诊断作业验证。
 
-## 1. 在 GPUQ 分配4,5,6,7的作业内重放一个配置
+## 1. 在 GPUQ 分配四张H100并设置CUDA_VISIBLE_DEVICES的作业内重放一个配置
 
 仓库根目录运行；只使用已有镜像与本地只读模型，无在线安装或下载：
 

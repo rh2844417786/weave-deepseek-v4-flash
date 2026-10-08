@@ -44,7 +44,7 @@ adapter 的 `get_server_args` 导入已改为该版本的 `sglang.srt.runtime_co
 
 ## 执行入口
 
-这些命令在 GPUQ 已分配 GPU 4–7 的作业中运行：
+这些命令在 GPUQ 已分配四张 H100 的作业中运行：
 
 ```bash
 git pull --ff-only
@@ -70,7 +70,7 @@ bash scripts/run_preflight_gpuq.sh
 
 默认输出 `<repo>/work/preflight.XXXXXX/` 下的 runtime 检查、模型预检 JSON、日志及退出码。此入口也使用当前 0.5.17 镜像。
 
-脚本保持 GPU 分配硬约束 `4,5,6,7`。它们只在 GPUQ 开始执行已分配的作业后工作，不设置排队期间的计时器，也不占用 0–3 卡。GPUQ 的 1 小时作业时限从实际启动起算；原先预计的排队时长属于用户提供的调度快照，脚本不硬编码该快照中的到期时间。
+脚本使用 GPUQ 提供的 `CUDA_VISIBLE_DEVICES`，校验四个不同的物理编号；编号不限于历史4–7。它们在已分配作业内运行，计时不包含排队。GPUQ 的 1 小时作业时限从实际启动起算；原先预计的排队时长属于用户提供的调度快照，脚本不硬编码该快照中的到期时间。
 
 ## 取消与结果回传
 

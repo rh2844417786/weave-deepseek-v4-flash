@@ -12,7 +12,9 @@ ROOT = Path(__file__).resolve().parents[2]
 def copy_manager(repo):
     (repo/'src/weave').mkdir(parents=True)
     shutil.copy(ROOT/'scripts/manage_container.py',repo/'scripts')
+    shutil.copy(ROOT/'scripts/check_gpu_allocation.py',repo/'scripts')
     shutil.copy(ROOT/'src/weave/container_lifecycle.py',repo/'src/weave')
+    shutil.copy(ROOT/'src/weave/gpu_allocation.py',repo/'src/weave')
 
 
 class CUDAGateLauncherTest(unittest.TestCase):
@@ -36,7 +38,7 @@ class CUDAGateLauncherTest(unittest.TestCase):
                 'else:\n'
                 '    print("No such object",file=sys.stderr);sys.exit(1)\n')
             docker.chmod(0o755)
-            env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7', 'DOCKER_CAPTURE': str(capture),
+            env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '0,2,4,6', 'DOCKER_CAPTURE': str(capture),
                    'PATH': str(bin_dir)+os.pathsep+os.environ['PATH']}
             env.pop('WORK_ROOT', None)
             env.pop('IMAGE', None)
@@ -44,7 +46,8 @@ class CUDAGateLauncherTest(unittest.TestCase):
                                  env=env, capture_output=True, text=True)
             self.assertEqual(run.returncode, 7, run.stderr)
             args = json.loads(capture.read_text())
-            self.assertEqual(args[args.index('--gpus')+1], '"device=4,5,6,7"')
+            self.assertEqual(args[args.index('--gpus')+1], '"device=0,2,4,6"')
+            self.assertIn('WEAVE_HOST_ALLOCATION=0,2,4,6',args)
             self.assertIn('sha256:actual-image', args)
             self.assertIn(str(repo/'work')+':/work', args)
             self.assertIn('scripts/check_runtime.py', args)
@@ -69,7 +72,7 @@ class CUDAGateLauncherTest(unittest.TestCase):
                 'if sys.argv[1:3] == ["image","inspect"]: print("sha256:actual-image")\n'
                 'else: open(os.environ["DOCKER_CAPTURE"],"w").write(json.dumps(sys.argv[1:]))\n')
             docker.chmod(0o755)
-            env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7', 'DOCKER_CAPTURE': str(capture),
+            env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '1,3,5,7', 'DOCKER_CAPTURE': str(capture),
                    'PATH': str(bin_dir)+os.pathsep+os.environ['PATH']}
             for key in ('WORK_ROOT', 'IMAGE', 'OUTPUT_REL'):
                 env.pop(key, None)
@@ -77,6 +80,7 @@ class CUDAGateLauncherTest(unittest.TestCase):
                                  capture_output=True, text=True)
             self.assertEqual(run.returncode, 0, run.stderr)
             args = json.loads(capture.read_text())
+            self.assertEqual(args[args.index('--gpus')+1],'"device=1,3,5,7"')
             self.assertIn(str(repo/'work')+':/work', args)
             self.assertIn('lmsysorg/sglang:v0.5.17', args)
             self.assertEqual(args[args.index('--runtime-image-id')+1], 'sha256:actual-image')

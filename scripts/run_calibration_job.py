@@ -16,6 +16,7 @@ from src.weave.container_lifecycle import run_container
 from src.weave.runtime_contract import load_contract
 from src.weave.calibration import measuring_deadline,atomic_json,capture_gpu_snapshot
 from src.weave.experiment_export import export_run
+from src.weave.gpu_allocation import allocated_gpus
 
 
 def main():
@@ -35,8 +36,8 @@ def main():
                         help='diagnostic replay only; default1, choose0 to match normal calibration')
     parser.add_argument('--export-dir',type=Path,help='public-safe diagnostic export; default reports/server/<output-name>')
     args=parser.parse_args()
-    if os.environ.get('CUDA_VISIBLE_DEVICES')!='4,5,6,7':
-        parser.error('GPUQ must allocate exactly physical GPUs4,5,6,7')
+    try: allocation=allocated_gpus()
+    except ValueError as error: parser.error(str(error))
     if any(not p.is_absolute() for p in (args.model_path,args.work_root,args.core_run_dir,args.output_dir,args.lifecycle_path)):
         parser.error('all model/work/evidence paths must be absolute')
     args.work_root=args.work_root.resolve()
@@ -71,16 +72,16 @@ def main():
         raise
     name='weave-calibration-'+uuid.uuid4().hex[:12]
     docker=['docker','run','--rm','--pull=never','--name',name,
-            '--gpus','"device=4,5,6,7"','--network=host','--shm-size=8g',
+            '--gpus',allocation.docker_argument,'--network=host','--shm-size=8g',
             '-v',f'{ROOT}:/workspace:ro','-v',f'{args.work_root}:/work',
             '-v',f'{args.model_path}:/model:ro','-w','/workspace',
-            '-e','CUDA_VISIBLE_DEVICES=0,1,2,3','-e','CUDA_DEVICE_ORDER=PCI_BUS_ID',
+            '-e',f'CUDA_VISIBLE_DEVICES={allocation.container_visible}','-e','CUDA_DEVICE_ORDER=PCI_BUS_ID',
             '-e','GLOO_SOCKET_IFNAME=lo','-e','NCCL_SOCKET_IFNAME=lo','-e','NCCL_IB_DISABLE=1',
             '-e','HF_HUB_OFFLINE=1','-e','TRANSFORMERS_OFFLINE=1',
             '-e','HF_DATASETS_OFFLINE=1','-e','TORCH_EXTENSIONS_DIR=/work/torch_extensions',
             '-e','MAX_JOBS=2','-e',f'WEAVE_IMAGE_ID={image}',
             '-e',f'WEAVE_CALIBRATION_INVOCATION_ID={args.invocation_id}',
-            '-e',f'WEAVE_IMAGE_REF={args.image}','-e','WEAVE_HOST_ALLOCATION=4,5,6,7',
+            '-e',f'WEAVE_IMAGE_REF={args.image}','-e',f'WEAVE_HOST_ALLOCATION={allocation.csv}',
             '-e',f'WEAVE_HOST_HOSTNAME={os.uname().nodename}']
     docker += ['-e',f'CUDA_LAUNCH_BLOCKING={blocking}']
     docker += [image,contract['python_executable'],
@@ -94,13 +95,13 @@ def main():
     report={'requested_image':args.image,'resolved_image_id':image,'docker_argv':docker,
             'scope':'measured_calibration_not_formal_performance'}
     (args.output_dir/'launch.json').write_text(json.dumps(report,indent=2)+'\n')
-    atomic_json(args.output_dir/'gpu-before.json',capture_gpu_snapshot())
+    atomic_json(args.output_dir/'gpu-before.json',capture_gpu_snapshot(allocation))
     def expired():
         deadline=measuring_deadline(args.output_dir/'progress-rank0.json',args.invocation_id)
         return deadline is not None and time.monotonic()>=deadline
     with (args.output_dir/'calibration.log').open('a') as log:
         lifecycle=run_container(docker,name,args.lifecycle_path,stdout=log,expired=expired)
-    atomic_json(args.output_dir/'gpu-after.json',capture_gpu_snapshot())
+    atomic_json(args.output_dir/'gpu-after.json',capture_gpu_snapshot(allocation))
     if args.diagnose_case:
         status='diagnostic_passed' if lifecycle['exit_code']==0 else ('deadline' if lifecycle['exit_code']==124 else 'failed')
         if status=='diagnostic_passed':
@@ -110,6 +111,7 @@ def main():
                     raise ValueError('four passed diagnostic rank reports required')
         summary={'schema_version':1,'scope':'calibration_diagnostic','status':status,
                  'performance':'not_run','used_for_calibration':False,'raw_content_exported':False,
+                 'physical_gpus':list(allocation.ids),'host_gpu_allocation':allocation.csv,
                  'requested_case':args.diagnose_case,'invocation_id':args.invocation_id,
                  'calibration_dir':str(args.output_dir),'core_run_dir':str(args.core_run_dir),
                  'kernel_timeout_seconds':args.kernel_timeout_seconds,'launch_blocking':bool(blocking),

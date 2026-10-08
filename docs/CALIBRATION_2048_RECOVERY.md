@@ -8,11 +8,11 @@
 
 新增日志记录每个GPU调用的开始、结束/失败wall时间、请求guard、同步/异步模式，以及本invocation起始点数和新提交点数。保存的285..361点单是timed samples就有188.19秒，超过本invocation首个失败elapsed113.46秒；因此旧日志不能证明这77点全部在这个invocation中新执行。
 
-CUDA源码哈希仍为 `9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623`。现有core和362点按原校验复用；调试样本仍不进入正式校准。GPU快照只记录所分配4–7卡的clock/temperature/ECC等字段，不作为验收门限。
+CUDA源码哈希仍为 `9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623`。现有core和362点按原校验复用；调试样本仍不进入正式校准。GPU快照只记录调度器分配的四张卡的clock/temperature/ECC等字段，不作为验收门限。
 
 ## 1. 使用本地clone和本地工作盘
 
-`/home/jovyan`的NAS已有Errno122记录。请在有空间的本地clone拉取GitHub，在GPUQ已分配4,5,6,7的作业内执行。现有原版混合精度模型和镜像保持离线使用。core与校准数据已在`/srv/weave-work`。
+`/home/jovyan`的NAS已有Errno122记录。请在有空间的本地clone拉取GitHub，在GPUQ已分配四张H100并设置CUDA_VISIBLE_DEVICES的作业内执行。现有原版混合精度模型和镜像保持离线使用。core与校准数据已在`/srv/weave-work`。
 
 先以原来的异步条件和60秒guard重放**真正失败的case**：
 

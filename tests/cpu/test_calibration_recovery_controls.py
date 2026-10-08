@@ -45,7 +45,7 @@ class RecoveryControlsTest(unittest.TestCase):
     def test_gpu_snapshot_timeout_can_be_archived_without_masking_kernel_error(self):
         with tempfile.TemporaryDirectory() as tmp:
             error=subprocess.TimeoutExpired(['nvidia-smi'],10,stderr=b'driver stalled')
-            with patch('src.weave.calibration.subprocess.run',side_effect=error):
+            with patch('src.weave.calibration.subprocess.run',side_effect=error),patch.dict(os.environ,{'CUDA_VISIBLE_DEVICES':'4,5,6,7'}):
                 result=cal.capture_gpu_snapshot()
             path=Path(tmp)/'gpu-after.json'
             cal.atomic_json(path,result)
@@ -97,7 +97,7 @@ class RecoveryControlsTest(unittest.TestCase):
                 'if sys.argv[1:]!=["-q","-x","-i","4,5,6,7"]: sys.exit(7)\n'
                 'print('+repr(xml)+')\n')
             binary.chmod(0o755)
-            with patch.dict(os.environ,{'PATH':tmp+os.pathsep+os.environ['PATH']}):
+            with patch.dict(os.environ,{'PATH':tmp+os.pathsep+os.environ['PATH'],'CUDA_VISIBLE_DEVICES':'4,5,6,7'}):
                 result=capture()
             self.assertEqual(result['status'],'captured')
             self.assertEqual(result['devices'][0]['sm_clock'],'1590 MHz')

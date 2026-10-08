@@ -82,12 +82,12 @@ class NativeEPLaunchTest(unittest.TestCase):
         self.assertIn('/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash:/model:ro', args)
         self.assertEqual(data['status'], 'preview_not_executed')
 
-    def test_rejects_gpu_allocation_outside_authorized_cards(self):
-        env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '0,1,2,3'}
+    def test_rejects_duplicate_gpu_allocation(self):
+        env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '0,1,2,2'}
         run = subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--work-root', '/tmp/weave-work'],
                              cwd=ROOT, env=env, capture_output=True, text=True)
         self.assertNotEqual(run.returncode, 0)
-        self.assertIn('4,5,6,7', run.stderr)
+        self.assertIn('distinct', run.stderr)
 
     def test_execution_records_resolved_image_and_exit_without_claiming_generation(self):
         with tempfile.TemporaryDirectory() as tmp:

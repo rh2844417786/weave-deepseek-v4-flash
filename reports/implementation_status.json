@@ -5,7 +5,7 @@
     "torch": "2.11.0+cu130",
     "cuda": "13.0",
     "work_root_default": "<repo>/work",
-    "actual_current_server_validation": "diagnostic2_passed_permission_export_fixed_raw_core_verified_resume_has362_points_failed2048_c131_K1_compute",
+    "actual_current_server_validation": "core_passed_partial362_of374_calibration_points_async2048_c131_K1_compute_guard120_diagnostic_passed_full_resume_pending",
     "server_work_root": "/srv/weave-work",
     "export_root_default": "WORK_ROOT/public-reports"
   },
@@ -22,12 +22,13 @@
     "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented",
     "expert_rounding": "corrected_source_server_reported_functional_passed_tail_logprob_drift_persists",
     "formal_gpqa": "shared_server_output_timing_budgeted_common_completed_comparison_implemented",
-    "full_experiment_entry": "scripts/run_full_experiment.py"
+    "full_experiment_entry": "scripts/run_full_experiment.py",
+    "gpu_allocation": "scheduler_CUDA_VISIBLE_DEVICES_four_distinct_indices_all_host_launchers_no_physical_id_pin"
   },
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 136,
+      "tests": 143,
       "skipped": 0,
       "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
@@ -63,19 +64,30 @@
       "source_match_checked_against": "historical e59e064; new tiled source differs"
     },
     "measured_calibration": "exported_partial362_of374_points_per_rank_verified_no_complete_bank",
-    "calibration_fault_recovery": "async_replay_explicit_guard_iteration_history_invocation_counts_driver_snapshots_local_export_preflight_implemented_gpu_diagnosis_pending",
+    "calibration_fault_recovery": "async60_failed_first_warmup_async120_four_rank_diagnostic_passed_wait_guard_hypothesis_supported_full_resume_pending",
     "last_reported_diagnostic": {
-      "job_id": "job-20261008-025825-5d48f7a2",
-      "report_commit": "99c1a25",
-      "tested_git_revision": "002c807",
-      "case": {"tokens": 1024, "c": 131, "K": 8, "mode": "mixed"},
-      "all_four_rank_status": "reported_diagnostic_passed",
+      "report_commit": "f5cb812",
+      "tested_git_revision": "fcdb3d3",
+      "case": {
+        "tokens": 2048,
+        "c": 131,
+        "K": 1,
+        "mode": "compute"
+      },
+      "all_four_rank_status": "exported_raw_evidence_verified_diagnostic_passed",
+      "kernel_timeout_seconds": 120.0,
+      "launch_blocking": false,
       "used_for_calibration": false,
       "gpu_container_exit_code": 0,
       "host_gpuq_exit_code": 0,
-      "export_sha256_files_verified": 24,
+      "export_sha256_files_verified": 27,
       "gpu_fault_reproduced": false,
-      "full_experiment_resumed": true,
+      "full_experiment_resumed": "not_reported_after_this_diagnostic",
+      "rank0_cuda_event_samples_ms": [
+        57064.05859375,
+        56149.50390625,
+        57045.3359375
+      ],
       "raw_work_json_in_git": true,
       "gpu_execution_independently_verified": false
     },
@@ -96,7 +108,8 @@
       "raw_work_json_in_git": true,
       "historical_fault_root_cause": "unconfirmed_legitimate_long_chunk_wait_guard_is_priority_hypothesis",
       "storage_issue": "NAS_export_Errno122_operator_exported_to_local_disk"
-    }
+    },
+    "gpu_allocation": "passed_cpu_launch_report_and_snapshot_checks_other_physical_gpu_sets_not_verified_on_server"
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",
@@ -108,10 +121,11 @@
     "latest_model_acceptance_summary": "reports/model_acceptance-0c508db6a19e.json; added by ced332b",
     "previous_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293",
     "full_experiment": "reports/server/full-experiment-8c14e090e30e; added by a57baec",
-    "isolated_diagnostic": "reports/server/calibration-diagnostic-047ed4696f52-2; added by 99c1a25"
+    "isolated_diagnostic": "reports/server/diagnostic-2048-c131-K1-async120-1; added by f5cb812",
+    "previous_isolated_diagnostic": "reports/server/diagnostic-2048-c131-K1-async60-1; added by 24d7ca8"
   },
   "remaining_acceptance": [
-    "Diagnose2048_c131_K1_compute_in_async_mode_with_iteration_wall_times_and_guard_controls",
+    "Resume_full_calibration_with_guard120_and_verify_all374_points_per_rank",
     "Produce identity-bound real CUDA-event calibration banks",
     "Run new measured tiled eager/fullgraph model gates",
     "Execute and archive native/Weave budgeted formal GPQA comparison",

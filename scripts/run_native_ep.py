@@ -19,17 +19,19 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.weave.runtime_contract import load_contract
 from src.weave.container_lifecycle import run_container
+from src.weave.gpu_allocation import allocated_gpus
 CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
 
-def docker_command(args, image: str, name: str, run_name='preview') -> list:
+def docker_command(args, image: str, name: str, run_name='preview',allocation=None) -> list:
+    allocation=allocation or allocated_gpus()
     docker = [
         'docker', 'run', '--rm', '--pull=never', '--name', name,
-        '--gpus', '"device=4,5,6,7"', '--network=host', '--shm-size=8g',
+        '--gpus', allocation.docker_argument, '--network=host', '--shm-size=8g',
         '-v', f'{args.model_path}:/model:ro', '-v', f'{args.work_root}:/work',
         '-v', f'{ROOT}:/workspace:ro', '-w', '/workspace',
-        '-e', 'CUDA_VISIBLE_DEVICES=0,1,2,3', '-e', 'CUDA_DEVICE_ORDER=PCI_BUS_ID',
+        '-e', f'CUDA_VISIBLE_DEVICES={allocation.container_visible}', '-e', 'CUDA_DEVICE_ORDER=PCI_BUS_ID',
         '-e', 'NCCL_IB_DISABLE=1', '-e', 'NCCL_SOCKET_IFNAME=lo',
         '-e', 'GLOO_SOCKET_IFNAME=lo', '-e', 'NCCL_CUMEM_HOST_ENABLE=0',
         '-e', 'TORCH_NCCL_ASYNC_ERROR_HANDLING=1', '-e', 'TORCH_NCCL_BLOCKING_WAIT=1',
@@ -37,7 +39,7 @@ def docker_command(args, image: str, name: str, run_name='preview') -> list:
         '-e', 'HF_HUB_OFFLINE=1', '-e', 'TRANSFORMERS_OFFLINE=1',
         '-e', 'HF_DATASETS_OFFLINE=1',
         '-e', f'WEAVE_IMAGE_REF={args.image}', '-e', f'WEAVE_IMAGE_ID={image}',
-        '-e', f'WEAVE_HOST_HOSTNAME={os.uname().nodename}', '-e', 'WEAVE_HOST_ALLOCATION=4,5,6,7',
+        '-e', f'WEAVE_HOST_HOSTNAME={os.uname().nodename}', '-e', f'WEAVE_HOST_ALLOCATION={allocation.csv}',
     ]
     functional = args.backend == 'weave_functional'
     if args.checkpoint_content_sha256:
@@ -108,9 +110,8 @@ def main() -> int:
         parser.error('fixed-plan must contain nonnegative c/steal and K in 1..8')
     if not 1 <= args.evidence_port_base <= 65532 or args.port in range(args.evidence_port_base, args.evidence_port_base+4):
         parser.error('evidence port range must be valid and distinct from serving port')
-    allocation = os.environ.get('CUDA_VISIBLE_DEVICES', '')
-    if allocation != '4,5,6,7':
-        parser.error('GPUQ allocation must be CUDA_VISIBLE_DEVICES=4,5,6,7')
+    try: allocation=allocated_gpus()
+    except ValueError as error: parser.error(str(error))
     if not args.model_path.is_absolute() or not args.work_root.is_absolute():
         parser.error('model-path and work-root must be absolute paths')
     args.work_root = args.work_root.resolve()
@@ -128,7 +129,7 @@ def main() -> int:
         parser.error('measured tiled profile requires checkpoint-content-sha256 from the passed core gate')
     name = 'weave-native-ep-' + uuid.uuid4().hex[:12]
     if not args.execute:
-        print(json.dumps({'status': 'preview_not_executed', 'docker_argv': docker_command(args, args.image, name)}, indent=2))
+        print(json.dumps({'status': 'preview_not_executed', 'docker_argv': docker_command(args, args.image, name,allocation=allocation)}, indent=2))
         return 0
     if not args.model_path.is_dir():
         parser.error(f'model directory missing: {args.model_path}')
@@ -142,11 +143,12 @@ def main() -> int:
         raise ValueError('docker image inspect did not return a content-addressed image ID')
     run_dir = args.work_root / (args.run_name or 'native-ep-' + uuid.uuid4().hex)
     run_dir.mkdir()
-    command = docker_command(args, image_id, name, run_dir.name)
+    command = docker_command(args, image_id, name, run_dir.name,allocation=allocation)
     report = {
         'started_utc': datetime.now(timezone.utc).isoformat(),
         'requested_image': args.image, 'resolved_image_id': image_id,
-        'host_cuda_visible_devices': allocation,
+        'host_cuda_visible_devices': allocation.csv,
+        'physical_gpus':list(allocation.ids),
         'gpuq_job_id': os.environ.get('GPUQ_JOB_ID'),
         'docker_argv': command, 'generation_status': 'not_verified',
         'backend': args.backend,

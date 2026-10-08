@@ -4,7 +4,7 @@
 
 ## 保持的运行契约
 
-- GPUQ 分配物理 GPU `4,5,6,7`；Docker 内 ordinal `0,1,2,3`。
+- GPUQ 分配四张 H100，并用 `CUDA_VISIBLE_DEVICES` 提供实际编号；Docker 内逻辑 ordinal 为 `0,1,2,3`。
 - `lmsysorg/sglang:v0.5.17`、Torch 2.11.0+cu130、nvcc 13.0、Python 3.12.3、Transformers 5.12.1。镜像 content ID 在每次运行中记录。
 - 模型为 `/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash` 原版混合精度 checkpoint，routed experts 使用其原始 MXFP4 bytes 与 E8M0 scales。
 - 所有产物写入绝对可写的 `WORK_ROOT`，默认 `<repo>/work`。
