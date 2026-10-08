@@ -42,7 +42,7 @@ def cleanup_container(name):
     return state, attempts
 
 
-def run_container(command, name, evidence_path, *, stdout=None, exit_code_path=None):
+def run_container(command, name, evidence_path, *, stdout=None, exit_code_path=None, expired=None):
     """Manage only the uniquely named container in this exact docker-run argv.
 
     Signals only set a flag. Popen is allowed to finish registering its child
@@ -72,6 +72,12 @@ def run_container(command, name, evidence_path, *, stdout=None, exit_code_path=N
         while True:
             if requested is not None:
                 code = 128 + requested
+                break
+            if expired is not None and expired():
+                code=process.poll()
+                if code is None:
+                    code=124
+                    report['deadline_expired']=True
                 break
             try:
                 code = process.wait(timeout=.1)

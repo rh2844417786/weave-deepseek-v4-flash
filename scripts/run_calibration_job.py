@@ -8,11 +8,14 @@ import re
 import subprocess
 import sys
 import uuid
+import time
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from src.weave.container_lifecycle import run_container
 from src.weave.runtime_contract import load_contract
+from src.weave.calibration import measuring_deadline,atomic_json
+from src.weave.experiment_export import export_run
 
 
 def main():
@@ -26,6 +29,9 @@ def main():
     parser.add_argument('--image',default=contract['image'])
     parser.add_argument('--resume',action='store_true')
     parser.add_argument('--invocation-id',default=uuid.uuid4().hex)
+    parser.add_argument('--diagnose-case',help='isolated tokens,c,K,mode replay with synchronous CUDA, no profile')
+    parser.add_argument('--kernel-timeout-seconds',type=float,default=60.)
+    parser.add_argument('--export-dir',type=Path,help='public-safe diagnostic export; default reports/server/<output-name>')
     args=parser.parse_args()
     if os.environ.get('CUDA_VISIBLE_DEVICES')!='4,5,6,7':
         parser.error('GPUQ must allocate exactly physical GPUs4,5,6,7')
@@ -39,6 +45,15 @@ def main():
         except ValueError: parser.error('all evidence directories must be under work-root')
         setattr(args,field,path)
     if args.lifecycle_path.exists(): parser.error('fresh lifecycle file required')
+    if not re.fullmatch(r'[A-Za-z0-9_.-]{1,128}',args.invocation_id): parser.error('safe invocation ID required')
+    if not 0<args.kernel_timeout_seconds<=1200: parser.error('kernel timeout must be finite in (0,1200]')
+    if args.diagnose_case:
+        if args.resume: parser.error('diagnostic replay requires a fresh separate directory')
+        if args.output_dir.exists() and any(args.output_dir.iterdir()):
+            parser.error('diagnostic replay requires an empty separate output directory')
+        destination=args.export_dir or ROOT/'reports/server'/args.output_dir.name
+        if destination.exists(): parser.error('fresh diagnostic export directory required')
+    elif args.export_dir: parser.error('export-dir applies only to isolated diagnostic runs')
     args.output_dir.mkdir(parents=True,exist_ok=True)
     # No pulling: fail if the user-selected existing image is absent.
     try:
@@ -61,17 +76,41 @@ def main():
             '-e','MAX_JOBS=2','-e',f'WEAVE_IMAGE_ID={image}',
             '-e',f'WEAVE_CALIBRATION_INVOCATION_ID={args.invocation_id}',
             '-e',f'WEAVE_IMAGE_REF={args.image}','-e','WEAVE_HOST_ALLOCATION=4,5,6,7',
-            '-e',f'WEAVE_HOST_HOSTNAME={os.uname().nodename}',image,contract['python_executable'],
+            '-e',f'WEAVE_HOST_HOSTNAME={os.uname().nodename}']
+    if args.diagnose_case: docker += ['-e','CUDA_LAUNCH_BLOCKING=1']
+    else: docker += ['-e','CUDA_LAUNCH_BLOCKING=0']
+    docker += [image,contract['python_executable'],
             '-m','torch.distributed.run','--standalone','--nproc-per-node=4',
             '/workspace/scripts/calibrate_weave.py','--model-path','/model',
             '--output-dir',str(Path('/work')/relatives['output_dir']),
-            '--core-run-dir',str(Path('/work')/relatives['core_run_dir']),'--budget-seconds','1200']
+            '--core-run-dir',str(Path('/work')/relatives['core_run_dir']),'--budget-seconds','1200',
+            '--kernel-timeout-seconds',str(args.kernel_timeout_seconds)]
     if args.resume: docker.append('--resume')
+    if args.diagnose_case: docker += ['--diagnose-case',args.diagnose_case]
     report={'requested_image':args.image,'resolved_image_id':image,'docker_argv':docker,
             'scope':'measured_calibration_not_formal_performance'}
     (args.output_dir/'launch.json').write_text(json.dumps(report,indent=2)+'\n')
+    def expired():
+        deadline=measuring_deadline(args.output_dir/'progress-rank0.json',args.invocation_id)
+        return deadline is not None and time.monotonic()>=deadline
     with (args.output_dir/'calibration.log').open('a') as log:
-        lifecycle=run_container(docker,name,args.lifecycle_path,stdout=log)
+        lifecycle=run_container(docker,name,args.lifecycle_path,stdout=log,expired=expired)
+    if args.diagnose_case:
+        status='diagnostic_passed' if lifecycle['exit_code']==0 else ('deadline' if lifecycle['exit_code']==124 else 'failed')
+        if status=='diagnostic_passed':
+            for rank in range(4):
+                file=args.output_dir/f'diagnostic-rank{rank}.json'
+                if not file.is_file() or json.loads(file.read_text()).get('status')!='diagnostic_passed':
+                    raise ValueError('four passed diagnostic rank reports required')
+        summary={'schema_version':1,'scope':'calibration_diagnostic','status':status,
+                 'performance':'not_run','used_for_calibration':False,'raw_content_exported':False,
+                 'requested_case':args.diagnose_case,'invocation_id':args.invocation_id,
+                 'calibration_dir':str(args.output_dir),'core_run_dir':str(args.core_run_dir),
+                 'kernel_timeout_seconds':args.kernel_timeout_seconds,'launch_blocking':True,
+                 'cleanup':lifecycle,'image_id':image,'export_directory':str(destination)}
+        atomic_json(args.output_dir/'experiment.json',summary)
+        export_run(args.output_dir,destination)
+        print(json.dumps({'status':status,'export_directory':str(destination)}),flush=True)
     return lifecycle['exit_code']
 
 

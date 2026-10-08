@@ -51,8 +51,9 @@ def export_run(run_dir,destination):
     if report.get('calibration_dir'):
         cal=Path(report['calibration_dir'])
         for rank in range(4):
-            for prefix in ('profile-bank-rank','timings-rank','calibration-rank'):
+            for prefix in ('profile-bank-rank','timings-rank','calibration-rank','progress-rank','diagnostic-rank'):
                 add(cal/f'{prefix}{rank}.json',f'calibration/{prefix}{rank}.json')
+        for file in cal.glob('failure-rank*.json'): add(file,'calibration/'+file.name)
     if report.get('model_acceptance_dir'):
         model=Path(report['model_acceptance_dir'])
         for label in ('weave_eager','weave_graph'):

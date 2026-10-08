@@ -9,6 +9,9 @@ import math
 import os
 from pathlib import Path
 import tempfile
+import time
+import traceback
+import re
 
 KERNEL = 'tiled_mxfp4_tile_v1'
 BUCKETS = (1, 64, 256, 1024, 2048)
@@ -51,6 +54,112 @@ def atomic_json(path, value):
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
+
+
+class CalibrationJournal:
+    """Durable active-case marker; GPU stages stay local until success/failure.
+
+    Publish begin() through the caller's collective error agreement before any
+    rank launches CUDA. Failure recording uses CPU-only I/O after a poisoned
+    CUDA context and retains the first local traceback.
+    """
+    def __init__(self,directory,identity,invocation,start,budget,*,clock=time.monotonic):
+        if not re.fullmatch(r'[A-Za-z0-9_.-]{1,128}',invocation):
+            raise ValueError('safe calibration invocation ID required')
+        self.directory=Path(directory)
+        self.clock,self.start,self.failed=clock,start,False
+        self.value={'status':'measuring','rank':identity['rank'],'invocation_id':invocation,
+                    'measuring_started_monotonic':start,'budget_seconds':budget,
+                    'source_sha256':identity['source_sha256'],'identity':identity,
+                    'active_case':None,'iteration':None,'gpu_stage':'ready','completed_cases':0}
+        self.path=self.directory/f'progress-rank{identity["rank"]}.json'
+        self.failure_path=self.directory/f'failure-rank{identity["rank"]}-{invocation}.json'
+
+    def save(self): atomic_json(self.path,self.value)
+
+    def begin(self,case,iteration,*,elapsed_seconds,completed_cases):
+        self.value.update(active_case=dict(case),iteration=iteration,gpu_stage='before_kernel_iteration',
+                          elapsed_seconds=elapsed_seconds,completed_cases=completed_cases,
+                          remaining_seconds=self.value['budget_seconds']-elapsed_seconds)
+        self.save()
+
+    def stage(self,name): self.value['gpu_stage']=name
+
+    def fail(self,error):
+        if self.failed: return
+        self.failed=True
+        elapsed=self.clock()-self.start
+        self.value.update(status='failed',elapsed_seconds=elapsed,
+            remaining_seconds=self.value['budget_seconds']-elapsed,
+            error=f'{type(error).__name__}: {error}',
+            traceback=''.join(traceback.format_exception(type(error),error,error.__traceback__)))
+        atomic_json(self.failure_path,self.value)
+        self.save()
+
+    def committed(self,count):
+        self.value.update(completed_cases=count,gpu_stage='case_committed')
+        self.save()
+
+
+def capture_local_action(operation,*,journal=None):
+    """Retain the local exception before converting it for CPU rank agreement."""
+    try: return operation(),None
+    except Exception as error:
+        if journal is not None:
+            try: journal.fail(error)
+            except OSError as evidence_error:
+                error.add_note(f'failure evidence I/O failed: {evidence_error}')
+        return None,f'{type(error).__name__}: {error}'
+
+
+def execute_gpu_iteration(launch,synchronize,*,journal=None,kernel_timeout_seconds=60.,
+                          begin_event=None,end_event=None):
+    """Keep the device protocol guard independent of the measurement deadline.
+
+    The outer controller owns the hard budget; the driver excludes late points.
+    Shrinking the device wait guard to remaining budget would turn ordinary
+    deadline expiry into a trap/launch failure and poison the CUDA context.
+    """
+    if not _positive(kernel_timeout_seconds) or kernel_timeout_seconds>1200:
+        raise ValueError('kernel wait guard must be finite in (0,1200]')
+    def stage(name):
+        if journal is not None: journal.stage(name)
+    try:
+        if begin_event:
+            stage('begin_event_record');begin_event()
+        stage('kernel_launch');launch(kernel_timeout_seconds)
+        if end_event:
+            stage('end_event_record');end_event()
+        stage('cuda_synchronize');synchronize()
+        stage('iteration_synchronized')
+    except Exception as error:
+        if journal is not None:
+            try: journal.fail(error)
+            except OSError as evidence_error:
+                error.add_note(f'failure evidence I/O failed: {evidence_error}')
+        raise
+
+
+def measuring_deadline(path,invocation):
+    try: marker=json.loads(Path(path).read_text())
+    except (OSError,ValueError): return None
+    if marker.get('invocation_id')!=invocation: return None
+    start,budget=marker.get('measuring_started_monotonic'),marker.get('budget_seconds')
+    if not _positive(start) or budget!=1200:
+        raise ValueError('invalid calibration watchdog marker')
+    return start+1200
+
+
+def run_diagnostic_case(store,case,measure_case,should_stop):
+    """One isolated debug case; never mutate raw timings or derive a bank."""
+    if case_key(case) not in {case_key(c) for c in required_cases(store.identity['workers'])}:
+        raise ValueError('diagnostic case outside calibrated grid')
+    result={'status':'diagnostic_partial','used_for_calibration':False,'case':dict(case)}
+    if should_stop(): return result
+    value=measure_case(case)
+    if value is None or should_stop(): return result
+    store._validate_point(value)
+    return dict(result,status='diagnostic_passed',point=value)
 
 
 def candidate_plans(workers, tokens):

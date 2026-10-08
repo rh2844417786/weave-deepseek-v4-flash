@@ -1,15 +1,17 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-本项目使用原版 DeepSeek-V4-Flash 混合精度权重。新交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口；新 CUDA 与正式性能等待服务器执行。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史标量 CUDA 核心已通过两轮四 H100 小尺寸检查；最新回传 ced332b 报告在 e59e064 上完成修正后全 43 层 checkpoint、原生 EP4、Weave eager 和 Weave graph 功能验收，四阶段均通过，8 个生成 token 一致；原始工作目录证据待归档，正式 GPQA 性能比较尚未运行。
+本项目使用原版 DeepSeek-V4-Flash 混合精度权重。交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口。最新服务器报告9228519：新源码core通过，校准四rank各完成285点后发生CUDA launch failure，模型验收及正式GPQA尚未运行；当前交付修正校准超时语义并提供独立单点诊断和恢复入口，H100重放待执行。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史ced332b报告在e59e064上完成修正后全43层checkpoint、原生EP4、Weave eager和Weave graph功能验收，8个生成token一致。原始工作目录证据待归档，正式速度结果仍未产生。
 
 ## 入口
 
 - [分组 tile、实测校准与正式 GPQA 统一入口](docs/FORMAL_GPQA_EXPERIMENT.md)
+- [校准 CUDA 故障：单点定位与285点恢复](docs/CALIBRATION_FAULT_RECOVERY.md)
 
 - [当前服务器镜像、版本与工作目录契约](docs/RUNTIME_0517.md)
 - [服务器仅访问 GitHub：数据与依赖离线准备](docs/RUNTIME_0517.md#服务器网络与离线准备)
 - [真实 43 层 checkpoint、WMMA 与 SGLang graph 验收入口](docs/REAL_CHECKPOINT_GRAPH_ACCEPTANCE.md)
 - [最新模型验收：四阶段通过、8 token 一致（服务器生成摘要）](reports/model_acceptance-0c508db6a19e.json)
+- [最新完整作业：core通过、校准285点后CUDA故障](reports/full_experiment-047ed4696f52.json)
 - [前一轮 a934293 验收记录（旧 logprob 门导致停止）](reports/model_acceptance.json)
 - [CUDA 功能核心、动态调度与 SGLang adapter](docs/CUDA_FUNCTIONAL_CORE.md)
 - [历史 SGLang 0.5.16 接入核对](docs/SGLANG_V0516_INTEGRATION.md)

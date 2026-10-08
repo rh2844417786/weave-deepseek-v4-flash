@@ -4,7 +4,6 @@ import argparse
 from datetime import datetime,timezone
 import json
 import hashlib
-import math
 import os
 from pathlib import Path
 import signal
@@ -26,17 +25,13 @@ from src.weave.performance import benchmark_group,compare_groups,_atomic_json,_l
 from src.weave.request_timing import source_sha256 as timing_source_sha256
 from src.weave.runtime_contract import load_contract
 from src.weave.service_acceptance import validate_coverage_delta
+from src.weave.calibration import measuring_deadline
 
 
-def measuring_deadline(path,invocation):
-    try: marker=json.loads(Path(path).read_text())
-    except (OSError,ValueError): return None
-    if marker.get('invocation_id')!=invocation: return None
-    start=marker.get('measuring_started_monotonic')
-    budget=marker.get('budget_seconds')
-    if type(start) not in (int,float) or not math.isfinite(start) or start<=0 or budget!=1200:
-        raise ValueError('invalid calibration watchdog marker')
-    return start+1200
+def archive_evidence(report,run_dir,destination):
+    report['export_directory']=str(destination)
+    _atomic_json(Path(run_dir)/'experiment.json',report)
+    return export_run(run_dir,destination)
 
 
 def main():
@@ -114,6 +109,7 @@ def main():
         image=subprocess.run(['docker','image','inspect',contract['image'],'--format','{{.Id}}'],
             capture_output=True,text=True,check=True,timeout=30).stdout.strip()
         core=args.core_run_dir or args.work_root/f'cuda-functional.{run_id}'
+        report['core_run_dir']=str(core);checkpoint()
         if args.core_run_dir is None:
             env={**os.environ,'CHECKPOINT_TESTS':'1','CHECKPOINT_LAYERS':'all',
                  'MODEL_PATH':str(args.model_path),'WORK_ROOT':str(args.work_root),'CORE_RUN_NAME':core.name}
@@ -121,6 +117,7 @@ def main():
         core_gate,identity=validate_core_evidence(core,args.model_path,source,{'resolved_image_id':image})
         ledger.record('core',core_gate);report['core_run_dir']=str(core);checkpoint()
         cal=args.calibration_dir or args.work_root/f'calibration.{run_id}'
+        report['calibration_dir']=str(cal);checkpoint()
         for attempt in range(args.calibration_invocations):
             try:
                 profiles=validate_profile_directory(cal,core_gate)
@@ -213,9 +210,13 @@ def main():
         finally:
             for s,handler in previous.items(): signal.signal(s,handler)
             report['finished_utc']=datetime.now(timezone.utc).isoformat();checkpoint()
+            destination=ROOT/'reports/server'/out.name
+            try: archive_evidence(report,out,destination)
+            except Exception as export_error:
+                report['export_error']=f'{type(export_error).__name__}: {export_error}'
+                checkpoint()
+                if report['status']!='failed': raise
     destination=ROOT/'reports/server'/out.name
-    report['export_directory']=str(destination);checkpoint()
-    export_run(out,destination)
     print(json.dumps({'status':report['status'],'evidence':str(path),'export_directory':str(destination),
                      'relative_decode_speed':report['steps']['comparison'].get('relative_decode_speed')}),flush=True)
 

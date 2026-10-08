@@ -5,7 +5,7 @@
     "torch": "2.11.0+cu130",
     "cuda": "13.0",
     "work_root_default": "<repo>/work",
-    "actual_current_server_validation": "server_reported_corrected_checkpoint_and_native_eager_graph_passed_raw_work_pending"
+    "actual_current_server_validation": "tiled_core_reported_passed_calibration_failed_after285_points_per_rank_raw_work_pending"
   },
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
@@ -15,7 +15,7 @@
     "bubble_stealing": "tile_work_unit_implemented_new_source_gpu_validation_pending",
     "sglang_adapter": "eager_and_batch1_graph_server_reported_passed_20_source_files_locked",
     "native_fallback": "not_provided",
-    "tensor_core": "grouped_M16_N64_tiled_implemented_host_reviewed_new_cuda_not_compiled",
+    "tensor_core": "grouped_M16_N64_tiled_core_server_reported_passed_calibration_fault_pending_replay",
     "real_checkpoint_gate": "all_43_layers_scalar_wmma_tiled_reference_graph_and_nonzero_steal_tests_implemented",
     "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented",
     "expert_rounding": "corrected_source_server_reported_functional_passed_tail_logprob_drift_persists",
@@ -25,13 +25,13 @@
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 115,
+      "tests": 123,
       "skipped": 0,
       "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
-    "cuda_build": "historical_wmma_reported_passed_new_tiled_source_not_compiled",
+    "cuda_build": "tiled_core_server_reported_passed_raw_build_evidence_not_in_git",
     "multi_gpu_correctness": "passed_small_synthetic_fixture_twice",
     "core_graph_replay": "passed_small_synthetic_fixture_twice",
     "sglang_integration": "server_reported_native_eager_graph_passed_eight_generated_tokens_match",
@@ -39,7 +39,7 @@
     "performance": "formal_runner_implemented_not_run",
     "normal_container_exit": "passed_exit0_no_signal",
     "gpuq_sigterm_cleanup": "not_verified_on_server",
-    "new_source_checkpoint": "new_tiled_all43_three_kernel_gate_implemented_not_run",
+    "new_source_checkpoint": "core_server_reported_passed_raw_checkpoint_rank_evidence_pending",
     "new_source_sglang_graph": "new_tiled_measured_profile_model_gate_implemented_not_run",
     "acceptance_process_tree_cleanup": "passed_cpu_sigterm_and_signal_during_spawn_gpu_release_pending",
     "shared_expert_numerics_header_host_compile": "passed_bf16_silu_and_route_product_counterexamples",
@@ -60,7 +60,20 @@
       "raw_work_json_in_git": false,
       "source_match_checked_against": "historical e59e064; new tiled source differs"
     },
-    "measured_calibration": "script_implemented_real_cuda_event_samples_not_run"
+    "measured_calibration": "server_reported_partial285_points_per_rank_device_fault_no_complete_bank",
+    "calibration_fault_recovery": "independent_device_guard_case_journal_isolated_replay_failed_export_implemented_cpu_review_passed_h100_replay_pending",
+    "last_reported_full_experiment": {
+      "job_id": "job-20261003-095433-46cf54c3",
+      "report_commit": "9228519",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "local_cuda_source_matches": true,
+      "core": "reported_passed",
+      "calibration": "failed_unspecified_launch_failure_after285_points_per_rank",
+      "model_acceptance": "not_run",
+      "performance": "not_run",
+      "raw_work_json_in_git": false,
+      "historical_fault_root_cause": "unconfirmed_independent_guard_fix_requires_server_replay"
+    }
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",
@@ -70,10 +83,12 @@
     "original_bringup_log_in_git": false,
     "model_acceptance": "reports/model_acceptance-0c508db6a19e.json",
     "latest_model_acceptance_summary": "reports/model_acceptance-0c508db6a19e.json; added by ced332b",
-    "previous_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293"
+    "previous_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293",
+    "full_experiment": "reports/full_experiment-047ed4696f52.json; added by 9228519"
   },
   "remaining_acceptance": [
-    "Compile/run new tiled all43layer/three-kernel/steal/graph GPU gate",
+    "Archive raw new tiled core/three-kernel/checkpoint/steal/graph evidence",
+    "Replay isolated1024/c131/K8/mixed fault case on H100",
     "Produce identity-bound real CUDA-event calibration banks",
     "Run new measured tiled eager/fullgraph model gates",
     "Execute and archive native/Weave budgeted formal GPQA comparison",

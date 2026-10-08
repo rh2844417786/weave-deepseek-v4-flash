@@ -64,7 +64,7 @@ python3 scripts/run_full_experiment.py \
 
 已经通过同一源码、权重、实测 profile 的模型验收时，另可指定 `--model-acceptance-dir`。校准恢复使用所有 rank 共同完成的 case 交集，保留被排除的旧样本；过期或篡改的文件拒绝加载。
 
-完整作业成功结束后自动导出到 `reports/server/full-experiment-<ID>/`。失败或被取消的作业可手动导出已有证据：
+完整作业成功、失败或被取消后都会尝试导出到 `reports/server/full-experiment-<ID>/`。导出错误记录在工作报告；目的地未创建时可手动导出已有证据：
 
 ```bash
 python3 scripts/export_experiment_evidence.py --run-dir /absolute/work/full-experiment-ID
@@ -76,3 +76,5 @@ git push origin main
 导出包括指标、运行身份、core rank 记录、校准原始样本、模型覆盖矩阵；生成 token IDs、题目和正文保留在工作盘 `gpqa/` 中。源文件逐一附 SHA256。清理只作用于本作业创建的命名容器；外部 GPUQ 取消后的物理显存释放仍需服务器观察。
 
 模型验收的公开 logprob 诊断仅保留匹配状态、数量和 delta 汇总，不包含生成或候选 token ID；诊断仍不作为门限。
+
+校准遇到 CUDA launch failure 时，按 [单点诊断与恢复](CALIBRATION_FAULT_RECOVERY.md) 执行。设备等待保护与1200秒测量窗口分开，失败点保留rank/case/iteration/阶段；退出码1仍停止，避免把可重复的设备故障当成普通截止。

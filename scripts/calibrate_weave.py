@@ -19,7 +19,8 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from src.weave.calibration import (BUCKETS,KERNEL,TimingStore,atomic_json,case_key,
-                                   run_calibration,work_units)
+                                   run_calibration,work_units,CalibrationJournal,
+                                   execute_gpu_iteration,run_diagnostic_case,capture_local_action)
 
 
 def parse_args(argv=None):
@@ -32,6 +33,9 @@ def parse_args(argv=None):
     parser.add_argument('--invocation-id',default=os.environ.get('WEAVE_CALIBRATION_INVOCATION_ID','standalone'))
     parser.add_argument('--repetitions',type=int,default=3)
     parser.add_argument('--warmups',type=int,default=1)
+    parser.add_argument('--kernel-timeout-seconds',type=float,default=60.,
+                        help='device protocol wait guard, independent of remaining measurement budget')
+    parser.add_argument('--diagnose-case',help='one tokens,c,K,mode case; debug-only, never publish profile')
     args = parser.parse_args(argv)
     if not 0 < args.budget_seconds <= 1200:
         parser.error('--budget-seconds must be finite in (0,1200]')
@@ -39,6 +43,22 @@ def parse_args(argv=None):
         parser.error('at least two repetitions and one warmup required')
     if args.output_dir.resolve() == args.core_run_dir.resolve():
         parser.error('calibration output must differ from core evidence directory')
+    if not 0<args.kernel_timeout_seconds<=1200:
+        parser.error('kernel timeout must be finite in (0,1200]')
+    if args.diagnose_case:
+        if args.resume: parser.error('diagnostics use a fresh separate directory, not --resume')
+        try:
+            n,c,k,mode=args.diagnose_case.split(',')
+            args.diagnose_case={'tokens':int(n),'c':int(c),'K':int(k),'mode':mode}
+        except (ValueError,TypeError): parser.error('diagnose-case requires tokens,c,K,mode')
+        if (args.diagnose_case['tokens'] not in BUCKETS or args.diagnose_case['c']<0
+                or args.diagnose_case['K'] not in (1,2,4,8)
+                or args.diagnose_case['mode'] not in ('compute','communication','mixed')):
+            parser.error('diagnostic case must use a required bucket/c/K/mode')
+        if args.output_dir.exists() and any(args.output_dir.iterdir()):
+            # Host launcher writes launch.json/log in its directory; checked there.
+            if any(p.name not in ('launch.json','calibration.log') for p in args.output_dir.iterdir()):
+                parser.error('diagnostics require a fresh evidence directory')
     return args
 
 
@@ -99,12 +119,10 @@ def main(argv=None):
     for number in (signal.SIGTERM,signal.SIGINT):
         signal.signal(number,signal_request)
 
+    journal=None
     def collective_action(function):
         """Make ordinary Python setup/I/O failures visible to every rank."""
-        try:
-            result,error = function(),None
-        except Exception as exc:
-            result,error = None,f'{type(exc).__name__}: {exc}'
+        result,error = capture_local_action(function,journal=journal)
         errors = [None]*4
         dist.all_gather_object(errors,error)
         if any(errors):
@@ -173,9 +191,9 @@ def main(argv=None):
     dist.broadcast_object_list(start,src=0)
     start = start[0]
     # The parent starts its CUDA-block watchdog from this exact clock marker.
-    collective_action(lambda:atomic_json(args.output_dir/f'progress-rank{rank}.json',
-                      {'status':'measuring','rank':rank,'invocation_id':args.invocation_id,'measuring_started_monotonic':start,
-                       'budget_seconds':args.budget_seconds,'source_sha256':identity['source_sha256']}))
+    journal=collective_action(lambda:CalibrationJournal(args.output_dir,identity,args.invocation_id,
+                                                       start,args.budget_seconds))
+    collective_action(journal.save)
     control = {'remaining':args.budget_seconds,'reason':None}
 
     def should_stop():
@@ -201,34 +219,42 @@ def main(argv=None):
             if should_stop():
                 exclude_attempt()
                 return None
+            collective_action(lambda:journal.begin(case,iteration,
+                elapsed_seconds=time.monotonic()-start,completed_cases=len(store.points)))
             dist.barrier()
             timed = iteration >= args.warmups
             if timed:
                 begin,end = events[iteration-args.warmups]
-                begin.record()
             def execute_iteration():
-                runtime.run(x_all[:n],routes[case['mode']][:n],routing_all[:n],raw,
+                def launch(timeout):
+                    runtime.run(x_all[:n],routes[case['mode']][:n],routing_all[:n],raw,
                             fixed_plan=(case['c'],case['K'],0),calibration_mode=mode,
-                            timeout_seconds=max(.001,min(60.,control['remaining'])),clamp=setup['clamp'])
-                if timed:
-                    end.record()
-                torch.cuda.synchronize()
+                            timeout_seconds=timeout,clamp=setup['clamp'])
+                execute_gpu_iteration(launch,torch.cuda.synchronize,journal=journal,
+                    kernel_timeout_seconds=args.kernel_timeout_seconds,
+                    begin_event=begin.record if timed else None,end_event=end.record if timed else None)
             collective_action(execute_iteration)
             # Absolute deadline checked after events/synchronize too. A late
             # duration never becomes a completed measured timing point.
             if timed:
-                samples.append(float(begin.elapsed_time(end)))
+                def read_elapsed():
+                    journal.stage('event_elapsed_time')
+                    return float(begin.elapsed_time(end))
+                samples.append(collective_action(read_elapsed))
             if should_stop():
                 exclude_attempt()
                 return None
-            observed_work = runtime.ws.workload.cpu().tolist()
-            observed_tiles = runtime.ws.tile_counters.cpu().tolist()
+            def read_counters():
+                journal.stage('workload_counter_read')
+                return runtime.ws.workload.cpu().tolist(),runtime.ws.tile_counters.cpu().tolist()
+            observed_work,observed_tiles = collective_action(read_counters)
             def verify_counters():
                 if workload is not None and (workload != observed_work or tiles != observed_tiles):
                     raise ValueError('actual workload/tile counters changed across repetitions')
             collective_action(verify_counters)
             workload,tiles = observed_work,observed_tiles
         def validate_case():
+            journal.stage('case_output_validation')
             value = dict(case,samples_ms=samples,warmups=args.warmups,workload=workload,
                          tile_counters=tiles,completed_before_deadline=True)
             value.update(work_units(value,4096,2048))
@@ -245,8 +271,18 @@ def main(argv=None):
         # case while one process is unwinding a failed raw-point publication.
         original_append = store.append
         def append_point(*pos,**kwargs):
-            return collective_action(lambda:original_append(*pos,**kwargs))
+            def append():
+                original_append(*pos,**kwargs)
+                journal.committed(len(store.points))
+            return collective_action(append)
         store.append = append_point
+        if args.diagnose_case:
+            if os.environ.get('CUDA_LAUNCH_BLOCKING')!='1':
+                raise ValueError('diagnostic case requires CUDA_LAUNCH_BLOCKING=1 from the host launcher')
+            result=collective_action(lambda:run_diagnostic_case(store,args.diagnose_case,measure_case,should_stop))
+            collective_action(lambda:atomic_json(args.output_dir/f'diagnostic-rank{rank}.json',
+                dict(result,rank=rank,identity=identity,invocation_id=args.invocation_id)))
+            return 0 if result['status']=='diagnostic_passed' else 124
         result = collective_action(lambda:run_calibration(store,measure_case,should_stop,
                                   lambda:args.budget_seconds-control['remaining'],args.budget_seconds))
         if result['status'] == 'measured':
@@ -264,6 +300,10 @@ def main(argv=None):
         collective_action(lambda:atomic_json(args.output_dir/f'calibration-rank{rank}.json',summary))
         print(json.dumps({'rank':rank,'status':result['status'],'completed_cases':result['completed_cases']}),flush=True)
         return 0 if result['status'] == 'measured' else 124
+    except Exception as error:
+        try: journal.fail(error)
+        except OSError as evidence_error: error.add_note(f'failure evidence I/O failed: {evidence_error}')
+        raise
     finally:
         dist.destroy_process_group()
 
