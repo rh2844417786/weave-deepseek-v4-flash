@@ -1,0 +1,139 @@
+{
+ "schema_version": 1,
+ "scope": "operation_record_of_isolated_calibration_diagnostic",
+ "provenance": {
+  "kind": "host_side_record_written_by_operator_agent",
+  "note": "the in-job exporter did not run: the GPUQ driver aborted before writing experiment.json, so export_run() could not be executed. This file is an explicit host-side record, not an exporter artifact.",
+  "values_from": "work/calibration-diagnostic-047ed4696f52-1/*.json (container wrote them mode 0600; read as root), the lifecycle file, and /var/lib/gpuq/jobs/<job>/{request,result,stderr}",
+  "raw_work_json_in_git": false,
+  "gpu_execution_independently_verified": false
+ },
+ "run": {
+  "date": "2026-10-08",
+  "job_id": "job-20261008-022747-b4d4db07",
+  "gpuq_status": "failed",
+  "gpuq_exit_code": 1,
+  "gpuq_error": "command exited with status 1",
+  "physical_gpus": [
+   4,
+   5,
+   6,
+   7
+  ],
+  "image": "lmsysorg/sglang:v0.5.17",
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "tested_git_revision": "6ae957f",
+  "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+  "kernel": "tiled_mxfp4_tile_v1",
+  "created_utc": "2026-10-08T02:27:47.264272+00:00",
+  "started_utc": "2026-10-08T02:27:51.339551+00:00",
+  "finished_utc": "2026-10-08T02:29:56.563498+00:00"
+ },
+ "diagnostic": {
+  "requested_case": {
+   "K": 8,
+   "c": 131,
+   "mode": "mixed",
+   "tokens": 1024
+  },
+  "invocation_id": "9959a0182f484fdc83d0d8b7eeb5cff4",
+  "pass_conditions": {
+   "A_exit_code_zero": false,
+   "B_four_rank_reports_present": true,
+   "C_all_four_diagnostic_passed": true
+  },
+  "ranks": {
+   "rank0": {
+    "status": "diagnostic_passed",
+    "used_for_calibration": false,
+    "samples_ms": [
+     27293.21484375,
+     27324.53125,
+     26850.62109375
+    ],
+    "tile_jobs": 36864,
+    "completed_before_deadline": true,
+    "gpu_stage_last_persisted": "before_kernel_iteration",
+    "iteration_last_persisted": 3,
+    "elapsed_seconds_last_persisted": 81.93022712133825,
+    "remaining_seconds_last_persisted": 1118.0697728786618,
+    "failure_report_written": false
+   },
+   "rank1": {
+    "status": "diagnostic_passed",
+    "used_for_calibration": false,
+    "samples_ms": [
+     27292.73046875,
+     27322.931640625,
+     26850.37109375
+    ],
+    "tile_jobs": 36864,
+    "completed_before_deadline": true,
+    "gpu_stage_last_persisted": "before_kernel_iteration",
+    "iteration_last_persisted": 3,
+    "elapsed_seconds_last_persisted": 81.93031416647136,
+    "remaining_seconds_last_persisted": 1118.0696858335286,
+    "failure_report_written": false
+   },
+   "rank2": {
+    "status": "diagnostic_passed",
+    "used_for_calibration": false,
+    "samples_ms": [
+     27292.91015625,
+     27323.03125,
+     26850.31640625
+    ],
+    "tile_jobs": 36864,
+    "completed_before_deadline": true,
+    "gpu_stage_last_persisted": "before_kernel_iteration",
+    "iteration_last_persisted": 3,
+    "elapsed_seconds_last_persisted": 81.93029621895403,
+    "remaining_seconds_last_persisted": 1118.069703781046,
+    "failure_report_written": false
+   },
+   "rank3": {
+    "status": "diagnostic_passed",
+    "used_for_calibration": false,
+    "samples_ms": [
+     27292.69921875,
+     27322.896484375,
+     26850.328125
+    ],
+    "tile_jobs": 36864,
+    "completed_before_deadline": true,
+    "gpu_stage_last_persisted": "before_kernel_iteration",
+    "iteration_last_persisted": 3,
+    "elapsed_seconds_last_persisted": 81.93035835959017,
+    "remaining_seconds_last_persisted": 1118.0696416404098,
+    "failure_report_written": false
+   }
+  },
+  "fault_reproduced": false,
+  "interpretation": "isolated single-case replay under CUDA_LAUNCH_BLOCKING=1 passed on all four ranks. The 2026-10-03 unspecified launch failure is therefore not a deterministic single-point fault of this case. A single repetition cannot separate intermittent/scan-order/state-dependent behaviour from a transient device or driver event."
+ },
+ "blocking_defect": {
+  "class": "file_mode_masks_inherited_acl",
+  "detail": "the container wrote diagnostic-rank*.json, timings-rank*.json and progress-rank*.json as mode 0600 owned by root. A 0600 mode sets the file ACL mask to ---, which masks off the inherited user:gpuq-runner:rwx entry (getfacl shows #effective:---) even though the parent directory carries default:user:gpuq-runner:rwx.",
+  "contrast": "artifacts the driver reads successfully elsewhere (cuda-functional.*/rank*.json, checkpoint-rank*.json) are mode 0664",
+  "effect": "the driver (gpuq-runner) raised PermissionError at scripts/run_calibration_job.py:103 while reading diagnostic-rank0.json and exited 1",
+  "driver_stack_tail": "PermissionError: [Errno 13] Permission denied: '.../work/calibration-diagnostic-047ed4696f52-1/diagnostic-rank0.json'",
+  "missing_artifacts": [
+   "work/calibration-diagnostic-047ed4696f52-1/experiment.json",
+   "reports/server/calibration-diagnostic-047ed4696f52-1/"
+  ],
+  "manual_export_blocked": "src/weave/experiment_export.py::export_run requires run_dir/experiment.json, so the documented manual export fallback cannot run either"
+ },
+ "cleanup": {
+  "container_name": "weave-calibration-8ae752252bb5",
+  "exit_code": 0,
+  "termination_signal": null,
+  "cleanup_status": "not_required",
+  "no_weave_containers_after_run": true
+ },
+ "branch_decision": {
+  "rule": "resume the full experiment only when the command exits 0 and all four ranks report diagnostic_passed",
+  "satisfied": false,
+  "action": "stopped before model acceptance and both formal GPQA groups; no full-experiment run was submitted"
+ },
+ "recommended_fix": "keep a wide mode (0644/0664) for container-written JSON or chmod after writing so the inherited gpuq-runner ACL is not masked; alternatively validate the rank reports inside the container and let the driver read only an aggregate file"
+}
