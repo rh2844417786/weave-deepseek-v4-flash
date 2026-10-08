@@ -1,0 +1,1987 @@
+{
+  "status": "deadline",
+  "ready_monotonic": 4756485.154619328,
+  "deadline_monotonic": 4757685.154619328,
+  "record_sha256": "cdcba49397971a26d71b444c7a00785cff3f4cb305456b2acf70e2c0dc30f888",
+  "order_seed": 42,
+  "records": [
+    {
+      "row_index": 37,
+      "request_id": "weave-gpqa-179b9657e60f440793119723f65716da",
+      "input_tokens": 127,
+      "input_sha256": "b73b017ec312888d8cce66c6baf9b8a66c9fe81848174b375af595b8d9652a88",
+      "output_tokens": 0,
+      "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "finish_reason": null,
+      "status": "cache_flush_error",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "07018720a6ce0d995afd010ecc545f635e8395b7400b29974a31fc29a92e09c6"
+    },
+    {
+      "row_index": 41,
+      "request_id": "weave-gpqa-ac361b8bd02145209e4dba426cce8caa",
+      "input_tokens": 156,
+      "input_sha256": "71298bf1bcd3ad5de9d599d04b9fe91036ba60ccd4db3458a05691ff225878b0",
+      "output_tokens": 0,
+      "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "finish_reason": null,
+      "status": "cache_flush_error",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "24d3ee9489d70e2fe160f84ea9734fd98e0d386dd4fb44c585878573c47799d8"
+    },
+    {
+      "row_index": 280,
+      "request_id": "weave-gpqa-1e036239722e429f96a1198eceb9b77c",
+      "input_tokens": 138,
+      "input_sha256": "9869874b8a81c5498b9c486f0288b5b87cef45592b6fef7ef37fdca2cae50d70",
+      "output_tokens": 1936,
+      "output_sha256": "4709a42a3cd837dad2aaa34c9c2ca595a8b7ce7530676a8e6cf8e115b3634ff2",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.4433721844106913,
+      "decode_s": 170.96412448119372,
+      "decode_tokens": 1935,
+      "decode_tps": 11.318164005880968,
+      "tpot_s": 0.08835355270345929,
+      "server_timing": {
+        "request_received_s": 4756605.403405708,
+        "first_token_ready_s": 4756606.846777893,
+        "last_token_ready_s": 4756777.810902374,
+        "output_tokens": 1936,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "59b87e7426772e578e5184ff17b0dc5a4f205e1cf628d33794e75fe4fbd03589"
+    },
+    {
+      "row_index": 179,
+      "request_id": "weave-gpqa-a26bbccf5aa7415f8a1591978c33865e",
+      "input_tokens": 149,
+      "input_sha256": "7e87155ce38a53963035ac0cced44be14459bcad50a2949e9456f76529693852",
+      "output_tokens": 0,
+      "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "finish_reason": null,
+      "status": "cache_flush_error",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "6956774c69ecca750efe8c806fec7001964667703581113aaa5603c8b5917d76"
+    },
+    {
+      "row_index": 266,
+      "request_id": "weave-gpqa-c5e90e9409454ef5b1724e54c21260c2",
+      "input_tokens": 206,
+      "input_sha256": "afa984f07127eb1ad8b1ee0bd78c6e11de85c3ed534ceed9327c118a4167ffc6",
+      "output_tokens": 1001,
+      "output_sha256": "fb7b6b9d06f706966d059610ac4f712da6b74680114c36996cbfc54c279d5443",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.4816076532006264,
+      "decode_s": 88.95737210381776,
+      "decode_tokens": 1000,
+      "decode_tps": 11.241339265653545,
+      "tpot_s": 0.08895737210381777,
+      "server_timing": {
+        "request_received_s": 4756777.928705701,
+        "first_token_ready_s": 4756779.410313354,
+        "last_token_ready_s": 4756868.367685458,
+        "output_tokens": 1001,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "b7a2a1962c13dd8db0fc1c19d43a86a3c3023ef290491e36029f031d6fe82ece"
+    },
+    {
+      "row_index": 328,
+      "request_id": "weave-gpqa-eef9734e3e6b4e48bffaaabfd46b8f4b",
+      "input_tokens": 242,
+      "input_sha256": "7de3ed2d0edd9acbc942ade6dd5a09718b43f846d85e844059808b645f5dea3a",
+      "output_tokens": 0,
+      "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "finish_reason": null,
+      "status": "cache_flush_error",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "0f406db6d29d30963b0eb87585914b21ef1b12e679b21054b3bca4e410be6991"
+    },
+    {
+      "row_index": 169,
+      "request_id": "weave-gpqa-acb684aa2aee4527a2ae0834f0d39803",
+      "input_tokens": 147,
+      "input_sha256": "325122cbee46516d0ce0994a2db40b09b73c8eedae557ee898609a1df2afebb3",
+      "output_tokens": 3368,
+      "output_sha256": "54c323d3e0a2675001fd944fa6c28c1cb3f3636b15e0a8ed0387a9a4cd0e9276",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.1796462628990412,
+      "decode_s": 296.9957942198962,
+      "decode_tokens": 3367,
+      "decode_tps": 11.336860876578836,
+      "tpot_s": 0.08820783909114827,
+      "server_timing": {
+        "request_received_s": 4756868.489636093,
+        "first_token_ready_s": 4756869.669282356,
+        "last_token_ready_s": 4757166.665076576,
+        "output_tokens": 3368,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "6a801b5d3e82f7c6fb7cd55cd4966ea4ab916a746187781591fa598989dce029"
+    },
+    {
+      "row_index": 6,
+      "request_id": "weave-gpqa-bae731c676984e569d0734cc01675819",
+      "input_tokens": 124,
+      "input_sha256": "cb807afb98257c66cac22dddfbe2c4790dde9ae70e0ed249a813cec4a414dc43",
+      "output_tokens": 0,
+      "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "finish_reason": null,
+      "status": "cache_flush_error",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "c1cf1228432ea4b4575d138f5a5f76e0585f3886b5ce414b418afe0944839227"
+    },
+    {
+      "row_index": 109,
+      "request_id": "weave-gpqa-44891da0a285410286bb7a3c66714092",
+      "input_tokens": 213,
+      "input_sha256": "ab26a3513544707d120093760fcc8679d778a67d3c31393cfcb3c057205798b5",
+      "output_tokens": 1325,
+      "output_sha256": "719e2e60d261390ea0c57d4be8f4c8f5c3d0f81334998c6139ebc9cce5c94c24",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.645305184647441,
+      "decode_s": 117.39216717891395,
+      "decode_tokens": 1324,
+      "decode_tps": 11.278435621536236,
+      "tpot_s": 0.08866477883603772,
+      "server_timing": {
+        "request_received_s": 4757166.790507644,
+        "first_token_ready_s": 4757168.435812829,
+        "last_token_ready_s": 4757285.827980008,
+        "output_tokens": 1325,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "47a183cab6d614085af4f665d2882e33f1b6522a2981a84fad089d208b87395f"
+    },
+    {
+      "row_index": 120,
+      "request_id": "weave-gpqa-5531b2fa37464100acf22001973f7408",
+      "input_tokens": 121,
+      "input_sha256": "2d34390838fc7b71e6864159d072adb8d2a74fdca41a7b0449c37f132e281f04",
+      "output_tokens": 0,
+      "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "finish_reason": null,
+      "status": "cache_flush_error",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "ec7bb1709caa526e73274feffa6630849150a4d7e66a9d82cd3ba085e886cbff"
+    },
+    {
+      "row_index": 144,
+      "request_id": "weave-gpqa-5f8b3cd75dcf4066aa910459b2973c46",
+      "input_tokens": 194,
+      "input_sha256": "801dc21c92fe1b08d74ef8904f1cd6edf22067c096baec7717957edf93c43f3f",
+      "output_tokens": 4509,
+      "output_sha256": "641760e407ff170ed865cda12f83e01d106e2d8ad65465c3bf417ec29b3d7cdf",
+      "finish_reason": null,
+      "status": "deadline",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "c56fb7d1a4c61042ad87702dd0b6b18e971e984b3951080429591712287bb6d8"
+    }
+  ],
+  "warmups": [
+    {
+      "row_index": 37,
+      "request_id": "weave-gpqa-bd9473f47ea0426eb46db06efcd6d73b",
+      "input_tokens": 127,
+      "input_sha256": "b73b017ec312888d8cce66c6baf9b8a66c9fe81848174b375af595b8d9652a88",
+      "output_tokens": 1334,
+      "output_sha256": "d5842aafc82a4e716afacd9e078c1a6ddac5f4a52da9ae593c321a49f96d8f63",
+      "finish_reason": null,
+      "status": "deadline",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "07018720a6ce0d995afd010ecc545f635e8395b7400b29974a31fc29a92e09c6"
+    }
+  ],
+  "warmup_count": 1,
+  "timeout_count": 1,
+  "warmup_timeout_count": 1,
+  "raw_artifact_relative_path": null,
+  "raw_artifact_directory": "/srv/weave-work/gpqa/f20f1a1565164ac7a10c91934c2dbd5c",
+  "request_settings": {
+    "sampling_params": {
+      "temperature": 0,
+      "max_new_tokens": 32768,
+      "ignore_eos": false
+    },
+    "return_logprob": true,
+    "top_logprobs_num": 10,
+    "return_text_in_logprobs": false,
+    "stream": true
+  },
+  "completed_count": 4,
+  "decode_tokens": 7626,
+  "decode_s": 674.3094579838216,
+  "decode_tps": 11.309347525395332,
+  "tpot_s": 0.08842243089218747,
+  "mean_ttft_s": 1.43748282128945,
+  "output_tokens": 7630,
+  "input_tokens": 704,
+  "reason_counts": {
+    "cache_flush_error": 6,
+    "stop": 4,
+    "deadline": 1
+  },
+  "attempted_count": 11,
+  "unattempted_count": 437,
+  "coverage": {
+    "status": "passed",
+    "scope": "43_layer_request_execution",
+    "graph_required": true,
+    "ranks": {
+      "0": {
+        "0": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "1": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "2": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "3": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "4": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "5": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "6": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "7": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "8": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "9": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "10": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "11": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "12": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "13": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "14": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "15": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "16": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "17": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "18": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "19": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "20": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "21": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "22": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "23": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "24": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "25": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "26": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "27": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "28": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "29": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "30": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "31": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "32": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "33": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "34": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "35": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "36": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "37": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "38": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "39": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "40": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "41": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        },
+        "42": {
+          "device_delta": [
+            6,
+            13476,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13476
+        }
+      },
+      "1": {
+        "0": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "1": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "2": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "3": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "4": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "5": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "6": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "7": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "8": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "9": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "10": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "11": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "12": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "13": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "14": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "15": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "16": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "17": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "18": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "19": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "20": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "21": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "22": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "23": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "24": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "25": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "26": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "27": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "28": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "29": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "30": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "31": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "32": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "33": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "34": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "35": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "36": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "37": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "38": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "39": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "40": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "41": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "42": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        }
+      },
+      "2": {
+        "0": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "1": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "2": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "3": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "4": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "5": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "6": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "7": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "8": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "9": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "10": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "11": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "12": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "13": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "14": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "15": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "16": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "17": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "18": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "19": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "20": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "21": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "22": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "23": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "24": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "25": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "26": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "27": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "28": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "29": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "30": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "31": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "32": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "33": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "34": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "35": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "36": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "37": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "38": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "39": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "40": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "41": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "42": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        }
+      },
+      "3": {
+        "0": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "1": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "2": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "3": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "4": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "5": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "6": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "7": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "8": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "9": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "10": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "11": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "12": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "13": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "14": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "15": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "16": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "17": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "18": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "19": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "20": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "21": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "22": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "23": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "24": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "25": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "26": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "27": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "28": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "29": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "30": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "31": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "32": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "33": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "34": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "35": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "36": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "37": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "38": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "39": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "40": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "41": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        },
+        "42": {
+          "device_delta": [
+            6,
+            13477,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 13477
+        }
+      }
+    }
+  },
+  "runtime": {
+    "captured_utc": "2026-10-08T07:53:16.477536+00:00",
+    "kernel_source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+    "container_hostname": "h100-8",
+    "host_hostname": "h100-8",
+    "requested_image": "lmsysorg/sglang:v0.5.17",
+    "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+    "host_gpu_allocation": "4,5,6,7",
+    "python": "3.12.3",
+    "python_executable": "/usr/bin/python3",
+    "packages": {
+      "torch": "2.11.0+cu130",
+      "sglang": "0.5.17",
+      "transformers": "5.12.1",
+      "triton": "3.6.0",
+      "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+      "flashinfer-python": "0.6.15.post1"
+    },
+    "torch_cuda": "13.0",
+    "cuda_available": true,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 1,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 2,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 3,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      }
+    ],
+    "nvcc_release": "13.0",
+    "cuda_home": "/usr/local/cuda",
+    "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+    "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+    "adapter_source_sha256": {
+      "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+      "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+      "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+      "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+      "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+      "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+      "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+      "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334",
+      "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+      "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+      "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+      "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+      "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+      "srt/entrypoints/http_server.py": "1de1fbce4c87b11b01ab99c802d0684053dc4539b95d8b3a8d88c80d7d238e9a",
+      "srt/observability/req_time_stats.py": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9",
+      "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+      "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+      "srt/layers/logits_processor.py": "cf3f0f71ff54870362698ebf2b67ced9d668ee59bfc9e0e97510f6f99a4aa016",
+      "srt/layers/logprob_processor.py": "d8fc9ce621d3130f6c586b6288e888c2d4cc117336f86e8384f9486d49d3048d",
+      "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1"
+    },
+    "validation_stage": "adapter",
+    "validation_errors": [],
+    "runtime_status": "passed",
+    "expected_contract": {
+      "image": "lmsysorg/sglang:v0.5.17",
+      "python_executable": "/usr/bin/python3",
+      "python_version": "3.12.3",
+      "torch_version": "2.11.0+cu130",
+      "torch_cuda": "13.0",
+      "nvcc_release": "13.0",
+      "sglang_version": "0.5.17",
+      "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+      "transformers_version": "5.12.1",
+      "work_directory": "work",
+      "gpu_allocation": "4,5,6,7",
+      "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+    }
+  },
+  "server_run_directory": "/srv/weave-work/native-ep-9d9ee0d02724-formal-weave",
+  "cleanup": {
+    "container_name": "weave-native-ep-c4b9990cc7d7",
+    "started_utc": "2026-10-08T07:53:14.863894+00:00",
+    "termination_signal": 15,
+    "exit_code": 143,
+    "cleanup_status": "absent",
+    "cleanup_attempts": [
+      {
+        "command": [
+          "docker",
+          "stop",
+          "--timeout",
+          "2",
+          "weave-native-ep-c4b9990cc7d7"
+        ],
+        "error": "TimeoutExpired: Command '['docker', 'stop', '--timeout', '2', 'weave-native-ep-c4b9990cc7d7']' timed out after 3 seconds"
+      },
+      {
+        "command": [
+          "docker",
+          "rm",
+          "--force",
+          "weave-native-ep-c4b9990cc7d7"
+        ],
+        "returncode": 0,
+        "stdout": "weave-native-ep-c4b9990cc7d7\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "docker",
+          "inspect",
+          "--format",
+          "{{.State.Running}}",
+          "weave-native-ep-c4b9990cc7d7"
+        ],
+        "returncode": 1,
+        "stdout": "\n",
+        "stderr": "error: no such object: weave-native-ep-c4b9990cc7d7\n"
+      }
+    ],
+    "finished_utc": "2026-10-08T08:24:45.365233+00:00"
+  }
+}

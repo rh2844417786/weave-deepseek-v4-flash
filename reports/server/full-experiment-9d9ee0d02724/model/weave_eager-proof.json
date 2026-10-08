@@ -1,0 +1,6490 @@
+{
+  "status": "passed",
+  "input_sha256": "b73b017ec312888d8cce66c6baf9b8a66c9fe81848174b375af595b8d9652a88",
+  "row_index": 37,
+  "coverage_before": [
+    {
+      "rank": 0,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "cd9d0190d057a40144a7b81a128225a512a9fa696e6853d79567b3fae52989e8",
+      "layers": {
+        "0": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "rank": 1,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "40237745fa4ef7e1720f0f429216b85628658ea81f5c852fb50b0751dad85774",
+      "layers": {
+        "0": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "e59c15a497e7cc8c3645250c15cfae91df83b0b810e79ac3a1f5122401ef83b9",
+      "layers": {
+        "0": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "rank": 3,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "b111176672181b698091a06831a29590cd6cc24af6bd6e17ae6057d7009c02ec",
+      "layers": {
+        "0": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            1,
+            8,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 8,
+          "python_calls": {
+            "prefill": 1,
+            "decode": 8,
+            "other": 0
+          }
+        }
+      }
+    }
+  ],
+  "coverage_after": [
+    {
+      "rank": 0,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "cd9d0190d057a40144a7b81a128225a512a9fa696e6853d79567b3fae52989e8",
+      "layers": {
+        "0": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "rank": 1,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "40237745fa4ef7e1720f0f429216b85628658ea81f5c852fb50b0751dad85774",
+      "layers": {
+        "0": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "e59c15a497e7cc8c3645250c15cfae91df83b0b810e79ac3a1f5122401ef83b9",
+      "layers": {
+        "0": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        }
+      }
+    },
+    {
+      "rank": 3,
+      "kernel": "tiled",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "graph_enabled": false,
+      "schedule_mode": "measured_dynamic",
+      "profile_checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+      "profile_bank_sha256": "b111176672181b698091a06831a29590cd6cc24af6bd6e17ae6057d7009c02ec",
+      "layers": {
+        "0": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "1": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "2": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "3": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "4": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "5": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "6": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "7": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "8": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "9": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "10": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "11": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "12": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "13": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "14": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "15": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "16": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "17": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "18": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "19": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "20": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "21": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "22": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "23": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "24": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "25": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "26": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "27": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "28": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "29": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "30": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "31": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "32": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "33": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "34": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "35": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "36": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "37": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "38": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "39": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "40": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "41": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        },
+        "42": {
+          "device_calls": [
+            2,
+            16,
+            0
+          ],
+          "capture_calls": 0,
+          "python_decode_calls": 16,
+          "python_calls": {
+            "prefill": 2,
+            "decode": 16,
+            "other": 0
+          }
+        }
+      }
+    }
+  ],
+  "coverage_check": {
+    "status": "passed",
+    "scope": "43_layer_request_execution",
+    "graph_required": false,
+    "ranks": {
+      "0": {
+        "0": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "1": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "2": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "3": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "4": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "5": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "6": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "7": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "8": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "9": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "10": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "11": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "12": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "13": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "14": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "15": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "16": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "17": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "18": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "19": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "20": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "21": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "22": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "23": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "24": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "25": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "26": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "27": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "28": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "29": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "30": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "31": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "32": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "33": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "34": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "35": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "36": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "37": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "38": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "39": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "40": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "41": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "42": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        }
+      },
+      "1": {
+        "0": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "1": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "2": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "3": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "4": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "5": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "6": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "7": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "8": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "9": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "10": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "11": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "12": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "13": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "14": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "15": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "16": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "17": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "18": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "19": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "20": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "21": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "22": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "23": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "24": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "25": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "26": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "27": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "28": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "29": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "30": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "31": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "32": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "33": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "34": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "35": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "36": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "37": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "38": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "39": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "40": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "41": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "42": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        }
+      },
+      "2": {
+        "0": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "1": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "2": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "3": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "4": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "5": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "6": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "7": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "8": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "9": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "10": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "11": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "12": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "13": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "14": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "15": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "16": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "17": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "18": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "19": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "20": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "21": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "22": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "23": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "24": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "25": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "26": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "27": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "28": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "29": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "30": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "31": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "32": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "33": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "34": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "35": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "36": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "37": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "38": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "39": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "40": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "41": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "42": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        }
+      },
+      "3": {
+        "0": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "1": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "2": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "3": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "4": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "5": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "6": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "7": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "8": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "9": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "10": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "11": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "12": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "13": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "14": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "15": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "16": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "17": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "18": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "19": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "20": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "21": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "22": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "23": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "24": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "25": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "26": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "27": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "28": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "29": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "30": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "31": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "32": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "33": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "34": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "35": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "36": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "37": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "38": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "39": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "40": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "41": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        },
+        "42": {
+          "device_delta": [
+            1,
+            8,
+            0
+          ],
+          "python_decode_delta": 8,
+          "graph_replay_lower_bound": 0
+        }
+      }
+    }
+  },
+  "native_comparison": {
+    "status": "recorded",
+    "used_for_acceptance": false,
+    "scope": "first_token_and_top_logprobs_only",
+    "first_token_matches": true,
+    "first_token_logprob_delta": 3.576271865313174e-07,
+    "top_logprob_support_matches": false,
+    "max_abs_common_logprob_delta": 0.625,
+    "max_abs_logprob_delta": 0.625,
+    "matched_generated_tokens": 8,
+    "native_only_count": 2,
+    "weave_only_count": 2,
+    "common_count": 8
+  }
+}

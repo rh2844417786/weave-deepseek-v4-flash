@@ -1,0 +1,47 @@
+{
+  "status": "compared",
+  "common_completed_row_ids": [
+    109,
+    169,
+    266,
+    280
+  ],
+  "identity_mismatch_row_ids": [],
+  "native": {
+    "completed_count": 4,
+    "decode_tokens": 8889,
+    "decode_s": 82.58318335469812,
+    "decode_tps": 107.63692605335137,
+    "tpot_s": 0.009290491996253586,
+    "mean_ttft_s": 0.26160289137624204,
+    "output_tokens": 8893,
+    "input_tokens": 704,
+    "reason_counts": {
+      "stop": 4
+    }
+  },
+  "weave": {
+    "completed_count": 4,
+    "decode_tokens": 7626,
+    "decode_s": 674.3094579838216,
+    "decode_tps": 11.309347525395332,
+    "tpot_s": 0.08842243089218747,
+    "mean_ttft_s": 1.43748282128945,
+    "output_tokens": 7630,
+    "input_tokens": 704,
+    "reason_counts": {
+      "stop": 4
+    }
+  },
+  "relative_decode_speed": 0.10506940266753563,
+  "native_completed_count": 15,
+  "weave_completed_count": 4,
+  "quality_diagnostics": {
+    "different_output_row_ids": [
+      109,
+      169,
+      266,
+      280
+    ]
+  }
+}

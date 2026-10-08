@@ -1,0 +1,35 @@
+{
+  "container_name": "weave-calibration-58a1e6378e12",
+  "started_utc": "2026-10-08T06:05:59.934483+00:00",
+  "termination_signal": 15,
+  "exit_code": 124,
+  "cleanup_status": "stopped",
+  "deadline_expired": true,
+  "cleanup_attempts": [
+    {
+      "command": [
+        "docker",
+        "stop",
+        "--timeout",
+        "2",
+        "weave-calibration-58a1e6378e12"
+      ],
+      "returncode": 0,
+      "stdout": "weave-calibration-58a1e6378e12\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{{.State.Running}}",
+        "weave-calibration-58a1e6378e12"
+      ],
+      "returncode": 0,
+      "stdout": "false\n",
+      "stderr": ""
+    }
+  ],
+  "finished_utc": "2026-10-08T06:26:14.636899+00:00"
+}
