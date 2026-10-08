@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "scope": "formal_gpqa_budgeted_comparison",
+  "run_id": "8c14e090e30e",
+  "started_utc": "2026-10-08T03:25:50.853101+00:00",
+  "kernel": "tiled",
+  "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+  "timing_source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+  "steps": {
+    "core": {
+      "status": "passed",
+      "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+      "source_sha256": "9906ca7c29a1aca1ac74a20d2020ddb8f35d419371e0dc25bb42794b1fbc3623",
+      "checkpoint_index_sha256": "7e975ba3bef8947a94e7da0abd60888375b232b4dfad883d59653e65c6ba522a",
+      "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226"
+    }
+  },
+  "physical_gpus": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "acceptance_policy": {
+    "logprob": "record_only",
+    "top_logprob_support": "record_only"
+  },
+  "performance": "not_run",
+  "raw_content_exported": false,
+  "dataset_record_sha256": "cdcba49397971a26d71b444c7a00785cff3f4cb305456b2acf70e2c0dc30f888",
+  "core_run_dir": "/srv/weave-work/cuda-functional.047ed4696f52",
+  "calibration_dir": "/srv/weave-work/calibration.047ed4696f52",
+  "error": "CalledProcessError: Command '['/usr/bin/python3', '/home/jovyan/wangtonghan/weave-deepseek-v4-flash/scripts/run_calibration_job.py', '--model-path', '/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash', '--work-root', '/srv/weave-work', '--core-run-dir', '/srv/weave-work/cuda-functional.047ed4696f52', '--output-dir', '/srv/weave-work/calibration.047ed4696f52', '--lifecycle-path', '/srv/weave-work/full-experiment-8c14e090e30e/calibration-0-lifecycle.json', '--invocation-id', '8c14e090e30e-0', '--resume']' returned non-zero exit status 1.",
+  "finished_utc": "2026-10-08T03:29:43.353403+00:00",
+  "export_directory": "/home/jovyan/wangtonghan/weave-deepseek-v4-flash/reports/server/full-experiment-8c14e090e30e",
+  "export_error": "OSError: [Errno 122] Disk quota exceeded"
+}
