@@ -18,6 +18,7 @@ from src.weave.ops import kernel_source_sha256
 from src.weave.service_acceptance import validate_checkpoint_gate
 from src.weave.checkpoint_identity import checkpoint_identity, checkpoint_stats
 from scripts.check_sglang_service import wait_ready, check_service
+from src.weave.gpu_allocation import allocated_gpus
 
 
 def assert_ports_free(ports):
@@ -105,8 +106,9 @@ def main():
     parser.add_argument('--controller-lifecycle', type=Path, help='outer orchestrator cleanup handshake file')
     parser.add_argument('--profile', type=Path, help='measured profile bank for dynamic tiled model validation')
     args = parser.parse_args()
-    if os.environ.get('CUDA_VISIBLE_DEVICES') != '4,5,6,7':
-        parser.error('GPUQ allocation must be 4,5,6,7')
+    try: allocation=allocated_gpus()
+    except ValueError as error: parser.error(str(error))
+    os.environ['CUDA_VISIBLE_DEVICES']=allocation.csv
     if not args.work_root.is_absolute() or not args.model_path.is_absolute():
         parser.error('model-path and work-root must be absolute')
     if not args.records.is_file():
@@ -133,6 +135,7 @@ def main():
     out = args.work_root/f'model-acceptance-{run_id}'
     out.mkdir()
     report = {'status': 'running', 'source_sha256': kernel_source_sha256(),
+              'physical_gpus':list(allocation.ids),'host_gpu_allocation':allocation.csv,
               'kernel': args.kernel, 'scope': 'correctness_and_graph_acceptance', 'performance': 'not_run',
               'steps': {}, 'server_runs': {},
               'acceptance_policy': {'logprob': 'record_only', 'top_logprob_support': 'record_only'}}
@@ -190,8 +193,9 @@ def main():
                         raise ValueError('checkpoint changed during service loading')
                     actual = json.loads((args.work_root/name/'runtime.json').read_text())
                     if (actual['resolved_image_id'] != runtime['resolved_image_id'] or actual['runtime_status'] != 'passed'
-                            or actual['kernel_source_sha256'] != report['source_sha256']):
-                        raise ValueError('service image/runtime differs from passed checkpoint gate')
+                            or actual['kernel_source_sha256'] != report['source_sha256']
+                            or actual.get('host_gpu_allocation')!=allocation.csv):
+                        raise ValueError('service image/runtime/allocation differs from passed checkpoint gate')
                     target = native if label == 'native' else out/f'{label}-request.json'
                     result = check_service(url, args.records, target, weave=backend == 'weave_functional',
                         graph=label == 'weave_graph', evidence_port=args.evidence_port_base,

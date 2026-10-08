@@ -22,7 +22,7 @@ core 使用 device valid-count 与 epoch，提供独立 CUDA Graph replay 检查
 
 ## 服务器验证顺序
 
-在 GPUQ 分配 GPU 4–7 的作业中，先运行小张量核心检查：
+在 GPUQ 分配四张 H100 的作业中，先运行小张量核心检查：
 
 ```bash
 git pull --ff-only

@@ -3,8 +3,10 @@
 # allocated H100s. This job does not load the full model or measure performance.
 set -euo pipefail
 : "${CUDA_VISIBLE_DEVICES:?GPUQ must supply its allocation}"
-[[ "$CUDA_VISIBLE_DEVICES" == '4,5,6,7' ]] || { echo 'Expected GPU allocation 4,5,6,7' >&2; exit 2; }
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CUDA_VISIBLE_DEVICES="$(python3 "$repo_root/scripts/check_gpu_allocation.py")"
+export CUDA_VISIBLE_DEVICES
+container_visible="$(python3 "$repo_root/scripts/check_gpu_allocation.py" --container-visible)"
 WORK_ROOT="${WORK_ROOT:-$repo_root/work}"
 [[ "$WORK_ROOT" == /* ]] || { echo 'WORK_ROOT must be absolute' >&2; exit 2; }
 image_ref="${IMAGE:-$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["image"])' "$repo_root/configs/runtime.json")}"
@@ -38,7 +40,7 @@ python3 "$repo_root/scripts/manage_container.py" --name "$container_name" \
   --exit-code-file "$run_dir/exit_code.txt" -- \
   docker run --rm --name "$container_name" --pull=never --gpus "\"device=${CUDA_VISIBLE_DEVICES}\"" --network=host --shm-size=8g \
   -v "$repo_root:/workspace:ro" -v "$WORK_ROOT:/work" ${extra_mounts[@]+"${extra_mounts[@]}"} -w /workspace \
-  -e CUDA_VISIBLE_DEVICES=0,1,2,3 -e GLOO_SOCKET_IFNAME=lo \
+  -e "CUDA_VISIBLE_DEVICES=$container_visible" -e GLOO_SOCKET_IFNAME=lo \
   -e "WEAVE_IMAGE_REF=$image_ref" -e "WEAVE_IMAGE_ID=$image_id" \
   -e "WEAVE_HOST_HOSTNAME=$(hostname)" -e "WEAVE_HOST_ALLOCATION=$CUDA_VISIBLE_DEVICES" \
   -e TORCH_EXTENSIONS_DIR=/work/torch_extensions -e MAX_JOBS=2 \

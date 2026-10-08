@@ -3,7 +3,7 @@
 #
 # Two host quirks are load-bearing here:
 #   * Docker CLI 29 parses an unquoted comma-separated device list as both a
-#     count and DeviceIDs: "device=4,5,6,7" becomes {Count: 7, DeviceIDs: ["4"]}
+#     count and DeviceIDs. A CSV list must remain one inner-quoted argument.
 #     and the daemon rejects the run with "cannot set both Count and DeviceIDs".
 #     Keep the inner quotes as part of the argument. Same convention as
 #     moe-flex/scripts/server/run_container.sh.
@@ -17,6 +17,9 @@ set -euo pipefail
 : "${CUDA_VISIBLE_DEVICES:?GPUQ must export CUDA_VISIBLE_DEVICES}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CUDA_VISIBLE_DEVICES="$(python3 "$REPO_ROOT/scripts/check_gpu_allocation.py")"
+export CUDA_VISIBLE_DEVICES
+CONTAINER_VISIBLE="$(python3 "$REPO_ROOT/scripts/check_gpu_allocation.py" --container-visible)"
 MODEL_PATH="${MODEL_PATH:-/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash}"
 WORK_ROOT="${WORK_ROOT:-$REPO_ROOT/work}"
 [[ "$WORK_ROOT" == /* ]] || { echo 'WORK_ROOT must be absolute' >&2; exit 2; }
@@ -55,7 +58,7 @@ docker run --rm --name "$CONTAINER_NAME" --pull=never \
   -v "${REPO_ROOT}:/workspace:ro" -v "${WORK_ROOT}:/work" \
   -v "${MODEL_PATH}:${MODEL_PATH}:ro" \
   -w /workspace \
-  -e CUDA_VISIBLE_DEVICES=0,1,2,3 \
+  -e "CUDA_VISIBLE_DEVICES=$CONTAINER_VISIBLE" \
   -e "WEAVE_IMAGE_REF=$IMAGE" -e "WEAVE_IMAGE_ID=$IMAGE_ID" \
   -e "WEAVE_HOST_HOSTNAME=$(hostname)" -e "WEAVE_HOST_ALLOCATION=$CUDA_VISIBLE_DEVICES" \
   "${IMAGE_ID}" \

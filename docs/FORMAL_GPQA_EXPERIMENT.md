@@ -6,7 +6,7 @@
 
 先按 [离线准备说明](RUNTIME_0517.md#服务器网络与离线准备) 准备 Main 448 题 Think High token ID 清单。服务器使用已有 `lmsysorg/sglang:v0.5.17`、本地原版混合精度 checkpoint，不安装在线依赖或拉取镜像。
 
-在 GPUQ 已分配物理 GPU **4,5,6,7** 的作业内，仓库根目录执行：
+在 GPUQ 已分配四张 H100、并提供 `CUDA_VISIBLE_DEVICES` 的作业内，仓库根目录执行：
 
 ```bash
 git pull --ff-only

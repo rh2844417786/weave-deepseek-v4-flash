@@ -5,7 +5,7 @@
 ## 已确定
 
 - 使用用户指定的原版权重，首选 `/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash`；`/mnt/docker_data/models/DeepSeek-V4-Flash` 是用户报告的副本。两份索引的 MD5 相同是用户提供的信息，尚不能代替全部分片完整性检查。
-- 使用 `CUDA_VISIBLE_DEVICES=4,5,6,7`，两组 routed-MoE 均以 EP=4 为目标，保持相同专家划分及 attention/dense 并行布局。先验证原生 SGLang 对原版混合精度权重的 EP 支持，再接入 Weave。原生 TP-only 与 Weave EP 的速度差不作为本实验的同拓扑主对照。
+- 使用调度器设置的四卡 `CUDA_VISIBLE_DEVICES`，两组 routed-MoE 均以 EP=4 为目标，保持相同专家划分及 attention/dense 并行布局。先验证原生 SGLang 对原版混合精度权重的 EP 支持，再接入 Weave。原生 TP-only 与 Weave EP 的速度差不作为本实验的同拓扑主对照。
 - GPQA Main，batch/concurrency=1，Think High，最多生成 32768 tokens，允许正常 EOS；正式对照仅为原生 SGLang 与完整 Weave，每组服务 ready 后最多 1200 秒。
 - 用户提供的 `launch_sglang_original.sh` 和 `launch_sglang_dace.sh` 属于旧 Qwen/DACE 环境：两组使用 `/opt/sglang-v4/bin/python`、GPU 4–7、TP=4、context-length=131072、完整 decode CUDA Graph 等；三处差异是模型路径、外部模型注册、MoE runner。它们不能直接当成 DeepSeek-V4-Flash 的已验证启动配置，DACE 不加入当前正式对照。
 
@@ -27,13 +27,13 @@ TP 与 EP 参数可以共存。SGLang 的 EP 文档给出 `--tp 8 --ep 8` 等配
 2. 在能读取原版权重的环境运行只读检查：
 
    ```bash
-   CUDA_VISIBLE_DEVICES=4,5,6,7 /opt/sglang-v4/bin/python scripts/preflight_deepseek_v4.py \
+   /opt/sglang-v4/bin/python scripts/preflight_deepseek_v4.py \
      --model-path /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash \
      --output results/deepseek_v4_preflight.json
    ```
 
    此脚本检查模型架构、MXFP4 routed experts 的配置或分片头证据、索引列出的分片是否存在及其总字节数，记录配置/索引 SHA256、Python/包版本和 GPU 清单。它不读取完整权重内容，也不证明模型能生成。服务器可使用 `scripts/run_preflight_gpuq.sh` 通过 GPUQ 在其锁定镜像中执行。
-3. 在锁定的同一 SGLang runtime 上，用 GPU 4–7 验证原生 DeepSeek-V4-Flash 的 EP=4 路径，记录完整命令、实际 EP size、每 rank 专家归属、dispatch/combine 后端、MoE/attention 后端、权重显存和 CUDA Graph 状态；运行固定短输入并保存真实输出及错误。仅有服务 ready 或 TP 参数不能证明 EP 已生效。失败时定位并记录具体的格式/内核/通信/内存缺口。
+3. 在锁定的同一 SGLang runtime 上，用调度器分配的四张 H100 验证原生 DeepSeek-V4-Flash 的 EP=4 路径，记录完整命令、实际 EP size、每 rank 专家归属、dispatch/combine 后端、MoE/attention 后端、权重显存和 CUDA Graph 状态；运行固定短输入并保存真实输出及错误。仅有服务 ready 或 TP 参数不能证明 EP 已生效。失败时定位并记录具体的格式/内核/通信/内存缺口。
 4. 按原生组相同的 EP=4 划分设计 MXFP4 专家计算、top-6 路由、共享专家和 SGLang V4 adapter。先通过数值/路由/多卡/graph 正确性，再做同拓扑对照。若原生 runtime 确需新增 EP 适配，该改动及基线名称必须如实记录，不能称为未经修改的原生支持。当前没有任何这一阶段的 GPU 结果。
 
 ## 待外部回传

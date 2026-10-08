@@ -27,6 +27,7 @@ from src.weave.request_timing import source_sha256 as timing_source_sha256
 from src.weave.runtime_contract import load_contract
 from src.weave.service_acceptance import validate_coverage_delta
 from src.weave.calibration import measuring_deadline
+from src.weave.gpu_allocation import allocated_gpus
 
 
 def archive_evidence(report,run_dir,destination):
@@ -69,7 +70,9 @@ def calibration_command(args,core,cal,lifecycle,invocation):
 def main():
     contract=load_contract()
     args,parser=parse_args()
-    if os.environ.get('CUDA_VISIBLE_DEVICES')!='4,5,6,7': parser.error('GPUQ allocation must be4,5,6,7')
+    try: allocation=allocated_gpus()
+    except ValueError as error: parser.error(str(error))
+    os.environ['CUDA_VISIBLE_DEVICES']=allocation.csv
     if not args.work_root.is_absolute() or not args.model_path.is_absolute(): parser.error('absolute model/work paths required')
     if not args.records.is_file(): parser.error('prepare pinned448-row Think High IDs offline before submitting')
     _,prepared=_load_records(args.records)
@@ -95,7 +98,7 @@ def main():
             'run_id':run_id,'started_utc':datetime.now(timezone.utc).isoformat(),
             'kernel':'tiled','source_sha256':source,'timing_source_sha256':timing_source_sha256(),
             'calibration_kernel_timeout_seconds':args.calibration_kernel_timeout_seconds,
-            'steps':ledger.steps,'physical_gpus':[4,5,6,7],
+            'steps':ledger.steps,'physical_gpus':list(allocation.ids),'host_gpu_allocation':allocation.csv,
             'acceptance_policy':{'logprob':'record_only','top_logprob_support':'record_only'},
             'performance':'not_run','raw_content_exported':False,
             'dataset_record_sha256':prepared['record_sha256']}
@@ -198,8 +201,10 @@ def main():
                     if checkpoint_stats(args.model_path)!=identity['verified_stats']:
                         raise ValueError('checkpoint changed before formal group')
                     runtime=json.loads((args.work_root/name/'runtime.json').read_text())
-                    if runtime['resolved_image_id']!=image or runtime['runtime_status']!='passed' or runtime['kernel_source_sha256']!=source:
-                        raise ValueError('formal runtime/image/source differs from passed gates')
+                    if (runtime['resolved_image_id']!=image or runtime['runtime_status']!='passed'
+                            or runtime['kernel_source_sha256']!=source
+                            or runtime.get('host_gpu_allocation')!=allocation.csv):
+                        raise ValueError('formal runtime/image/source/allocation differs from passed gates')
                     before=coverage(args.evidence_port_base) if backend=='weave_functional' else None
                     if before: validate_tiled_snapshot_metadata(before,core_gate,profiles)
                     benchmark_active=True

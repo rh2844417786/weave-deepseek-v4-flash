@@ -15,6 +15,7 @@ import re
 import subprocess
 from datetime import datetime,timezone
 import xml.etree.ElementTree as ET
+from .gpu_allocation import allocated_gpus
 
 KERNEL = 'tiled_mxfp4_tile_v1'
 BUCKETS = (1, 64, 256, 1024, 2048)
@@ -65,15 +66,17 @@ def atomic_json(path, value):
             temporary.unlink(missing_ok=True)
 
 
-def capture_gpu_snapshot():
+def capture_gpu_snapshot(allocation=None):
     """Optional host-driver context for the four leased physical devices.
 
     Select only hardware fields; do not publish unrelated process inventories.
     Missing tools/fields are explicit and never become an acceptance gate.
     """
-    value={'captured_utc':datetime.now(timezone.utc).isoformat(),'physical_gpus':[4,5,6,7]}
+    value={'captured_utc':datetime.now(timezone.utc).isoformat()}
     try:
-        output=subprocess.run(['nvidia-smi','-q','-x','-i','4,5,6,7'],
+        allocation=allocation or allocated_gpus()
+        value['physical_gpus']=list(allocation.ids)
+        output=subprocess.run(['nvidia-smi','-q','-x','-i',allocation.csv],
             capture_output=True,text=True,timeout=10,check=True)
         xml=ET.fromstring(output.stdout)
         devices=[]
