@@ -33,7 +33,12 @@ def _encoded(value):
 
 
 def atomic_json(path, value):
-    """Publish a complete JSON document via fsync+replace in the same directory."""
+    """Publish calibration JSON with a readable host/container ACL mask.
+
+    NamedTemporaryFile starts at0600, masking inherited named-user ACLs.
+    Keep the group class readable before replace so the GPUQ host can read
+    root-container artifacts. This helper contains no raw GPQA payloads.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     content = _encoded(value) + b'\n'
@@ -43,6 +48,7 @@ def atomic_json(path, value):
             temporary = Path(stream.name)
             stream.write(content)
             stream.flush()
+            os.fchmod(stream.fileno(),0o664)
             os.fsync(stream.fileno())
         os.replace(temporary, path)
         temporary = None

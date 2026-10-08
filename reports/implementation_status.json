@@ -5,7 +5,7 @@
     "torch": "2.11.0+cu130",
     "cuda": "13.0",
     "work_root_default": "<repo>/work",
-    "actual_current_server_validation": "tiled_core_reported_passed_calibration_failed_after285_points_per_rank_raw_work_pending"
+    "actual_current_server_validation": "isolated_case_reported_passed_all4_gpu_container0_host_driver1_due_json_acl_mask_full_calibration_not_resumed"
   },
   "source": {
     "persistent_ep_kernel": "implemented_scalar_mxfp4_functional_path",
@@ -15,7 +15,7 @@
     "bubble_stealing": "tile_work_unit_implemented_new_source_gpu_validation_pending",
     "sglang_adapter": "eager_and_batch1_graph_server_reported_passed_20_source_files_locked",
     "native_fallback": "not_provided",
-    "tensor_core": "grouped_M16_N64_tiled_core_server_reported_passed_calibration_fault_pending_replay",
+    "tensor_core": "grouped_M16_N64_core_and_isolated_case_server_reported_passed_full_calibration_pending",
     "real_checkpoint_gate": "all_43_layers_scalar_wmma_tiled_reference_graph_and_nonzero_steal_tests_implemented",
     "service_acceptance": "sequential_native_eager_graph_with_43_layer_device_counters_implemented",
     "expert_rounding": "corrected_source_server_reported_functional_passed_tail_logprob_drift_persists",
@@ -25,7 +25,7 @@
   "validation": {
     "cpu_suite": {
       "status": "passed",
-      "tests": 123,
+      "tests": 125,
       "skipped": 0,
       "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
     },
@@ -61,7 +61,22 @@
       "source_match_checked_against": "historical e59e064; new tiled source differs"
     },
     "measured_calibration": "server_reported_partial285_points_per_rank_device_fault_no_complete_bank",
-    "calibration_fault_recovery": "independent_device_guard_case_journal_isolated_replay_failed_export_implemented_cpu_review_passed_h100_replay_pending",
+    "calibration_fault_recovery": "isolated_replay_reported_passed_json_acl_blocked_driver_atomic0664_fix_cpu_verified_linux_export_retest_pending",
+    "last_reported_diagnostic": {
+      "job_id": "job-20261008-022747-b4d4db07",
+      "report_commit": "d4275c0",
+      "tested_git_revision": "6ae957f",
+      "case": {"tokens": 1024, "c": 131, "K": 8, "mode": "mixed"},
+      "all_four_rank_status": "reported_diagnostic_passed",
+      "used_for_calibration": false,
+      "gpu_container_exit_code": 0,
+      "host_gpuq_exit_code": 1,
+      "host_error": "PermissionError_root0600_json_masks_inherited_gpuq_reader_acl",
+      "gpu_fault_reproduced": false,
+      "full_experiment_resumed": false,
+      "raw_work_json_in_git": false,
+      "gpu_execution_independently_verified": false
+    },
     "last_reported_full_experiment": {
       "job_id": "job-20261003-095433-46cf54c3",
       "report_commit": "9228519",
@@ -84,11 +99,12 @@
     "model_acceptance": "reports/model_acceptance-0c508db6a19e.json",
     "latest_model_acceptance_summary": "reports/model_acceptance-0c508db6a19e.json; added by ced332b",
     "previous_model_acceptance_summary": "reports/model_acceptance.json; source report merged in a934293",
-    "full_experiment": "reports/full_experiment-047ed4696f52.json; added by 9228519"
+    "full_experiment": "reports/full_experiment-047ed4696f52.json; added by 9228519",
+    "isolated_diagnostic": "reports/calibration_diagnostic-047ed4696f52-1_operation_record.json; operator record added by d4275c0"
   },
   "remaining_acceptance": [
     "Archive raw new tiled core/three-kernel/checkpoint/steal/graph evidence",
-    "Replay isolated1024/c131/K8/mixed fault case on H100",
+    "Retest fresh diagnostic-2 host read_and_export_with_atomic0664_acl_mask",
     "Produce identity-bound real CUDA-event calibration banks",
     "Run new measured tiled eager/fullgraph model gates",
     "Execute and archive native/Weave budgeted formal GPQA comparison",

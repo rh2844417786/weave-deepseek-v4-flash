@@ -1,6 +1,6 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-本项目使用原版 DeepSeek-V4-Flash 混合精度权重。交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口。最新服务器报告9228519：新源码core通过，校准四rank各完成285点后发生CUDA launch failure，模型验收及正式GPQA尚未运行；当前交付修正校准超时语义并提供独立单点诊断和恢复入口，H100重放待执行。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史ced332b报告在e59e064上完成修正后全43层checkpoint、原生EP4、Weave eager和Weave graph功能验收，8个生成token一致。原始工作目录证据待归档，正式速度结果仍未产生。
+本项目使用原版 DeepSeek-V4-Flash 混合精度权重。交付包含 M16/N64 分组 tile、真实 CUDA-event 校准与 `scripts/run_full_experiment.py` 正式两组入口。最新服务器记录d4275c0：同步单点诊断四rank通过、容器退出0，宿主驱动因root-owned JSON的0600权限屏蔽继承ACL而退出1，完整校准尚未恢复。当前修正原子JSON发布权限为0664，新`-2`作业需验证宿主读取和导出链路。此前9228519报告core通过、校准四rank各完成285点后CUDA故障；本次同步重放未复现该故障，完整扫描仍待恢复。GPQA 官方数据已下载，并用锁定的 DeepSeek tokenizer/编码器完成本地输入长度审计。历史ced332b报告在e59e064上完成修正后全43层checkpoint、原生EP4、Weave eager和Weave graph功能验收，8个生成token一致。原始工作目录证据待归档，正式速度结果仍未产生。
 
 ## 入口
 
@@ -12,6 +12,7 @@
 - [真实 43 层 checkpoint、WMMA 与 SGLang graph 验收入口](docs/REAL_CHECKPOINT_GRAPH_ACCEPTANCE.md)
 - [最新模型验收：四阶段通过、8 token 一致（服务器生成摘要）](reports/model_acceptance-0c508db6a19e.json)
 - [最新完整作业：core通过、校准285点后CUDA故障](reports/full_experiment-047ed4696f52.json)
+- [单点诊断：四rank通过，驱动被JSON权限阻塞](reports/calibration_diagnostic-047ed4696f52-1_operation_record.json)
 - [前一轮 a934293 验收记录（旧 logprob 门导致停止）](reports/model_acceptance.json)
 - [CUDA 功能核心、动态调度与 SGLang adapter](docs/CUDA_FUNCTIONAL_CORE.md)
 - [历史 SGLang 0.5.16 接入核对](docs/SGLANG_V0516_INTEGRATION.md)
