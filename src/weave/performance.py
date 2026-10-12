@@ -16,7 +16,7 @@ from urllib.parse import urlsplit
 from .request_timing import BOUNDARY, SOURCE, NATIVE_SHA256, source_sha256
 from .gpqa import load_prepared_records as _load_records
 
-GROUP_SECONDS = 1200
+GROUP_SECONDS = 600
 WARMUP_SECONDS = 120
 MAX_WARMUPS = 2
 
@@ -391,7 +391,7 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
     def checkpoint():
         summary.update(aggregate(summary['records']))
         summary['attempted_count'] = len(summary['records'])
-        summary['unattempted_count'] = 448-len(summary['records'])
+        summary['unattempted_count'] = len(records)-len(summary['records'])
         _atomic_json(output_dir/'summary.json', summary)
 
     checkpoint()
@@ -430,7 +430,7 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
             if hasattr(accumulator, 'interruption'):
                 summary['status'] = row['status']; checkpoint()
                 raise accumulator.interruption
-    summary['status'] = ('complete' if len(summary['records']) == 448 and summary['completed_count'] == 448
+    summary['status'] = ('complete' if len(summary['records']) == len(records) and summary['completed_count'] == len(records)
                          else 'deadline' if clock() >= deadline else 'incomplete')
     checkpoint()
     return summary
