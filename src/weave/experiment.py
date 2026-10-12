@@ -78,7 +78,7 @@ def validate_profile_directory(path,core_gate):
     return {'status':'measured','profiles':result}
 
 
-def validate_tiled_snapshot_metadata(snapshots,core_gate,profiles):
+def validate_tiled_snapshot_metadata(snapshots,core_gate,profiles,execution_profile=None):
     expected={v['rank']:v['sha256'] for v in profiles['profiles']}
     if len(snapshots)!=4 or {v.get('rank') for v in snapshots}!=set(range(4)):
         raise ValueError('four tiled worker snapshot identities required')
@@ -88,14 +88,18 @@ def validate_tiled_snapshot_metadata(snapshots,core_gate,profiles):
                 snapshot.get('profile_checkpoint_content_sha256')!=core_gate['checkpoint_content_sha256'] or
                 snapshot.get('profile_bank_sha256')!=expected[snapshot['rank']]):
             raise ValueError('snapshot is not current measured tiled execution')
+        if snapshot.get('execution_profile_configuration')!=execution_profile:
+            raise ValueError('snapshot execution profile configuration differs from required diagnostic')
 
 
-def validate_model_evidence(directory,core_gate,profiles):
+def validate_model_evidence(directory,core_gate,profiles,execution_profile=None):
     """Recheck saved request/coverage evidence before starting formal timing."""
     directory=Path(directory)
     accepted=json.loads((directory/'acceptance.json').read_text())
     if accepted.get('status')!='passed' or accepted.get('source_sha256')!=core_gate['source_sha256'] or accepted.get('kernel')!='tiled':
         raise ValueError('current tiled full-model acceptance must pass before benchmarking')
+    if accepted.get('execution_profile_configuration')!=execution_profile:
+        raise ValueError('model acceptance execution profile configuration differs from required mode')
     native=json.loads((directory/'native-request.json').read_text())
     if native.get('status')!='passed' or len(native['response']['output_ids'])!=8:
         raise ValueError('native eight-token request evidence required')
@@ -106,8 +110,8 @@ def validate_model_evidence(directory,core_gate,profiles):
                 request['response']['output_ids']!=native['response']['output_ids']):
             raise ValueError('tiled/native request identity and generated tokens must match')
         before,after=request['coverage_before'],request['coverage_after']
-        validate_tiled_snapshot_metadata(before,core_gate,profiles)
-        validate_tiled_snapshot_metadata(after,core_gate,profiles)
+        validate_tiled_snapshot_metadata(before,core_gate,profiles,execution_profile)
+        validate_tiled_snapshot_metadata(after,core_gate,profiles,execution_profile)
         proof[label]=validate_coverage_delta(before,after,require_graph=graph)
     return {'status':'passed','directory':str(directory),'coverage':proof,
             'record_sha256':native['prepared_manifest']['record_sha256']}

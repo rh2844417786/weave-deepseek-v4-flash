@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from src.weave.ops import PeerRuntime
 from src.weave.quantization import decode_row
+from src.weave.execution_profile import TraceConfig
 
 
 def main():
@@ -66,6 +67,37 @@ def main():
     runtime.run(x,ids,route_weights,raw,valid_count=valid,fixed_plan=(0,1,0),timeout_seconds=10.)
     torch.cuda.synchronize()
     torch.testing.assert_close(runtime.ws.output[:2],reference(2),rtol=.025,atol=.002)
+    # Instrumentation must preserve math and remain dynamic under replay.
+    traced=PeerRuntime(None,2,32,32,2,8,kernel='tiled')
+    traced.enable_execution_profile(TraceConfig(stride=2,capacity=2,layers=1))
+    ids.copy_(torch.tensor([[(rank+1)%4*2,(rank+1)%4*2+1]]*2,dtype=torch.int32,device=device))
+    traced.phase='decode';valid.fill_(1)
+    traced.run(x,ids,route_weights,raw,valid_count=valid,fixed_plan=(1,1,1),timeout_seconds=10.)
+    torch.cuda.synchronize()
+    torch.testing.assert_close(traced.ws.output[:1],reference(1),rtol=.025,atol=.002)
+    traced.reset_execution_profile()
+    dist.barrier()
+    trace_graph=torch.cuda.CUDAGraph()
+    with torch.cuda.graph(trace_graph):
+        traced.run(x,ids,route_weights,raw,valid_count=valid,fixed_plan=(1,1,1),
+                   timeout_seconds=10.,trace_layer=0)
+    for rows in (1,0,1,2,1):
+        valid.fill_(rows);dist.barrier();trace_graph.replay();torch.cuda.synchronize()
+        torch.testing.assert_close(traced.ws.output[:rows],reference(rows),rtol=.025,atol=.002)
+    try: traced.enable_execution_profile(TraceConfig(stride=2,capacity=2,layers=1))
+    except ValueError: pass
+    else: raise AssertionError('captured trace buffers were reconfigured')
+    traced.phase='prefill'
+    traced.run(x,ids,route_weights,raw,valid_count=valid,fixed_plan=(1,1,1),
+               timeout_seconds=10.,trace_layer=0)
+    torch.cuda.synchronize()
+    trace=traced.execution_profile_snapshot({'rank':rank,'kernel':'tiled',
+        'source_sha256':traced.source_sha256,'graph_enabled':True,'profile_bank_sha256':'0'*64,
+        'checkpoint_content_sha256':'0'*64,'device_key':'functional_fixture_only'})
+    decode=trace['layers']['0']['decode']
+    assert decode['calls']==5 and decode['sampled_invocations']==3,decode
+    assert [v['sequence'] for v in decode['recent_samples']]==[2,4],decode
+    assert trace['layers']['0']['prefill']['calls']==1,trace
     # Device valid counts and routing buffers are changed between replays.
     dist.barrier()
     graph = torch.cuda.CUDAGraph()
@@ -91,6 +123,7 @@ def main():
         'rank':rank, 'status':'functional_checks_passed', 'core_graph_replay':'passed',
         'sglang_adapter':'not_run', 'full_model':'not_run', 'performance':'not_run',
         'profile':'synthetic_test_fixture_only', 'selected_plan':plan,
+        'execution_profile_smoke':'passed_numeric_graph_replay_ring_wrap_phase_separation',
     },indent=2)+'\n')
     dist.barrier()
     dist.destroy_process_group()

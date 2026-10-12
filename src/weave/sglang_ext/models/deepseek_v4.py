@@ -13,11 +13,15 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
             fixed = tuple(int(x) for x in os.environ.get('WEAVE_FIXED_PLAN', '1,1,0').split(','))
             if len(fixed) != 3:
                 raise ValueError('WEAVE_FIXED_PLAN must be c,K,steal-task-count')
+            from weave.execution_profile import TraceConfig
+            profiling=(TraceConfig(stride=int(os.environ.get('WEAVE_EXECUTION_PROFILE_STRIDE','128')),
+                                   capacity=int(os.environ.get('WEAVE_EXECUTION_PROFILE_CAPACITY','8')))
+                       if os.environ.get('WEAVE_EXECUTION_PROFILE')=='1' else None)
             result = install_weave_backend(self, model_path,
                 capacity=int(os.environ.get('WEAVE_CAPACITY', '2048')),
                 profile_path=os.environ.get('WEAVE_PROFILE'), fixed_plan=fixed,
                 kernel=os.environ.get('WEAVE_KERNEL', 'scalar'),
-                allow_decode_graph=os.environ.get('WEAVE_DECODE_GRAPH') == '1')
+                allow_decode_graph=os.environ.get('WEAVE_DECODE_GRAPH') == '1',execution_profile=profiling)
             if os.environ.get('WEAVE_EVIDENCE_PORT_BASE'):
                 from weave.evidence_server import start_evidence_server
                 self.weave_evidence_server = start_evidence_server(self, int(os.environ['WEAVE_EVIDENCE_PORT_BASE']))

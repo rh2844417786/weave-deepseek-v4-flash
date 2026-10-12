@@ -10,7 +10,7 @@ class ExtensionIdentityTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root/'csrc').mkdir()
-            for name in ('megakernel.cu', 'scheduler.h', 'expert_numerics.h', 'tile_scheduler.h'):
+            for name in ('megakernel.cu', 'scheduler.h', 'expert_numerics.h', 'tile_scheduler.h','execution_trace.h'):
                 (root/'csrc'/name).write_text(name)
             with patch('src.weave.ops.__file__', str(root/'src/weave/ops.py')):
                 before = (kernel_source_sha256(), extension_name('torch', 'cuda'))
@@ -24,6 +24,17 @@ class ExtensionIdentityTest(unittest.TestCase):
         self.assertNotEqual(original, extension_name('2.13.0+cu130', '13.0'))
         self.assertNotEqual(original, extension_name('2.11.0+cu130', '12.8'))
         self.assertEqual(original, extension_name('2.11.0+cu130', '13.0'))
+
+    def test_trace_header_change_invalidates_extension_and_calibration_identity(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);(root/'csrc').mkdir()
+            for name in ('megakernel.cu','scheduler.h','expert_numerics.h','tile_scheduler.h','execution_trace.h'):
+                (root/'csrc'/name).write_text(name)
+            with patch('src.weave.ops.__file__',str(root/'src/weave/ops.py')):
+                before=(kernel_source_sha256(),extension_name('torch','cuda'))
+                (root/'csrc/execution_trace.h').write_text('changed trace layout')
+                after=(kernel_source_sha256(),extension_name('torch','cuda'))
+                self.assertNotEqual(before,after)
 
 
 if __name__ == '__main__':

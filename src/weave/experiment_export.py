@@ -41,6 +41,9 @@ def export_run(run_dir,destination):
         if source.is_file(): files[name]=source.read_bytes()
     add(run_dir/'comparison.json','comparison.json')
     for group in ('native','weave'): add(run_dir/group/'summary.json',f'{group}/summary.json')
+    for rank in range(4):
+        name=f'execution-profile-rank{rank}.json'
+        add(run_dir/'weave'/name,'weave/'+name)
     for file in run_dir.glob('calibration-*-lifecycle.json'): add(file,'lifecycle/'+file.name)
     if report.get('core_run_dir'):
         core=Path(report['core_run_dir'])

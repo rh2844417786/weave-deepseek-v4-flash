@@ -91,6 +91,9 @@ def aggregate(rows):
 
 
 def compare_groups(native, weave):
+    mode=native.get('measurement_mode','formal_performance')
+    if mode not in ('formal_performance','instrumented_diagnostic') or mode!=weave.get('measurement_mode','formal_performance'):
+        raise ValueError('comparison measurement modes differ')
     def completed(group):
         rows = group['records']
         if len({r['row_index'] for r in rows}) != len(rows):
@@ -105,6 +108,7 @@ def compare_groups(native, weave):
     a, b = aggregate([n[i] for i in valid]), aggregate([w[i] for i in valid])
     speed = b['decode_tps']/a['decode_tps'] if a['decode_tps'] and b['decode_tps'] is not None else None
     return {'status': 'identity_mismatch' if mismatch else ('compared' if common else 'no_common_completed'),
+            'measurement_mode':mode,'used_for_formal_performance':mode=='formal_performance',
             'common_completed_row_ids': valid, 'identity_mismatch_row_ids': mismatch,
             'native': a, 'weave': b, 'relative_decode_speed': speed,
             'native_completed_count': len(n), 'weave_completed_count': len(w),
@@ -363,13 +367,16 @@ def _atomic_json(path, value):
     os.replace(temporary, path)
 
 
-def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=time.monotonic, raw_root=None):
+def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=time.monotonic, raw_root=None,
+                    measurement_mode='formal_performance'):
     """Run identical requests; ready_monotonic is the observed health-success time.
 
     Sanitized summary lives in output_dir. Decodable token/logprob artifacts always
     live under the configured working disk gpqa/<unique group>/, never public reports.
     """
     records, manifest = _load_records(records_path)
+    if measurement_mode not in ('formal_performance','instrumented_diagnostic'):
+        raise ValueError('unsupported benchmark measurement mode')
     if not math.isfinite(ready_monotonic) or ready_monotonic > clock():
         raise ValueError('observed ready time must precede benchmark start')
     deadline = ready_monotonic+GROUP_SECONDS
@@ -379,6 +386,7 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
     if not raw_base.is_absolute(): raise ValueError('raw work root must be absolute')
     raw_dir=raw_base.resolve()/'gpqa'/uuid.uuid4().hex
     summary = {'status': 'running', 'ready_monotonic': ready_monotonic,
+               'measurement_mode':measurement_mode,'used_for_formal_performance':measurement_mode=='formal_performance',
                'deadline_monotonic': deadline, 'record_sha256': manifest['record_sha256'],
                'order_seed': 42, 'records': [], 'warmups': [], 'warmup_count': 0,
                'timeout_count': 0, 'warmup_timeout_count': 0,
