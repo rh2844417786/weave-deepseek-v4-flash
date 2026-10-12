@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "scope": "formal_gpqa_budgeted_comparison",
+  "measurement_mode": "formal_performance",
+  "used_for_formal_performance": true,
+  "execution_profile_configuration": null,
+  "profiling_source_sha256": null,
+  "run_id": "e28f36c729dd",
+  "started_utc": "2026-10-12T03:16:57.252603+00:00",
+  "kernel": "tiled",
+  "source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+  "timing_source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+  "calibration_kernel_timeout_seconds": 120.0,
+  "steps": {},
+  "physical_gpus": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "host_gpu_allocation": "4,5,6,7",
+  "acceptance_policy": {
+    "logprob": "record_only",
+    "top_logprob_support": "record_only"
+  },
+  "performance": "not_run",
+  "raw_content_exported": false,
+  "dataset_record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a",
+  "core_run_dir": "/srv/weave-work/cuda-functional.047ed4696f52",
+  "error": "ValueError: runtime source evidence is stale",
+  "finished_utc": "2026-10-12T03:16:57.569047+00:00",
+  "export_directory": "/srv/weave-work/public-reports/full-experiment-e28f36c729dd"
+}
