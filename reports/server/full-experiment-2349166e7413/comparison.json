@@ -1,0 +1,43 @@
+{
+  "status": "compared",
+  "measurement_mode": "formal_performance",
+  "used_for_formal_performance": true,
+  "common_completed_row_ids": [
+    0
+  ],
+  "identity_mismatch_row_ids": [],
+  "native": {
+    "completed_count": 1,
+    "decode_tokens": 99,
+    "decode_s": 0.9155490901321173,
+    "decode_tps": 108.13183156100774,
+    "tpot_s": 0.009247970607395123,
+    "mean_ttft_s": 0.23204208072274923,
+    "output_tokens": 100,
+    "input_tokens": 263,
+    "reason_counts": {
+      "stop": 1
+    }
+  },
+  "weave": {
+    "completed_count": 1,
+    "decode_tokens": 77,
+    "decode_s": 7.6807155553251505,
+    "decode_tps": 10.025107614695456,
+    "tpot_s": 0.0997495526665604,
+    "mean_ttft_s": 1.5999926012009382,
+    "output_tokens": 78,
+    "input_tokens": 263,
+    "reason_counts": {
+      "stop": 1
+    }
+  },
+  "relative_decode_speed": 0.09271190055667661,
+  "native_completed_count": 9,
+  "weave_completed_count": 1,
+  "quality_diagnostics": {
+    "different_output_row_ids": [
+      0
+    ]
+  }
+}

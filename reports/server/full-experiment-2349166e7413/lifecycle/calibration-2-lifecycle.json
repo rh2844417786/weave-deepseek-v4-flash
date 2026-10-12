@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-calibration-84ea9bf0bc50",
+  "started_utc": "2026-10-12T04:10:47.210787+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-12T04:26:13.647898+00:00"
+}

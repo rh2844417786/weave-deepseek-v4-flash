@@ -1,0 +1,5618 @@
+{
+  "schema_version": 1,
+  "status": "budgeted_comparison_complete",
+  "scope": "formal_gpqa_budgeted_comparison",
+  "measurement_mode": "formal_performance",
+  "used_for_formal_performance": true,
+  "execution_profile_configuration": null,
+  "profiling_source_sha256": null,
+  "run_id": "2349166e7413",
+  "started_utc": "2026-10-12T03:18:35.815519+00:00",
+  "kernel": "tiled",
+  "source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+  "timing_source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+  "calibration_kernel_timeout_seconds": 120.0,
+  "steps": {
+    "core": {
+      "status": "passed",
+      "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+      "source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+      "checkpoint_index_sha256": "7e975ba3bef8947a94e7da0abd60888375b232b4dfad883d59653e65c6ba522a",
+      "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226"
+    },
+    "calibration": {
+      "status": "measured",
+      "profiles": [
+        {
+          "rank": 0,
+          "path": "/srv/weave-work/calibration.2349166e7413/profile-bank-rank0.json",
+          "sha256": "4f44f75c6f427e2f4457c38db0197a56483ce42704ee368c4c3fde87322258ad",
+          "device_key": "NVIDIA H100 80GB HBM3;sm90;132",
+          "buckets": [
+            1,
+            64,
+            256,
+            1024,
+            2048
+          ]
+        },
+        {
+          "rank": 1,
+          "path": "/srv/weave-work/calibration.2349166e7413/profile-bank-rank1.json",
+          "sha256": "356b669e84634b527c2865cb98b65dc0e3e48bc7463f7ac793597f4af3e93638",
+          "device_key": "NVIDIA H100 80GB HBM3;sm90;132",
+          "buckets": [
+            1,
+            64,
+            256,
+            1024,
+            2048
+          ]
+        },
+        {
+          "rank": 2,
+          "path": "/srv/weave-work/calibration.2349166e7413/profile-bank-rank2.json",
+          "sha256": "642c73f8bd7cff24e335794d6924fa1d27276384c98fd359595ea22db0062cea",
+          "device_key": "NVIDIA H100 80GB HBM3;sm90;132",
+          "buckets": [
+            1,
+            64,
+            256,
+            1024,
+            2048
+          ]
+        },
+        {
+          "rank": 3,
+          "path": "/srv/weave-work/calibration.2349166e7413/profile-bank-rank3.json",
+          "sha256": "24289dcf8b0298798bb1c7d6c76acaacb86b2aff707be869c2288899ed840f90",
+          "device_key": "NVIDIA H100 80GB HBM3;sm90;132",
+          "buckets": [
+            1,
+            64,
+            256,
+            1024,
+            2048
+          ]
+        }
+      ]
+    },
+    "model_acceptance": {
+      "status": "passed",
+      "directory": "/srv/weave-work/model-acceptance-963da6f9a789",
+      "coverage": {
+        "weave_eager": {
+          "status": "passed",
+          "scope": "43_layer_request_execution",
+          "graph_required": false,
+          "ranks": {
+            "0": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              }
+            },
+            "1": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              }
+            },
+            "2": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              }
+            },
+            "3": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 8,
+                "graph_replay_lower_bound": 0
+              }
+            }
+          }
+        },
+        "weave_graph": {
+          "status": "passed",
+          "scope": "43_layer_request_execution",
+          "graph_required": true,
+          "ranks": {
+            "0": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              }
+            },
+            "1": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              }
+            },
+            "2": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              }
+            },
+            "3": {
+              "0": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "1": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "2": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "3": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "4": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "5": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "6": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "7": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "8": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "9": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "10": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "11": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "12": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "13": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "14": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "15": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "16": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "17": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "18": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "19": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "20": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "21": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "22": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "23": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "24": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "25": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "26": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "27": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "28": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "29": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "30": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "31": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "32": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "33": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "34": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "35": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "36": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "37": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "38": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "39": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "40": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "41": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              },
+              "42": {
+                "device_delta": [
+                  1,
+                  8,
+                  0
+                ],
+                "python_decode_delta": 0,
+                "graph_replay_lower_bound": 8
+              }
+            }
+          }
+        }
+      },
+      "record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a"
+    },
+    "native_formal": {
+      "status": "complete",
+      "ready_monotonic": 5092370.415996998,
+      "measurement_mode": "formal_performance",
+      "used_for_formal_performance": true,
+      "deadline_monotonic": 5092970.415996998,
+      "record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a",
+      "order_seed": 42,
+      "records": [
+        {
+          "row_index": 0,
+          "request_id": "weave-gpqa-4137daf4cf6d4e82bf3411c10543c641",
+          "input_tokens": 263,
+          "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+          "output_tokens": 100,
+          "output_sha256": "185de069b2a64a968ef8dc7fb923484b3f95951f92f9e1b84c9f0506a07d4a68",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.23204208072274923,
+          "decode_s": 0.9155490901321173,
+          "decode_tokens": 99,
+          "decode_tps": 108.13183156100774,
+          "tpot_s": 0.009247970607395123,
+          "server_timing": {
+            "request_received_s": 5092379.351151681,
+            "first_token_ready_s": 5092379.583193761,
+            "last_token_ready_s": 5092380.498742851,
+            "output_tokens": 100,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e"
+        },
+        {
+          "row_index": 1,
+          "request_id": "weave-gpqa-a26601fb1f994b57bf189daff2230174",
+          "input_tokens": 252,
+          "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+          "output_tokens": 767,
+          "output_sha256": "9b095059d22e067463e2397862858d97145c97c3c7fc247122cf171b8865ecb8",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.2479828530922532,
+          "decode_s": 7.090717080980539,
+          "decode_tokens": 766,
+          "decode_tps": 108.02856625807918,
+          "tpot_s": 0.009256810810679555,
+          "server_timing": {
+            "request_received_s": 5092380.575537577,
+            "first_token_ready_s": 5092380.82352043,
+            "last_token_ready_s": 5092387.914237511,
+            "output_tokens": 767,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737"
+        },
+        {
+          "row_index": 2,
+          "request_id": "weave-gpqa-01864529e15f4d6d98db57eab9cdd4ad",
+          "input_tokens": 240,
+          "input_sha256": "60c572f53903e1d9e022c7558ae9573b0c9218b088f70c0ce4b16d5c5c40e42e",
+          "output_tokens": 159,
+          "output_sha256": "9b3394ceb8b74f68706a9c67582061ae040a6e78f729b65d8d2017fbc4289325",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.6493866862729192,
+          "decode_s": 1.4609078858047724,
+          "decode_tokens": 158,
+          "decode_tps": 108.15192493328374,
+          "tpot_s": 0.009246252441802357,
+          "server_timing": {
+            "request_received_s": 5092387.95682095,
+            "first_token_ready_s": 5092388.606207636,
+            "last_token_ready_s": 5092390.067115522,
+            "output_tokens": 159,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "b36d33c12a47729b33b8e285f8ca5f3fe28e003b79c938cb069108d3f55006aa"
+        },
+        {
+          "row_index": 3,
+          "request_id": "weave-gpqa-c6ba8c0c7dd04dc8a848b95aedadf818",
+          "input_tokens": 251,
+          "input_sha256": "d00b783d3cf9a77a126cb1bbbc34f5853da58e494f5e93ab882fc1f31f20834c",
+          "output_tokens": 2175,
+          "output_sha256": "d81dca98e76abd7aebd05d0dfa2ae0c99791a3a8f299cc0a4003ca9fa226a07a",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.25803501158952713,
+          "decode_s": 20.1627951990813,
+          "decode_tokens": 2174,
+          "decode_tps": 107.82235193754565,
+          "tpot_s": 0.009274514810984959,
+          "server_timing": {
+            "request_received_s": 5092390.096082028,
+            "first_token_ready_s": 5092390.35411704,
+            "last_token_ready_s": 5092410.516912239,
+            "output_tokens": 2175,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "e588a8e6819ced1f88ddbbb9408295c350847de8a11d946ace07cd83c1e689c2"
+        },
+        {
+          "row_index": 4,
+          "request_id": "weave-gpqa-adcc2474e29f4d19973c309a4f0d0671",
+          "input_tokens": 251,
+          "input_sha256": "15847716bd36e4f14d47585a9f12790c9e03985ec376a2f3d52428b7f30a7fda",
+          "output_tokens": 1593,
+          "output_sha256": "203e165eda9df74c2015935d4f7146a0b80cb8ff78fdf91c4a0c13b83a95b03c",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.29418495669960976,
+          "decode_s": 14.731034071184695,
+          "decode_tokens": 1592,
+          "decode_tps": 108.07116406811546,
+          "tpot_s": 0.009253162105015512,
+          "server_timing": {
+            "request_received_s": 5092410.568045744,
+            "first_token_ready_s": 5092410.8622307,
+            "last_token_ready_s": 5092425.593264772,
+            "output_tokens": 1593,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "5ec939d77568c0e70d6d173c3f9bad9164259152977c05ee92fb977e582494dd"
+        },
+        {
+          "row_index": 5,
+          "request_id": "weave-gpqa-8dda7f2555ff4d629b628972bb4162ec",
+          "input_tokens": 229,
+          "input_sha256": "09223af5930d7b1e43f5efd4730180d904519b4bf7c1c0d503dd1863500db52f",
+          "output_tokens": 73,
+          "output_sha256": "0ac2c8b4979702681ca7d534373098c660bd54f3e6986abdfae5b2775f7e306f",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.2532833209261298,
+          "decode_s": 0.6660118121653795,
+          "decode_tokens": 72,
+          "decode_tps": 108.1061907384331,
+          "tpot_s": 0.009250164057852494,
+          "server_timing": {
+            "request_received_s": 5092425.663926131,
+            "first_token_ready_s": 5092425.917209452,
+            "last_token_ready_s": 5092426.583221264,
+            "output_tokens": 73,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "5a7fe7bb32752328356d4c667d35e32f01a827226a677343174938c59df9f670"
+        },
+        {
+          "row_index": 6,
+          "request_id": "weave-gpqa-35fc55bf87e749b3b17fe6de3a4257ae",
+          "input_tokens": 2233,
+          "input_sha256": "43c6e6ce0988dc844fb8ac1e55ed348c34a120f3bda994095aa8fac1af2b7608",
+          "output_tokens": 153,
+          "output_sha256": "7b59240ecd99007f327780250e1e9c51ea7e0143f398cdf4bdb724eef017a29b",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.5246095089241862,
+          "decode_s": 1.4258693493902683,
+          "decode_tokens": 152,
+          "decode_tps": 106.60163223579944,
+          "tpot_s": 0.009380719403883344,
+          "server_timing": {
+            "request_received_s": 5092426.61554376,
+            "first_token_ready_s": 5092427.140153269,
+            "last_token_ready_s": 5092428.566022619,
+            "output_tokens": 153,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "0950d6517b1aed4a8dd9a866168b99847bd19d5f8b5ee2e44470f0ea26447b6e"
+        },
+        {
+          "row_index": 7,
+          "request_id": "weave-gpqa-6202e10f27644bc59184a67dc1abdf43",
+          "input_tokens": 2279,
+          "input_sha256": "e69e423bfe2bbec66886a8fb45ceea610163454b706d188e072219db9faa9595",
+          "output_tokens": 198,
+          "output_sha256": "35581d62c7a0de61e808f521e609625ff319c24a9c6d62329ffa737ffc6d53a2",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.3595029516145587,
+          "decode_s": 1.8484332049265504,
+          "decode_tokens": 197,
+          "decode_tps": 106.57674806692732,
+          "tpot_s": 0.00938290966967792,
+          "server_timing": {
+            "request_received_s": 5092428.62869727,
+            "first_token_ready_s": 5092428.988200221,
+            "last_token_ready_s": 5092430.836633426,
+            "output_tokens": 198,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "5887693eea03e6ec2550f8798c6d1310fe526e42db19a6367d17f809012b2e10"
+        },
+        {
+          "row_index": 8,
+          "request_id": "weave-gpqa-81b92131c38a4145abdf45af920eee5b",
+          "input_tokens": 2300,
+          "input_sha256": "ef60ed0ed984ef589e92efcb75e2970791e4c7bbd6f28d5824924f0c11e91d51",
+          "output_tokens": 743,
+          "output_sha256": "3cf42644a6a5b30beddc538264abb66e398afcb24aa77c90b6113587c7ca3b3b",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.3853463092818856,
+          "decode_s": 6.959375341422856,
+          "decode_tokens": 742,
+          "decode_tps": 106.61876441460863,
+          "tpot_s": 0.009379212050435116,
+          "server_timing": {
+            "request_received_s": 5092430.908569504,
+            "first_token_ready_s": 5092431.293915813,
+            "last_token_ready_s": 5092438.253291154,
+            "output_tokens": 743,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "15e7b0fb12e6ae751d2139fc0e3f9ce5c2e58095c4f1878c1d4af8150bc7babc"
+        }
+      ],
+      "warmups": [
+        {
+          "row_index": 0,
+          "request_id": "weave-gpqa-f7f124177d4c425295cb697f7e209c6e",
+          "input_tokens": 263,
+          "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+          "output_tokens": 77,
+          "output_sha256": "86ac6f0f199c3508fd214107b1232c547e64a14fc9d424b00fd813fe8fb05846",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.4998321821913123,
+          "decode_s": 0.701547397300601,
+          "decode_tokens": 76,
+          "decode_tps": 108.33195346804958,
+          "tpot_s": 0.009230886806586855,
+          "server_timing": {
+            "request_received_s": 5092370.503260575,
+            "first_token_ready_s": 5092371.003092757,
+            "last_token_ready_s": 5092371.704640155,
+            "output_tokens": 77,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e"
+        },
+        {
+          "row_index": 1,
+          "request_id": "weave-gpqa-bbffac87c51b4d20a8a6ba56e19a19f5",
+          "input_tokens": 252,
+          "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+          "output_tokens": 778,
+          "output_sha256": "88f53a09448c7b2d2a6356658e62cbca634fabf88faba9f5ba32113cc33bbaae",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 0.29645802825689316,
+          "decode_s": 7.189763520844281,
+          "decode_tokens": 777,
+          "decode_tps": 108.07031382149803,
+          "tpot_s": 0.009253234904561494,
+          "server_timing": {
+            "request_received_s": 5092371.840308515,
+            "first_token_ready_s": 5092372.136766544,
+            "last_token_ready_s": 5092379.326530064,
+            "output_tokens": 778,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737"
+        }
+      ],
+      "warmup_count": 2,
+      "timeout_count": 0,
+      "warmup_timeout_count": 0,
+      "raw_artifact_relative_path": null,
+      "raw_artifact_directory": "/srv/weave-work/gpqa/02cf8aba076f472186e5a31ce5313a44",
+      "request_settings": {
+        "sampling_params": {
+          "temperature": 0,
+          "max_new_tokens": 32768,
+          "ignore_eos": false
+        },
+        "return_logprob": true,
+        "top_logprobs_num": 10,
+        "return_text_in_logprobs": false,
+        "stream": true
+      },
+      "completed_count": 9,
+      "decode_tokens": 5952,
+      "decode_s": 55.26069303508848,
+      "decode_tps": 107.70766114389303,
+      "tpot_s": 0.009284390630895242,
+      "mean_ttft_s": 0.35604151990264654,
+      "output_tokens": 5961,
+      "input_tokens": 8298,
+      "reason_counts": {
+        "stop": 9
+      },
+      "attempted_count": 9,
+      "unattempted_count": 0,
+      "runtime": {
+        "captured_utc": "2026-10-12T05:07:47.280113+00:00",
+        "kernel_source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+        "container_hostname": "h100-8",
+        "host_hostname": "h100-8",
+        "requested_image": "lmsysorg/sglang:v0.5.17",
+        "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+        "host_gpu_allocation": "4,5,6,7",
+        "python": "3.12.3",
+        "python_executable": "/usr/bin/python3",
+        "packages": {
+          "torch": "2.11.0+cu130",
+          "sglang": "0.5.17",
+          "transformers": "5.12.1",
+          "triton": "3.6.0",
+          "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+          "flashinfer-python": "0.6.15.post1"
+        },
+        "torch_cuda": "13.0",
+        "cuda_available": true,
+        "devices": [
+          {
+            "ordinal": 0,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          },
+          {
+            "ordinal": 1,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          },
+          {
+            "ordinal": 2,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          },
+          {
+            "ordinal": 3,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          }
+        ],
+        "nvcc_release": "13.0",
+        "cuda_home": "/usr/local/cuda",
+        "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+        "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+        "adapter_source_sha256": {
+          "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+          "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+          "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+          "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+          "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+          "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+          "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+          "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334",
+          "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+          "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+          "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+          "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+          "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+          "srt/entrypoints/http_server.py": "1de1fbce4c87b11b01ab99c802d0684053dc4539b95d8b3a8d88c80d7d238e9a",
+          "srt/observability/req_time_stats.py": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9",
+          "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+          "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+          "srt/layers/logits_processor.py": "cf3f0f71ff54870362698ebf2b67ced9d668ee59bfc9e0e97510f6f99a4aa016",
+          "srt/layers/logprob_processor.py": "d8fc9ce621d3130f6c586b6288e888c2d4cc117336f86e8384f9486d49d3048d",
+          "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1"
+        },
+        "validation_stage": "native",
+        "validation_errors": [],
+        "runtime_status": "passed",
+        "expected_contract": {
+          "image": "lmsysorg/sglang:v0.5.17",
+          "python_executable": "/usr/bin/python3",
+          "python_version": "3.12.3",
+          "torch_version": "2.11.0+cu130",
+          "torch_cuda": "13.0",
+          "nvcc_release": "13.0",
+          "sglang_version": "0.5.17",
+          "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+          "transformers_version": "5.12.1",
+          "work_directory": "work",
+          "gpu_count": 4,
+          "gpu_allocation_source": "CUDA_VISIBLE_DEVICES from the scheduler",
+          "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+        }
+      },
+      "server_run_directory": "/srv/weave-work/native-ep-2349166e7413-formal-native",
+      "cleanup": {
+        "container_name": "weave-native-ep-ab3032dbc37a",
+        "started_utc": "2026-10-12T05:07:45.050494+00:00",
+        "termination_signal": 15,
+        "exit_code": 143,
+        "cleanup_status": "absent",
+        "cleanup_attempts": [
+          {
+            "command": [
+              "docker",
+              "stop",
+              "--timeout",
+              "2",
+              "weave-native-ep-ab3032dbc37a"
+            ],
+            "error": "TimeoutExpired: Command '['docker', 'stop', '--timeout', '2', 'weave-native-ep-ab3032dbc37a']' timed out after 3 seconds"
+          },
+          {
+            "command": [
+              "docker",
+              "rm",
+              "--force",
+              "weave-native-ep-ab3032dbc37a"
+            ],
+            "returncode": 0,
+            "stdout": "weave-native-ep-ab3032dbc37a\n",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "docker",
+              "inspect",
+              "--format",
+              "{{.State.Running}}",
+              "weave-native-ep-ab3032dbc37a"
+            ],
+            "returncode": 1,
+            "stdout": "\n",
+            "stderr": "error: no such object: weave-native-ep-ab3032dbc37a\n"
+          }
+        ],
+        "finished_utc": "2026-10-12T05:23:58.384003+00:00"
+      }
+    },
+    "weave_formal": {
+      "status": "deadline",
+      "ready_monotonic": 5093138.298085347,
+      "measurement_mode": "formal_performance",
+      "used_for_formal_performance": true,
+      "deadline_monotonic": 5093738.298085347,
+      "record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a",
+      "order_seed": 42,
+      "records": [
+        {
+          "row_index": 0,
+          "request_id": "weave-gpqa-1dcfce0461804fbf89efd1ae46787b0f",
+          "input_tokens": 263,
+          "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+          "output_tokens": 78,
+          "output_sha256": "c3c005b4664dea0f4713d2bc0d0b3b67e07433e724272f63746e4c3cfe0633c4",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 1.5999926012009382,
+          "decode_s": 7.6807155553251505,
+          "decode_tokens": 77,
+          "decode_tps": 10.025107614695456,
+          "tpot_s": 0.0997495526665604,
+          "server_timing": {
+            "request_received_s": 5093148.057571885,
+            "first_token_ready_s": 5093149.657564486,
+            "last_token_ready_s": 5093157.338280042,
+            "output_tokens": 78,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e"
+        },
+        {
+          "row_index": 1,
+          "request_id": "weave-gpqa-b0a8f86450d6445a868c22f90f91af1b",
+          "input_tokens": 252,
+          "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+          "output_tokens": 0,
+          "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "finish_reason": null,
+          "status": "cache_flush_error",
+          "ttft_s": null,
+          "decode_s": null,
+          "decode_tokens": null,
+          "decode_tps": null,
+          "tpot_s": null,
+          "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737"
+        },
+        {
+          "row_index": 2,
+          "request_id": "weave-gpqa-4dd4b08ed95041db95754e674d75b31f",
+          "input_tokens": 240,
+          "input_sha256": "60c572f53903e1d9e022c7558ae9573b0c9218b088f70c0ce4b16d5c5c40e42e",
+          "output_tokens": 5893,
+          "output_sha256": "4ad0c4699db7f57c663df40f0b15dd1361b7e242fc89c69f3dba7e104bf08f5c",
+          "finish_reason": null,
+          "status": "deadline",
+          "ttft_s": null,
+          "decode_s": null,
+          "decode_tokens": null,
+          "decode_tps": null,
+          "tpot_s": null,
+          "prompt_sha256": "b36d33c12a47729b33b8e285f8ca5f3fe28e003b79c938cb069108d3f55006aa"
+        }
+      ],
+      "warmups": [
+        {
+          "row_index": 0,
+          "request_id": "weave-gpqa-63f51da78ae94d31b1c2202f5960fb56",
+          "input_tokens": 263,
+          "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+          "output_tokens": 78,
+          "output_sha256": "c3c005b4664dea0f4713d2bc0d0b3b67e07433e724272f63746e4c3cfe0633c4",
+          "finish_reason": "stop",
+          "status": "completed",
+          "ttft_s": 1.8297303337603807,
+          "decode_s": 7.658162714913487,
+          "decode_tokens": 77,
+          "decode_tps": 10.054630969129239,
+          "tpot_s": 0.0994566586352401,
+          "server_timing": {
+            "request_received_s": 5093138.41826324,
+            "first_token_ready_s": 5093140.247993574,
+            "last_token_ready_s": 5093147.906156288,
+            "output_tokens": 78,
+            "boundary": "tokenizer_manager_output_handling",
+            "clock": "perf_counter",
+            "source": "sglang_api_request_time_stats",
+            "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+            "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+          },
+          "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e"
+        },
+        {
+          "row_index": 1,
+          "request_id": "weave-gpqa-629ffffbb4804d099082751e65d54c4f",
+          "input_tokens": 252,
+          "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+          "output_tokens": 0,
+          "output_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "finish_reason": null,
+          "status": "cache_flush_error",
+          "ttft_s": null,
+          "decode_s": null,
+          "decode_tokens": null,
+          "decode_tps": null,
+          "tpot_s": null,
+          "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737"
+        }
+      ],
+      "warmup_count": 2,
+      "timeout_count": 1,
+      "warmup_timeout_count": 0,
+      "raw_artifact_relative_path": null,
+      "raw_artifact_directory": "/srv/weave-work/gpqa/57d0668166d34c61b306b986602ebbf9",
+      "request_settings": {
+        "sampling_params": {
+          "temperature": 0,
+          "max_new_tokens": 32768,
+          "ignore_eos": false
+        },
+        "return_logprob": true,
+        "top_logprobs_num": 10,
+        "return_text_in_logprobs": false,
+        "stream": true
+      },
+      "completed_count": 1,
+      "decode_tokens": 77,
+      "decode_s": 7.6807155553251505,
+      "decode_tps": 10.025107614695456,
+      "tpot_s": 0.0997495526665604,
+      "mean_ttft_s": 1.5999926012009382,
+      "output_tokens": 78,
+      "input_tokens": 263,
+      "reason_counts": {
+        "stop": 1,
+        "cache_flush_error": 1,
+        "deadline": 1
+      },
+      "attempted_count": 3,
+      "unattempted_count": 6,
+      "coverage": {
+        "status": "passed",
+        "scope": "43_layer_request_execution",
+        "graph_required": true,
+        "ranks": {
+          "0": {
+            "0": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "1": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "2": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "3": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "4": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "5": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "6": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "7": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "8": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "9": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "10": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "11": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "12": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "13": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "14": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "15": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "16": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "17": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "18": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "19": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "20": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "21": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "22": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "23": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "24": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "25": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "26": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "27": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "28": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "29": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "30": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "31": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "32": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "33": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "34": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "35": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "36": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "37": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "38": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "39": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "40": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "41": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            },
+            "42": {
+              "device_delta": [
+                3,
+                6050,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6050
+            }
+          },
+          "1": {
+            "0": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "1": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "2": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "3": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "4": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "5": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "6": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "7": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "8": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "9": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "10": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "11": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "12": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "13": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "14": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "15": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "16": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "17": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "18": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "19": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "20": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "21": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "22": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "23": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "24": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "25": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "26": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "27": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "28": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "29": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "30": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "31": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "32": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "33": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "34": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "35": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "36": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "37": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "38": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "39": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "40": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "41": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "42": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            }
+          },
+          "2": {
+            "0": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "1": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "2": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "3": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "4": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "5": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "6": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "7": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "8": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "9": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "10": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "11": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "12": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "13": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "14": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "15": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "16": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "17": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "18": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "19": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "20": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "21": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "22": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "23": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "24": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "25": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "26": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "27": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "28": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "29": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "30": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "31": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "32": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "33": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "34": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "35": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "36": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "37": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "38": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "39": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "40": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "41": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "42": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            }
+          },
+          "3": {
+            "0": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "1": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "2": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "3": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "4": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "5": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "6": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "7": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "8": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "9": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "10": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "11": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "12": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "13": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "14": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "15": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "16": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "17": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "18": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "19": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "20": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "21": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "22": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "23": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "24": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "25": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "26": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "27": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "28": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "29": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "30": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "31": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "32": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "33": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "34": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "35": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "36": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "37": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "38": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "39": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "40": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "41": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            },
+            "42": {
+              "device_delta": [
+                3,
+                6051,
+                0
+              ],
+              "python_decode_delta": 0,
+              "graph_replay_lower_bound": 6051
+            }
+          }
+        }
+      },
+      "runtime": {
+        "captured_utc": "2026-10-12T05:24:01.122982+00:00",
+        "kernel_source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+        "container_hostname": "h100-8",
+        "host_hostname": "h100-8",
+        "requested_image": "lmsysorg/sglang:v0.5.17",
+        "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+        "host_gpu_allocation": "4,5,6,7",
+        "python": "3.12.3",
+        "python_executable": "/usr/bin/python3",
+        "packages": {
+          "torch": "2.11.0+cu130",
+          "sglang": "0.5.17",
+          "transformers": "5.12.1",
+          "triton": "3.6.0",
+          "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+          "flashinfer-python": "0.6.15.post1"
+        },
+        "torch_cuda": "13.0",
+        "cuda_available": true,
+        "devices": [
+          {
+            "ordinal": 0,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          },
+          {
+            "ordinal": 1,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          },
+          {
+            "ordinal": 2,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          },
+          {
+            "ordinal": 3,
+            "name": "NVIDIA H100 80GB HBM3",
+            "capability": [
+              9,
+              0
+            ],
+            "memory_bytes": 85017493504
+          }
+        ],
+        "nvcc_release": "13.0",
+        "cuda_home": "/usr/local/cuda",
+        "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+        "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+        "adapter_source_sha256": {
+          "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+          "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+          "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+          "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+          "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+          "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+          "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+          "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334",
+          "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+          "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+          "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+          "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+          "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+          "srt/entrypoints/http_server.py": "1de1fbce4c87b11b01ab99c802d0684053dc4539b95d8b3a8d88c80d7d238e9a",
+          "srt/observability/req_time_stats.py": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9",
+          "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+          "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+          "srt/layers/logits_processor.py": "cf3f0f71ff54870362698ebf2b67ced9d668ee59bfc9e0e97510f6f99a4aa016",
+          "srt/layers/logprob_processor.py": "d8fc9ce621d3130f6c586b6288e888c2d4cc117336f86e8384f9486d49d3048d",
+          "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1"
+        },
+        "validation_stage": "adapter",
+        "validation_errors": [],
+        "runtime_status": "passed",
+        "expected_contract": {
+          "image": "lmsysorg/sglang:v0.5.17",
+          "python_executable": "/usr/bin/python3",
+          "python_version": "3.12.3",
+          "torch_version": "2.11.0+cu130",
+          "torch_cuda": "13.0",
+          "nvcc_release": "13.0",
+          "sglang_version": "0.5.17",
+          "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+          "transformers_version": "5.12.1",
+          "work_directory": "work",
+          "gpu_count": 4,
+          "gpu_allocation_source": "CUDA_VISIBLE_DEVICES from the scheduler",
+          "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+        }
+      },
+      "server_run_directory": "/srv/weave-work/native-ep-2349166e7413-formal-weave",
+      "cleanup": {
+        "container_name": "weave-native-ep-21525ace1ff6",
+        "started_utc": "2026-10-12T05:23:59.010933+00:00",
+        "termination_signal": 15,
+        "exit_code": 143,
+        "cleanup_status": "absent",
+        "cleanup_attempts": [
+          {
+            "command": [
+              "docker",
+              "stop",
+              "--timeout",
+              "2",
+              "weave-native-ep-21525ace1ff6"
+            ],
+            "error": "TimeoutExpired: Command '['docker', 'stop', '--timeout', '2', 'weave-native-ep-21525ace1ff6']' timed out after 3 seconds"
+          },
+          {
+            "command": [
+              "docker",
+              "rm",
+              "--force",
+              "weave-native-ep-21525ace1ff6"
+            ],
+            "returncode": 0,
+            "stdout": "weave-native-ep-21525ace1ff6\n",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "docker",
+              "inspect",
+              "--format",
+              "{{.State.Running}}",
+              "weave-native-ep-21525ace1ff6"
+            ],
+            "returncode": 1,
+            "stdout": "\n",
+            "stderr": "error: no such object: weave-native-ep-21525ace1ff6\n"
+          }
+        ],
+        "finished_utc": "2026-10-12T05:45:38.530700+00:00"
+      }
+    },
+    "comparison": {
+      "status": "compared",
+      "measurement_mode": "formal_performance",
+      "used_for_formal_performance": true,
+      "common_completed_row_ids": [
+        0
+      ],
+      "identity_mismatch_row_ids": [],
+      "native": {
+        "completed_count": 1,
+        "decode_tokens": 99,
+        "decode_s": 0.9155490901321173,
+        "decode_tps": 108.13183156100774,
+        "tpot_s": 0.009247970607395123,
+        "mean_ttft_s": 0.23204208072274923,
+        "output_tokens": 100,
+        "input_tokens": 263,
+        "reason_counts": {
+          "stop": 1
+        }
+      },
+      "weave": {
+        "completed_count": 1,
+        "decode_tokens": 77,
+        "decode_s": 7.6807155553251505,
+        "decode_tps": 10.025107614695456,
+        "tpot_s": 0.0997495526665604,
+        "mean_ttft_s": 1.5999926012009382,
+        "output_tokens": 78,
+        "input_tokens": 263,
+        "reason_counts": {
+          "stop": 1
+        }
+      },
+      "relative_decode_speed": 0.09271190055667661,
+      "native_completed_count": 9,
+      "weave_completed_count": 1,
+      "quality_diagnostics": {
+        "different_output_row_ids": [
+          0
+        ]
+      }
+    }
+  },
+  "physical_gpus": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "host_gpu_allocation": "4,5,6,7",
+  "acceptance_policy": {
+    "logprob": "record_only",
+    "top_logprob_support": "record_only"
+  },
+  "performance": "measured_budgeted_common_completed_rows",
+  "raw_content_exported": false,
+  "dataset_record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a",
+  "core_run_dir": "/srv/weave-work/cuda-functional.2349166e7413",
+  "calibration_dir": "/srv/weave-work/calibration.2349166e7413",
+  "model_acceptance_dir": "/srv/weave-work/model-acceptance-963da6f9a789",
+  "finished_utc": "2026-10-12T05:45:38.627875+00:00",
+  "export_directory": "/srv/weave-work/public-reports/full-experiment-2349166e7413"
+}

@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-cuda-functional-2349166e7413",
+  "started_utc": "2026-10-12T03:18:36.350936+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-12T03:27:45.972222+00:00"
+}
