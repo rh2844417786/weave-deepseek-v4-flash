@@ -1,0 +1,668 @@
+{
+  "status": "complete",
+  "ready_monotonic": 5184570.165187131,
+  "measurement_mode": "formal_performance",
+  "used_for_formal_performance": true,
+  "deadline_monotonic": 5185170.165187131,
+  "record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a",
+  "order_seed": 42,
+  "records": [
+    {
+      "row_index": 0,
+      "request_id": "weave-gpqa-ff37ca912bca4bdd8df47a4fe720531c",
+      "input_tokens": 263,
+      "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+      "output_tokens": 77,
+      "output_sha256": "dfaac6dec35b13795e2268bacde893799a31b7d8e3d6b1fd6359904dd8c494ef",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.2837557941675186,
+      "decode_s": 0.702409534715116,
+      "decode_tokens": 76,
+      "decode_tps": 108.1989868358267,
+      "tpot_s": 0.009242230719935737,
+      "server_timing": {
+        "request_received_s": 5184577.897550852,
+        "first_token_ready_s": 5184578.181306646,
+        "last_token_ready_s": 5184578.883716181,
+        "output_tokens": 77,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.03917242772877216,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.039160034619271755
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 1,
+      "request_id": "weave-gpqa-cb762afd2db94680bf0e084939e80dd9",
+      "input_tokens": 252,
+      "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+      "output_tokens": 626,
+      "output_sha256": "ef74272beb82d332072609273f027e1aa6db59c855d50a5d7841e21ca0d50b86",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.24319910071790218,
+      "decode_s": 5.781980246305466,
+      "decode_tokens": 625,
+      "decode_tps": 108.09445438686143,
+      "tpot_s": 0.009251168394088745,
+      "server_timing": {
+        "request_received_s": 5184578.934675464,
+        "first_token_ready_s": 5184579.177874565,
+        "last_token_ready_s": 5184584.959854811,
+        "output_tokens": 626,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.04167953785508871,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.041670278646051884
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 2,
+      "request_id": "weave-gpqa-7a51dca73ba94fd0bdb728668223d34b",
+      "input_tokens": 240,
+      "input_sha256": "60c572f53903e1d9e022c7558ae9573b0c9218b088f70c0ce4b16d5c5c40e42e",
+      "output_tokens": 3338,
+      "output_sha256": "63c4930479f8a2e3de75353cb1d33e84ca36f86c7cd39019464a96411b97dce9",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.8119563981890678,
+      "decode_s": 31.04180478863418,
+      "decode_tokens": 3337,
+      "decode_tps": 107.50019281165726,
+      "tpot_s": 0.00930230889680377,
+      "server_timing": {
+        "request_received_s": 5184585.047878865,
+        "first_token_ready_s": 5184585.859835263,
+        "last_token_ready_s": 5184616.901640052,
+        "output_tokens": 3338,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "b36d33c12a47729b33b8e285f8ca5f3fe28e003b79c938cb069108d3f55006aa",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.07208603248000145,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.07207201607525349
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 3,
+      "request_id": "weave-gpqa-69326370a9ba49a8a33102d8b77e4bec",
+      "input_tokens": 251,
+      "input_sha256": "d00b783d3cf9a77a126cb1bbbc34f5853da58e494f5e93ab882fc1f31f20834c",
+      "output_tokens": 660,
+      "output_sha256": "1c05e162455e82e42b19b262591735524e72cfbacc766dbdc96b48cea4a0efc9",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.270592600107193,
+      "decode_s": 6.10094587597996,
+      "decode_tokens": 659,
+      "decode_tps": 108.01603774171306,
+      "tpot_s": 0.009257884485553808,
+      "server_timing": {
+        "request_received_s": 5184616.957666522,
+        "first_token_ready_s": 5184617.228259122,
+        "last_token_ready_s": 5184623.329204998,
+        "output_tokens": 660,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "e588a8e6819ced1f88ddbbb9408295c350847de8a11d946ace07cd83c1e689c2",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.02365272957831621,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.023640152998268604
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 4,
+      "request_id": "weave-gpqa-d1f983e9e4f948d8950c68b086a55d58",
+      "input_tokens": 251,
+      "input_sha256": "15847716bd36e4f14d47585a9f12790c9e03985ec376a2f3d52428b7f30a7fda",
+      "output_tokens": 571,
+      "output_sha256": "1e10e54f90cad8fe785e213753c7049ff8b0132705c967639055a3e1d31e9b05",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.2747960174456239,
+      "decode_s": 5.276140875183046,
+      "decode_tokens": 570,
+      "decode_tps": 108.03350658832152,
+      "tpot_s": 0.009256387500321133,
+      "server_timing": {
+        "request_received_s": 5184623.373949426,
+        "first_token_ready_s": 5184623.648745444,
+        "last_token_ready_s": 5184628.924886319,
+        "output_tokens": 571,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "5ec939d77568c0e70d6d173c3f9bad9164259152977c05ee92fb977e582494dd",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.03090233262628317,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.0308901509270072
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 5,
+      "request_id": "weave-gpqa-b9cbb717fc264ed4864172ba02427644",
+      "input_tokens": 229,
+      "input_sha256": "09223af5930d7b1e43f5efd4730180d904519b4bf7c1c0d503dd1863500db52f",
+      "output_tokens": 73,
+      "output_sha256": "0ac2c8b4979702681ca7d534373098c660bd54f3e6986abdfae5b2775f7e306f",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.3191822590306401,
+      "decode_s": 0.66859420388937,
+      "decode_tokens": 72,
+      "decode_tps": 107.68863920919303,
+      "tpot_s": 0.009286030609574582,
+      "server_timing": {
+        "request_received_s": 5184628.955939507,
+        "first_token_ready_s": 5184629.275121766,
+        "last_token_ready_s": 5184629.94371597,
+        "output_tokens": 73,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "5a7fe7bb32752328356d4c667d35e32f01a827226a677343174938c59df9f670",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.018018494360148907,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.018005902878940105
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 6,
+      "request_id": "weave-gpqa-07c342e77cde4c878dc729608b6083d4",
+      "input_tokens": 2233,
+      "input_sha256": "43c6e6ce0988dc844fb8ac1e55ed348c34a120f3bda994095aa8fac1af2b7608",
+      "output_tokens": 141,
+      "output_sha256": "cb2c07d3907249db7e8d60099530457132bdaad1de036ef1194e2cdc0ea36e56",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.5571662094444036,
+      "decode_s": 1.3138701263815165,
+      "decode_tokens": 140,
+      "decode_tps": 106.55543283076926,
+      "tpot_s": 0.009384786617010832,
+      "server_timing": {
+        "request_received_s": 5184629.980722484,
+        "first_token_ready_s": 5184630.537888694,
+        "last_token_ready_s": 5184631.85175882,
+        "output_tokens": 141,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "0950d6517b1aed4a8dd9a866168b99847bd19d5f8b5ee2e44470f0ea26447b6e",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.02437678724527359,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.024364597164094448
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 7,
+      "request_id": "weave-gpqa-2ec62711c4154d1386c9f83ef1b71b0d",
+      "input_tokens": 2279,
+      "input_sha256": "e69e423bfe2bbec66886a8fb45ceea610163454b706d188e072219db9faa9595",
+      "output_tokens": 118,
+      "output_sha256": "5529c82e0d80c7cc832a23ebcf0d8d3a6907a2275a7a2acce82874f6e74b4d26",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.31063003838062286,
+      "decode_s": 1.0993543332442641,
+      "decode_tokens": 117,
+      "decode_tps": 106.42610527101449,
+      "tpot_s": 0.009396190882429607,
+      "server_timing": {
+        "request_received_s": 5184632.051114106,
+        "first_token_ready_s": 5184632.361744144,
+        "last_token_ready_s": 5184633.461098477,
+        "output_tokens": 118,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "5887693eea03e6ec2550f8798c6d1310fe526e42db19a6367d17f809012b2e10",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.18524645548313856,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.18523569963872433
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 8,
+      "request_id": "weave-gpqa-761a8c66057b4dc6a585d546c3173721",
+      "input_tokens": 2300,
+      "input_sha256": "ef60ed0ed984ef589e92efcb75e2970791e4c7bbd6f28d5824924f0c11e91d51",
+      "output_tokens": 866,
+      "output_sha256": "e101b46b0285620d5b798bb418f57d7b02087e993e79c393a6579d51404980c6",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.27993764262646437,
+      "decode_s": 8.112750581465662,
+      "decode_tokens": 865,
+      "decode_tps": 106.62228442917664,
+      "tpot_s": 0.009378902406318683,
+      "server_timing": {
+        "request_received_s": 5184633.500710097,
+        "first_token_ready_s": 5184633.78064774,
+        "last_token_ready_s": 5184641.893398321,
+        "output_tokens": 866,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "15e7b0fb12e6ae751d2139fc0e3f9ce5c2e58095c4f1878c1d4af8150bc7babc",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.026325893588364124,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.026313865557312965
+          }
+        ],
+        "history_dropped": 0
+      }
+    }
+  ],
+  "warmups": [
+    {
+      "row_index": 0,
+      "request_id": "weave-gpqa-34bd6e4eceb6403195f93c75ffe982b6",
+      "input_tokens": 263,
+      "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+      "output_tokens": 77,
+      "output_sha256": "86ac6f0f199c3508fd214107b1232c547e64a14fc9d424b00fd813fe8fb05846",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.5285928957164288,
+      "decode_s": 0.7008555326610804,
+      "decode_tokens": 76,
+      "decode_tps": 108.43889569000817,
+      "tpot_s": 0.009221783324487899,
+      "server_timing": {
+        "request_received_s": 5184570.258104911,
+        "first_token_ready_s": 5184570.786697807,
+        "last_token_ready_s": 5184571.487553339,
+        "output_tokens": 77,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.018692323938012123,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.01868391502648592
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 1,
+      "request_id": "weave-gpqa-26d1ed77ba0a40e8bf04053210ff3ed9",
+      "input_tokens": 252,
+      "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+      "output_tokens": 616,
+      "output_sha256": "333f36f8fcb2a3faa9de3b50ddca702539aa834d2692d809991b6d17326e5806",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 0.5990582732483745,
+      "decode_s": 5.696213496848941,
+      "decode_tokens": 615,
+      "decode_tps": 107.96645883097757,
+      "tpot_s": 0.00926213576723405,
+      "server_timing": {
+        "request_received_s": 5184571.550721703,
+        "first_token_ready_s": 5184572.149779976,
+        "last_token_ready_s": 5184577.845993473,
+        "output_tokens": 616,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.05340179055929184,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.0533890426158905
+          }
+        ],
+        "history_dropped": 0
+      }
+    }
+  ],
+  "warmup_count": 2,
+  "timeout_count": 0,
+  "warmup_timeout_count": 0,
+  "cache_flush_policy": {
+    "max_wait_s": 30.0,
+    "attempt_timeout_s": 2.0,
+    "retry_interval_s": 0.1,
+    "requires_positive_ack": true
+  },
+  "raw_artifact_relative_path": null,
+  "raw_artifact_directory": "/srv/weave-work/gpqa/f62988e2a95c46469c1c94782e92861a",
+  "request_settings": {
+    "sampling_params": {
+      "temperature": 0,
+      "max_new_tokens": 32768,
+      "ignore_eos": false
+    },
+    "return_logprob": true,
+    "top_logprobs_num": 10,
+    "return_text_in_logprobs": false,
+    "stream": true
+  },
+  "completed_count": 9,
+  "decode_tokens": 6461,
+  "decode_s": 60.09785056579858,
+  "decode_tps": 107.50800468189999,
+  "tpot_s": 0.00930163296173945,
+  "mean_ttft_s": 0.3723573400121596,
+  "output_tokens": 6470,
+  "input_tokens": 8298,
+  "reason_counts": {
+    "stop": 9
+  },
+  "attempted_count": 9,
+  "unattempted_count": 0,
+  "runtime": {
+    "captured_utc": "2026-10-13T06:44:28.384170+00:00",
+    "kernel_source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+    "container_hostname": "h100-8",
+    "host_hostname": "h100-8",
+    "requested_image": "lmsysorg/sglang:v0.5.17",
+    "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+    "host_gpu_allocation": "4,5,6,7",
+    "python": "3.12.3",
+    "python_executable": "/usr/bin/python3",
+    "packages": {
+      "torch": "2.11.0+cu130",
+      "sglang": "0.5.17",
+      "transformers": "5.12.1",
+      "triton": "3.6.0",
+      "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+      "flashinfer-python": "0.6.15.post1"
+    },
+    "torch_cuda": "13.0",
+    "cuda_available": true,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 1,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 2,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 3,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      }
+    ],
+    "nvcc_release": "13.0",
+    "cuda_home": "/usr/local/cuda",
+    "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+    "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+    "adapter_source_sha256": {
+      "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+      "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+      "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+      "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+      "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+      "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+      "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+      "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334",
+      "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+      "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+      "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+      "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+      "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+      "srt/entrypoints/http_server.py": "1de1fbce4c87b11b01ab99c802d0684053dc4539b95d8b3a8d88c80d7d238e9a",
+      "srt/observability/req_time_stats.py": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9",
+      "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+      "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+      "srt/layers/logits_processor.py": "cf3f0f71ff54870362698ebf2b67ced9d668ee59bfc9e0e97510f6f99a4aa016",
+      "srt/layers/logprob_processor.py": "d8fc9ce621d3130f6c586b6288e888c2d4cc117336f86e8384f9486d49d3048d",
+      "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1"
+    },
+    "validation_stage": "native",
+    "validation_errors": [],
+    "runtime_status": "passed",
+    "expected_contract": {
+      "image": "lmsysorg/sglang:v0.5.17",
+      "python_executable": "/usr/bin/python3",
+      "python_version": "3.12.3",
+      "torch_version": "2.11.0+cu130",
+      "torch_cuda": "13.0",
+      "nvcc_release": "13.0",
+      "sglang_version": "0.5.17",
+      "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+      "transformers_version": "5.12.1",
+      "work_directory": "work",
+      "gpu_count": 4,
+      "gpu_allocation_source": "CUDA_VISIBLE_DEVICES from the scheduler",
+      "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+    }
+  },
+  "server_run_directory": "/srv/weave-work/native-ep-92bc8cf04dc0-formal-native",
+  "cleanup": {
+    "container_name": "weave-native-ep-5fe7471617a2",
+    "started_utc": "2026-10-13T06:44:26.780602+00:00",
+    "termination_signal": 15,
+    "exit_code": 143,
+    "cleanup_status": "absent",
+    "cleanup_attempts": [
+      {
+        "command": [
+          "docker",
+          "stop",
+          "--timeout",
+          "2",
+          "weave-native-ep-5fe7471617a2"
+        ],
+        "error": "TimeoutExpired: Command '['docker', 'stop', '--timeout', '2', 'weave-native-ep-5fe7471617a2']' timed out after 3 seconds"
+      },
+      {
+        "command": [
+          "docker",
+          "rm",
+          "--force",
+          "weave-native-ep-5fe7471617a2"
+        ],
+        "returncode": 0,
+        "stdout": "weave-native-ep-5fe7471617a2\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "docker",
+          "inspect",
+          "--format",
+          "{{.State.Running}}",
+          "weave-native-ep-5fe7471617a2"
+        ],
+        "returncode": 1,
+        "stdout": "\n",
+        "stderr": "error: no such object: weave-native-ep-5fe7471617a2\n"
+      }
+    ],
+    "finished_utc": "2026-10-13T07:00:41.845847+00:00"
+  }
+}

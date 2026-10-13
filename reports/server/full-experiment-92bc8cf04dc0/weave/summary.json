@@ -1,0 +1,2019 @@
+{
+  "status": "deadline",
+  "ready_monotonic": 5185338.802392171,
+  "measurement_mode": "formal_performance",
+  "used_for_formal_performance": true,
+  "deadline_monotonic": 5185938.802392171,
+  "record_sha256": "d3928f28e645ae716f0e4a63d06b8fa1a27103b2d8d602975f7384ada289918a",
+  "order_seed": 42,
+  "records": [
+    {
+      "row_index": 0,
+      "request_id": "weave-gpqa-d64f904ee50e414898d48e1953ebc46b",
+      "input_tokens": 263,
+      "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+      "output_tokens": 77,
+      "output_sha256": "86ac6f0f199c3508fd214107b1232c547e64a14fc9d424b00fd813fe8fb05846",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.5613382710143924,
+      "decode_s": 7.531351167708635,
+      "decode_tokens": 76,
+      "decode_tps": 10.091150752053235,
+      "tpot_s": 0.0990967258909031,
+      "server_timing": {
+        "request_received_s": 5185419.751401285,
+        "first_token_ready_s": 5185421.312739556,
+        "last_token_ready_s": 5185428.844090723,
+        "output_tokens": 77,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 2,
+        "retryable_failures": 1,
+        "elapsed_s": 0.20029677916318178,
+        "max_wait_s": 30.0,
+        "last_error": {
+          "reason": "scheduler_busy",
+          "http_status": 400,
+          "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+          "body_bytes": 20
+        },
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "retryable_error",
+            "elapsed_s": 0.08505664486438036,
+            "reason": "scheduler_busy",
+            "http_status": 400,
+            "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+            "body_bytes": 20
+          },
+          {
+            "attempt": 2,
+            "outcome": "flushed",
+            "elapsed_s": 0.015157235786318779
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 1,
+      "request_id": "weave-gpqa-9132255f50674acd944f952a30267ec0",
+      "input_tokens": 252,
+      "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+      "output_tokens": 785,
+      "output_sha256": "b2527aa3afb5aaecea9bbfcfb1f7e6ad12ec1fbcf4dc3ecdc6c672553f6e7d41",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.4908885518088937,
+      "decode_s": 77.3093817140907,
+      "decode_tokens": 784,
+      "decode_tps": 10.141071919310217,
+      "tpot_s": 0.09860890524756467,
+      "server_timing": {
+        "request_received_s": 5185429.078287792,
+        "first_token_ready_s": 5185430.569176344,
+        "last_token_ready_s": 5185507.878558058,
+        "output_tokens": 785,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 2,
+        "retryable_failures": 1,
+        "elapsed_s": 0.22325053624808788,
+        "max_wait_s": 30.0,
+        "last_error": {
+          "reason": "scheduler_busy",
+          "http_status": 400,
+          "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+          "body_bytes": 20
+        },
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "retryable_error",
+            "elapsed_s": 0.09262565430253744,
+            "reason": "scheduler_busy",
+            "http_status": 400,
+            "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+            "body_bytes": 20
+          },
+          {
+            "attempt": 2,
+            "outcome": "flushed",
+            "elapsed_s": 0.030533823184669018
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 2,
+      "request_id": "weave-gpqa-ad1ba99e37524a209687b3651f96278a",
+      "input_tokens": 240,
+      "input_sha256": "60c572f53903e1d9e022c7558ae9573b0c9218b088f70c0ce4b16d5c5c40e42e",
+      "output_tokens": 4385,
+      "output_sha256": "37b29d3d1b968f6d412927c70fba592e584b3d0faea76d4b087707d77a4f87ee",
+      "finish_reason": null,
+      "status": "deadline",
+      "ttft_s": null,
+      "decode_s": null,
+      "decode_tokens": null,
+      "decode_tps": null,
+      "tpot_s": null,
+      "prompt_sha256": "b36d33c12a47729b33b8e285f8ca5f3fe28e003b79c938cb069108d3f55006aa",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 2,
+        "retryable_failures": 1,
+        "elapsed_s": 0.22419794276356697,
+        "max_wait_s": 30.0,
+        "last_error": {
+          "reason": "scheduler_busy",
+          "http_status": 400,
+          "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+          "body_bytes": 20
+        },
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "retryable_error",
+            "elapsed_s": 0.08657465223222971,
+            "reason": "scheduler_busy",
+            "http_status": 400,
+            "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+            "body_bytes": 20
+          },
+          {
+            "attempt": 2,
+            "outcome": "flushed",
+            "elapsed_s": 0.037532271817326546
+          }
+        ],
+        "history_dropped": 0
+      }
+    }
+  ],
+  "warmups": [
+    {
+      "row_index": 0,
+      "request_id": "weave-gpqa-8474ace71d0b44d3b1809d09e03ec96e",
+      "input_tokens": 263,
+      "input_sha256": "b3edd7ebe5cbfbe92533c92ea6b174b497adedd86f76599bbe50529e72b42e50",
+      "output_tokens": 117,
+      "output_sha256": "f5fad3e5cece12a55d76039214eabac8d2a9ad42be68c70c335419158c8db8b7",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.8078508097678423,
+      "decode_s": 11.49518324714154,
+      "decode_tokens": 116,
+      "decode_tps": 10.091183194391029,
+      "tpot_s": 0.0990964073029443,
+      "server_timing": {
+        "request_received_s": 5185338.925025947,
+        "first_token_ready_s": 5185340.732876757,
+        "last_token_ready_s": 5185352.228060004,
+        "output_tokens": 117,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "a7bb8340cb84160957c6e798956d4457e97f47171069be891626fc7f4569328e",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 1,
+        "retryable_failures": 0,
+        "elapsed_s": 0.00882622878998518,
+        "max_wait_s": 30.0,
+        "last_error": null,
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "flushed",
+            "elapsed_s": 0.0088151004165411
+          }
+        ],
+        "history_dropped": 0
+      }
+    },
+    {
+      "row_index": 1,
+      "request_id": "weave-gpqa-df80fdd42b9b42ddbc5a8d78039368c9",
+      "input_tokens": 252,
+      "input_sha256": "a7a08cf607d7b87a98993dc70fc4df565a42577d1410a439a711df1e7f8fab29",
+      "output_tokens": 666,
+      "output_sha256": "952b7d58fbd48a6b66616d714be454eb8c82a360a94347f11638d731ef4daac8",
+      "finish_reason": "stop",
+      "status": "completed",
+      "ttft_s": 1.6753570782020688,
+      "decode_s": 65.39142138697207,
+      "decode_tokens": 665,
+      "decode_tps": 10.169529670637928,
+      "tpot_s": 0.09833296449168732,
+      "server_timing": {
+        "request_received_s": 5185352.47232866,
+        "first_token_ready_s": 5185354.147685738,
+        "last_token_ready_s": 5185419.539107125,
+        "output_tokens": 666,
+        "boundary": "tokenizer_manager_output_handling",
+        "clock": "perf_counter",
+        "source": "sglang_api_request_time_stats",
+        "source_sha256": "0801c50b80a17ef2359b9690c69354b9cacded0aa4edf2c5d36c368670aaa400",
+        "native_source_sha256": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9"
+      },
+      "prompt_sha256": "c03a99f1a3273d9d537c441fed4212b628ef795908bb98940c53e2ff9d266737",
+      "cache_flush": {
+        "status": "flushed",
+        "attempts": 2,
+        "retryable_failures": 1,
+        "elapsed_s": 0.2342284983024001,
+        "max_wait_s": 30.0,
+        "last_error": {
+          "reason": "scheduler_busy",
+          "http_status": 400,
+          "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+          "body_bytes": 20
+        },
+        "history": [
+          {
+            "attempt": 1,
+            "outcome": "retryable_error",
+            "elapsed_s": 0.09121291991323233,
+            "reason": "scheduler_busy",
+            "http_status": 400,
+            "body_sha256": "382a97019bcc4af34445c29c8c225f6f5f1bdcb9876c9df612dd3095e6278476",
+            "body_bytes": 20
+          },
+          {
+            "attempt": 2,
+            "outcome": "flushed",
+            "elapsed_s": 0.04292161948978901
+          }
+        ],
+        "history_dropped": 0
+      }
+    }
+  ],
+  "warmup_count": 2,
+  "timeout_count": 1,
+  "warmup_timeout_count": 0,
+  "cache_flush_policy": {
+    "max_wait_s": 30.0,
+    "attempt_timeout_s": 2.0,
+    "retry_interval_s": 0.1,
+    "requires_positive_ack": true
+  },
+  "raw_artifact_relative_path": null,
+  "raw_artifact_directory": "/srv/weave-work/gpqa/ced98ca546084f9f949fba5741e103d1",
+  "request_settings": {
+    "sampling_params": {
+      "temperature": 0,
+      "max_new_tokens": 32768,
+      "ignore_eos": false
+    },
+    "return_logprob": true,
+    "top_logprobs_num": 10,
+    "return_text_in_logprobs": false,
+    "stream": true
+  },
+  "completed_count": 2,
+  "decode_tokens": 860,
+  "decode_s": 84.84073288179934,
+  "decode_tps": 10.136640394162525,
+  "tpot_s": 0.09865201497883644,
+  "mean_ttft_s": 1.526113411411643,
+  "output_tokens": 862,
+  "input_tokens": 515,
+  "reason_counts": {
+    "stop": 2,
+    "deadline": 1
+  },
+  "attempted_count": 3,
+  "unattempted_count": 6,
+  "coverage": {
+    "status": "passed",
+    "scope": "43_layer_request_execution",
+    "graph_required": true,
+    "ranks": {
+      "0": {
+        "0": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "1": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "2": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "3": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "4": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "5": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "6": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "7": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "8": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "9": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "10": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "11": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "12": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "13": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "14": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "15": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "16": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "17": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "18": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "19": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "20": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "21": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "22": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "23": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "24": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "25": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "26": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "27": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "28": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "29": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "30": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "31": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "32": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "33": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "34": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "35": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "36": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "37": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "38": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "39": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "40": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "41": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "42": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        }
+      },
+      "1": {
+        "0": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "1": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "2": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "3": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "4": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "5": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "6": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "7": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "8": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "9": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "10": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "11": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "12": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "13": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "14": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "15": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "16": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "17": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "18": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "19": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "20": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "21": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "22": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "23": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "24": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "25": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "26": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "27": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "28": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "29": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "30": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "31": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "32": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "33": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "34": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "35": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "36": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "37": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "38": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "39": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "40": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "41": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "42": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        }
+      },
+      "2": {
+        "0": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "1": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "2": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "3": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "4": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "5": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "6": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "7": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "8": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "9": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "10": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "11": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "12": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "13": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "14": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "15": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "16": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "17": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "18": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "19": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "20": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "21": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "22": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "23": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "24": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "25": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "26": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "27": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "28": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "29": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "30": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "31": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "32": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "33": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "34": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "35": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "36": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "37": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "38": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "39": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "40": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "41": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "42": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        }
+      },
+      "3": {
+        "0": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "1": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "2": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "3": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "4": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "5": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "6": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "7": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "8": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "9": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "10": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "11": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "12": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "13": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "14": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "15": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "16": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "17": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "18": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "19": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "20": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "21": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "22": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "23": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "24": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "25": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "26": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "27": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "28": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "29": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "30": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "31": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "32": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "33": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "34": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "35": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "36": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "37": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "38": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "39": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "40": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "41": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        },
+        "42": {
+          "device_delta": [
+            5,
+            6032,
+            0
+          ],
+          "python_decode_delta": 0,
+          "graph_replay_lower_bound": 6032
+        }
+      }
+    }
+  },
+  "runtime": {
+    "captured_utc": "2026-10-13T07:00:44.464403+00:00",
+    "kernel_source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+    "container_hostname": "h100-8",
+    "host_hostname": "h100-8",
+    "requested_image": "lmsysorg/sglang:v0.5.17",
+    "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+    "host_gpu_allocation": "4,5,6,7",
+    "python": "3.12.3",
+    "python_executable": "/usr/bin/python3",
+    "packages": {
+      "torch": "2.11.0+cu130",
+      "sglang": "0.5.17",
+      "transformers": "5.12.1",
+      "triton": "3.6.0",
+      "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+      "flashinfer-python": "0.6.15.post1"
+    },
+    "torch_cuda": "13.0",
+    "cuda_available": true,
+    "devices": [
+      {
+        "ordinal": 0,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 1,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 2,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      },
+      {
+        "ordinal": 3,
+        "name": "NVIDIA H100 80GB HBM3",
+        "capability": [
+          9,
+          0
+        ],
+        "memory_bytes": 85017493504
+      }
+    ],
+    "nvcc_release": "13.0",
+    "cuda_home": "/usr/local/cuda",
+    "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+    "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+    "adapter_source_sha256": {
+      "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+      "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+      "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+      "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+      "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+      "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+      "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+      "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334",
+      "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+      "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+      "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+      "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+      "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+      "srt/entrypoints/http_server.py": "1de1fbce4c87b11b01ab99c802d0684053dc4539b95d8b3a8d88c80d7d238e9a",
+      "srt/observability/req_time_stats.py": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9",
+      "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+      "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+      "srt/layers/logits_processor.py": "cf3f0f71ff54870362698ebf2b67ced9d668ee59bfc9e0e97510f6f99a4aa016",
+      "srt/layers/logprob_processor.py": "d8fc9ce621d3130f6c586b6288e888c2d4cc117336f86e8384f9486d49d3048d",
+      "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1"
+    },
+    "validation_stage": "adapter",
+    "validation_errors": [],
+    "runtime_status": "passed",
+    "expected_contract": {
+      "image": "lmsysorg/sglang:v0.5.17",
+      "python_executable": "/usr/bin/python3",
+      "python_version": "3.12.3",
+      "torch_version": "2.11.0+cu130",
+      "torch_cuda": "13.0",
+      "nvcc_release": "13.0",
+      "sglang_version": "0.5.17",
+      "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+      "transformers_version": "5.12.1",
+      "work_directory": "work",
+      "gpu_count": 4,
+      "gpu_allocation_source": "CUDA_VISIBLE_DEVICES from the scheduler",
+      "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+    }
+  },
+  "server_run_directory": "/srv/weave-work/native-ep-92bc8cf04dc0-formal-weave",
+  "cleanup": {
+    "container_name": "weave-native-ep-7a1db9a949e1",
+    "started_utc": "2026-10-13T07:00:42.498770+00:00",
+    "termination_signal": 15,
+    "exit_code": 143,
+    "cleanup_status": "absent",
+    "cleanup_attempts": [
+      {
+        "command": [
+          "docker",
+          "stop",
+          "--timeout",
+          "2",
+          "weave-native-ep-7a1db9a949e1"
+        ],
+        "error": "TimeoutExpired: Command '['docker', 'stop', '--timeout', '2', 'weave-native-ep-7a1db9a949e1']' timed out after 3 seconds"
+      },
+      {
+        "command": [
+          "docker",
+          "rm",
+          "--force",
+          "weave-native-ep-7a1db9a949e1"
+        ],
+        "returncode": 0,
+        "stdout": "weave-native-ep-7a1db9a949e1\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "docker",
+          "inspect",
+          "--format",
+          "{{.State.Running}}",
+          "weave-native-ep-7a1db9a949e1"
+        ],
+        "returncode": 1,
+        "stdout": "\n",
+        "stderr": "error: no such object: weave-native-ep-7a1db9a949e1\n"
+      }
+    ],
+    "finished_utc": "2026-10-13T07:22:18.973402+00:00"
+  }
+}

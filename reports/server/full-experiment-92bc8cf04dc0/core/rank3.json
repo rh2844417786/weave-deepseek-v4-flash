@@ -1,0 +1,15 @@
+{
+  "rank": 3,
+  "status": "functional_checks_passed",
+  "core_graph_replay": "passed",
+  "sglang_adapter": "not_run",
+  "full_model": "not_run",
+  "performance": "not_run",
+  "profile": "synthetic_test_fixture_only",
+  "selected_plan": [
+    1,
+    2,
+    0
+  ],
+  "execution_profile_smoke": "passed_numeric_graph_replay_ring_wrap_phase_separation"
+}

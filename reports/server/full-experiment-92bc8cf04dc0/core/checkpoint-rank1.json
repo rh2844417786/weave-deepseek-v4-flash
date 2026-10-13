@@ -1,0 +1,8877 @@
+{
+  "status": "checkpoint_checks_passed",
+  "rank": 1,
+  "layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42
+  ],
+  "kernels": [
+    "scalar",
+    "wmma",
+    "tiled"
+  ],
+  "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+  "architecture": [
+    4096,
+    2048,
+    256,
+    6,
+    43
+  ],
+  "source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+  "checkpoint_index_sha256": "7e975ba3bef8947a94e7da0abd60888375b232b4dfad883d59653e65c6ba522a",
+  "expert_identity_digests_scope": "first_row_all_local_experts_per_raw_tensor",
+  "last_layer_identity_digests": [
+    "a228de780e02c067e2e420b2c004f5f4ec88f86cda1f284737bdeedbaa236024",
+    "8930febbeb35b3ddc3430d79b0e5ea48ebd7bee67b0d52cc1ebf97c3479e2afc",
+    "fa1cb88b7741676096329407e71e3b76bc6ca62ebe3a7d2cff2b17b6e6483026",
+    "c3a4aba02ffb41999370e02f3a4d9f49fa834eb3438449eb9fd8a50d39c2c6e3",
+    "84bf58d382e6bfc42916fde256a35bcaed505220d275e881a08fddbf54ee6ca5",
+    "e26c3c90285d8c745d7e994a75c4ef68508e8c0c1233f30b5d705de4921473de"
+  ],
+  "cases": [
+    {
+      "layer": -1,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": -1,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": -1,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0001488683483330533,
+        "max_abs": 0.00390625
+      }
+    },
+    {
+      "layer": -1,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002273763675475493,
+        "max_abs": 0.0078125
+      }
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0001488683483330533,
+        "max_abs": 0.00390625
+      }
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002273763675475493,
+        "max_abs": 0.0078125
+      }
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "grouped_rows_K1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "workload": [
+        0,
+        128,
+        96,
+        96,
+        128,
+        8,
+        768
+      ],
+      "tile_counters": [
+        768,
+        1
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "grouped_rows_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "workload": [
+        0,
+        128,
+        96,
+        96,
+        128,
+        8,
+        768
+      ],
+      "tile_counters": [
+        768,
+        1
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "grouped_rows_K4",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "workload": [
+        0,
+        128,
+        96,
+        96,
+        128,
+        11,
+        1056
+      ],
+      "tile_counters": [
+        1056,
+        1
+      ]
+    },
+    {
+      "layer": -1,
+      "kernel": "tiled",
+      "case": "grouped_rows_K8",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "workload": [
+        0,
+        128,
+        96,
+        96,
+        128,
+        13,
+        1248
+      ],
+      "tile_counters": [
+        1248,
+        1
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 0,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 0,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 1.06086872619926e-05,
+        "max_abs": 7.62939453125e-06
+      }
+    },
+    {
+      "layer": 0,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00019604516273830086,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 0,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 0,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 1.06086872619926e-05,
+        "max_abs": 7.62939453125e-06
+      }
+    },
+    {
+      "layer": 0,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00019604516273830086,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 1,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 1,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 1,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 4.5695564040215686e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 1,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 1,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 1,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 1,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 1,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 1,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 1,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 1,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 1,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 2,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 2,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 2,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00018174119759351015,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 2,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 2,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 2,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 2,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0007048155530355871,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 2,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.662533996859565e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 2,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 2,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 2,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0007048155530355871,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 2,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.662533996859565e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 3,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 3,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 3,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 3,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 3,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 3,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 3,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0006580015760846436,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 3,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 8.95495613804087e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 3,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 3,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 3,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0006580015760846436,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 3,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 8.95495613804087e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 4,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 4,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 4,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 4,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 4,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 4,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 4,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 4,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00014181136793922633,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 4,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 4,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 4,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 4,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00014181136793922633,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 5,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 5,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 5,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 5,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 5,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 5,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 5,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 6.708996079396456e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 5,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00037006763159297407,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 5,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 5,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 5,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 6.708996079396456e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 5,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00037006763159297407,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 6,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 6,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 6,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00017555156955495477,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 6,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 2.9782839192193933e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 6,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 6,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 6,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 6,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 6,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 6,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 6,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 6,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 7,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 7,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 7,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 8.386033732676879e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 7,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 7,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 7,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 7,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 7,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00011728748359018937,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 7,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 7,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 7,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 7,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00011728748359018937,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 8,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 8,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 8,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 8,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 8,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 8,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 8,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0005834900075569749,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 8,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00013017762103118002,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 8,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 8,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 8,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0005834900075569749,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 8,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00013017762103118002,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 9,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 9,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 9,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 9,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 9,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 9,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 9,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0002509994083084166,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 9,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00018919586727861315,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 9,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 9,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 9,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0002509994083084166,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 9,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00018919586727861315,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 10,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 10,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 10,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 10,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.5842661014175974e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 10,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 10,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 10,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.09891095943749e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 10,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.5425269743427634e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 10,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 10,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 10,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.09891095943749e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 10,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.5425269743427634e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 11,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 11,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 11,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 11,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 11,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 11,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 11,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 11,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.57353739370592e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 11,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 11,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 11,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 11,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.57353739370592e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 12,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 12,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 12,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 12,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 12,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 12,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 12,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00026055981288664043,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 12,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.189410563209094e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 12,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 12,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 12,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00026055981288664043,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 12,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.189410563209094e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 13,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 13,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 13,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 13,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 13,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 13,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 13,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.690316073829308e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 13,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.160282257245854e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 13,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 13,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 13,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.690316073829308e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 13,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.160282257245854e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 14,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 14,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 14,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 14,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.6351123122149147e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 14,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 14,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 14,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 14,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.312444358831272e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 14,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 14,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 14,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 14,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.312444358831272e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 15,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 15,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 15,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 15,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.3530403015902266e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 15,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 15,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 15,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 15,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 15,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 15,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 15,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 15,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 16,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 16,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 16,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 16,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 16,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 16,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 16,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0004011888522654772,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 16,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.155876664910465e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 16,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 16,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 16,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0004011888522654772,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 16,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.155876664910465e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 17,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 17,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 17,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 17,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.361576091265306e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 17,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 17,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 17,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.138833411270753e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 17,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00038867240073159337,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 17,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 17,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 17,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.138833411270753e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 17,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00038867240073159337,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 18,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 18,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 18,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 8.964844892034307e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 18,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 18,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 18,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 18,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.486400626366958e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 18,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.3578075090190396e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 18,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 18,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 18,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.486400626366958e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 18,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.3578075090190396e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 19,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 19,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 19,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 19,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 19,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 19,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 19,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 5.3440257943293545e-06,
+        "max_abs": 3.814697265625e-06
+      }
+    },
+    {
+      "layer": 19,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002652627881616354,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 19,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 19,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 19,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 5.3440257943293545e-06,
+        "max_abs": 3.814697265625e-06
+      }
+    },
+    {
+      "layer": 19,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002652627881616354,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 20,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 20,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 20,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 20,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 20,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 20,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 20,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 20,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002661991456989199,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 20,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 20,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 20,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 20,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002661991456989199,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 21,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 21,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 21,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 21,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 21,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 21,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 21,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.421430149814114e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 21,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.07867366145365e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 21,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 21,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 21,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 9.421430149814114e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 21,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.07867366145365e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 22,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 22,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 22,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 22,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.251085869735107e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 22,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 22,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 22,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0005645224009640515,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 22,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0003495882556308061,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 22,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 22,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 22,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0005645224009640515,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 22,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0003495882556308061,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 23,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 23,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 23,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 23,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 23,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 23,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 23,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 3.294878115411848e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 23,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0006787520251236856,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 23,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 23,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 23,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 3.294878115411848e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 23,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0006787520251236856,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 24,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 24,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 24,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 24,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.338575960602611e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 24,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 24,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 24,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 24,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00029754513525404036,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 24,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 24,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 24,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 24,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00029754513525404036,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 25,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 25,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 25,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 25,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.5913827155600302e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 25,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 25,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 25,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 25,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.000249725446337834,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 25,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 25,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 25,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 25,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.000249725446337834,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 26,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 26,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 26,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 26,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 26,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 26,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 26,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 26,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0003390447236597538,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 26,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 26,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 26,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 26,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0003390447236597538,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 27,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 27,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 27,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 27,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 27,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 27,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 27,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0001917520712595433,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 27,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00024955920525826514,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 27,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 27,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 27,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0001917520712595433,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 27,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00024955920525826514,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 28,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 28,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 28,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 28,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 28,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 28,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 28,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 28,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002249695680802688,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 28,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 28,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 28,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 28,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0002249695680802688,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 29,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 29,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 29,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 29,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 29,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 29,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 29,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 29,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0005137045518495142,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 29,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 29,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 29,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 29,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0005137045518495142,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 30,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 30,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 30,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 30,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.65516266861232e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 30,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 30,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 30,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0005203025648370385,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 30,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 8.2758133430616e-06,
+        "max_abs": 7.62939453125e-06
+      }
+    },
+    {
+      "layer": 30,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 30,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 30,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0005203025648370385,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 30,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 8.2758133430616e-06,
+        "max_abs": 7.62939453125e-06
+      }
+    },
+    {
+      "layer": 31,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 31,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 31,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 31,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 31,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 31,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 31,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0008235035929828882,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 31,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 31,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 31,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 31,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0008235035929828882,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 31,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 32,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 32,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 32,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 32,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 32,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 32,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 32,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0001650785852689296,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 32,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 4.329593502916396e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 32,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 32,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 32,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0001650785852689296,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 32,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 4.329593502916396e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 33,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 33,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 33,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 33,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.333641870995052e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 33,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 33,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 33,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00010461901547387242,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 33,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.333641870995052e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 33,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 33,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 33,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00010461901547387242,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 33,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.333641870995052e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 34,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 34,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 34,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 34,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 34,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 34,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 34,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0002733566507231444,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 34,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.5370322216767818e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 34,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 34,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 34,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0002733566507231444,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 34,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.5370322216767818e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 35,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 35,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 35,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 35,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00012884146417491138,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 35,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 35,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 35,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 8.234787674155086e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 35,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00012052015517838299,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 35,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 35,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 35,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 8.234787674155086e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 35,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00012052015517838299,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 36,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 36,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 36,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 36,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 36,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 36,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 36,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 4.3477532017277554e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 36,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.488403596449643e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 36,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 36,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 36,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 4.3477532017277554e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 36,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.488403596449643e-05,
+        "max_abs": 6.103515625e-05
+      }
+    },
+    {
+      "layer": 37,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 37,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 37,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 37,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 37,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 37,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 37,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00019985924882348627,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 37,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00028727640165016055,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 37,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 37,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 37,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00019985924882348627,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 37,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.00028727640165016055,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 38,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 38,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 38,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 38,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 38,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 38,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 38,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.7820366085506976e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 38,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.351773921167478e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 38,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 38,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 38,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.7820366085506976e-05,
+        "max_abs": 1.52587890625e-05
+      }
+    },
+    {
+      "layer": 38,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.351773921167478e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 39,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 39,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 39,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 39,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 39,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 39,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 39,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0006111676921136677,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 39,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.679997826111503e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 39,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 39,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 39,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0006111676921136677,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 39,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 3.679997826111503e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 40,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 40,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 40,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.00015931035159155726,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 40,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 40,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 40,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 40,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 40,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.623469289479544e-06,
+        "max_abs": 7.62939453125e-06
+      }
+    },
+    {
+      "layer": 40,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 40,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 40,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 40,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 6.623469289479544e-06,
+        "max_abs": 7.62939453125e-06
+      }
+    },
+    {
+      "layer": 41,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 41,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 41,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 41,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      }
+    },
+    {
+      "layer": 41,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 41,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 41,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 8.318908658111468e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 41,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0006089939270168543,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 41,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 41,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 41,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 8.318908658111468e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 41,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 0.0006089939270168543,
+        "max_abs": 0.000244140625
+      }
+    },
+    {
+      "layer": 42,
+      "kernel": "scalar",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 42,
+      "kernel": "scalar",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 42,
+      "kernel": "scalar",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.6365753001300618e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 42,
+      "kernel": "scalar",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 1.5214312043099198e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 42,
+      "kernel": "wmma",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 42,
+      "kernel": "wmma",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 31,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        0,
+        0
+      ],
+      "tile_counters": [
+        0,
+        0
+      ]
+    },
+    {
+      "layer": 42,
+      "kernel": "wmma",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.6365753001300618e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 42,
+      "kernel": "wmma",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.60715629439801e-05,
+        "max_abs": 0.0001220703125
+      }
+    },
+    {
+      "layer": 42,
+      "kernel": "tiled",
+      "case": "remote_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 0,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        0
+      ]
+    },
+    {
+      "layer": 42,
+      "kernel": "tiled",
+      "case": "steal_K2",
+      "metrics": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "completed_stolen": 131,
+      "completed_tasks": 32,
+      "workload": [
+        0,
+        32,
+        24,
+        24,
+        32,
+        28,
+        2688
+      ],
+      "tile_counters": [
+        2688,
+        131
+      ]
+    },
+    {
+      "layer": 42,
+      "kernel": "tiled",
+      "case": "graph_replay0",
+      "metrics": {
+        "relative_l2": 2.6365753001300618e-05,
+        "max_abs": 3.0517578125e-05
+      }
+    },
+    {
+      "layer": 42,
+      "kernel": "tiled",
+      "case": "graph_replay1",
+      "metrics": {
+        "relative_l2": 7.60715629439801e-05,
+        "max_abs": 0.0001220703125
+      }
+    }
+  ],
+  "sglang_graph": "not_checked_by_core_gate",
+  "performance": "not_measured"
+}
