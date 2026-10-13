@@ -24,14 +24,23 @@
     "formal_gpqa": "budgeted_comparison_returned_2910864_native107_64_weave11_31_tps_four_common_rows",
     "full_experiment_entry": "scripts/run_full_experiment.py",
     "gpu_allocation": "scheduler_CUDA_VISIBLE_DEVICES_four_distinct_indices_all_host_launchers_no_physical_id_pin",
-    "execution_profiling": "implemented_sampled_globaltimer_layer_phase_worker_records_schedule_histograms_source_bound_idle_export_gpu_verification_pending"
+    "execution_profiling": "implemented_sampled_globaltimer_layer_phase_worker_records_schedule_histograms_source_bound_idle_export_gpu_verification_pending",
+    "cache_flush_recovery": "bounded_idle_ack_retries_same_record_abort_group_on_terminal_failure_public_hash_diagnostics_private_error_bodies"
   },
   "validation": {
     "cpu_suite": {
-      "status": "passed",
-      "tests": 160,
+      "status": "known_baseline_failures_remain",
+      "tests": 169,
       "skipped": 0,
-      "command": ".venv-data/bin/python -m unittest discover -s tests/cpu"
+      "failure_subcases": 7,
+      "error_subcases": 3,
+      "command": ".venv-data/bin/python -m unittest discover -s tests/cpu",
+      "baseline_before_fix": {
+        "tests": 160,
+        "failure_subcases": 9,
+        "error_subcases": 3
+      },
+      "remaining_cause": "GPQA provenance/order expectations conflict with server5ea648f generalized reader; unchanged in cache recovery fix"
     },
     "shared_scheduler_header_host_compile": "passed",
     "python_syntax": "passed",
@@ -119,7 +128,15 @@
       "gpu_execution_independently_verified": false
     },
     "gpu_allocation": "passed_cpu_launch_report_and_snapshot_checks_other_physical_gpu_sets_not_verified_on_server",
-    "execution_profiling": "cpu_aggregation_http_gates_export_and_host_header_passed_cuda_numeric_graph_timer_ring_checks_added_not_run_locally"
+    "execution_profiling": "cpu_aggregation_http_gates_export_and_host_header_passed_cuda_numeric_graph_timer_ring_checks_added_not_run_locally",
+    "cache_flush_recovery": {
+      "status": "passed_local_server_recheck_pending",
+      "localhost_http_tests": 8,
+      "recovery_controller_cancellation_cleanup_suite_tests": 19,
+      "server_rechecked": false,
+      "cuda_source_unchanged": true,
+      "cuda_source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0"
+    }
   },
   "server_report_sources": {
     "core": "reports/core_acceptance.json and reports/server/cuda-functional.Uzo4T0, cuda-functional.YfA3yp",

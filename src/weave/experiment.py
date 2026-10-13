@@ -50,6 +50,8 @@ class ExperimentLedger:
             raise ValueError('required experiment phase ordering violated')
         if result.get('status') not in ALLOWED[name]:
             raise ValueError(f'{name} has not completed its required gate: {result.get("status")}')
+        if name in ('native_formal','weave_formal') and result.get('stop_reason')=='cache_flush_failed':
+            raise ValueError(f'{name} cache flush failed; inspect the saved partial summary before retrying')
         self.steps[name]=result
     @property
     def outcome(self):

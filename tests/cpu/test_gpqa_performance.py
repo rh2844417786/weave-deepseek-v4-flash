@@ -209,7 +209,7 @@ class PerformanceTest(unittest.TestCase):
                 conn = self
                 class Reply:
                     status = 200
-                    def read(self): return b'{}'
+                    def read(self): return b'Cache flushed.' if conn.path=='/flush_cache' else b'{}'
                     def readline(self):
                         if conn.path.endswith('/generate'):
                             observed.append(conn.payload)
@@ -224,7 +224,7 @@ class PerformanceTest(unittest.TestCase):
             def close(self): pass
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); records = make_records(root)
-            with patch.object(perf.http.client, 'HTTPConnection', FakeConnection), patch.object(perf.queue, 'Queue', FakeQueue):
+            with patch.object(perf.http.client, 'HTTPConnection', FakeConnection), patch.object(perf.queue, 'Queue', FakeQueue), patch.object(perf,'GROUP_SECONDS',1200):
                 result = perf.benchmark_group('http://localhost:1', records, root/'out', ready_monotonic=0., clock=lambda: clock[0])
             self.assertEqual(result['warmup_count'], 2)
             self.assertEqual(result['completed_count'], 21)
@@ -282,7 +282,7 @@ class PerformanceTest(unittest.TestCase):
                 conn = self
                 class Reply:
                     status = 200
-                    def read(self): return b'{}'
+                    def read(self): return b'Cache flushed.' if conn.path=='/flush_cache' else b'{}'
                     def readline(self):
                         if not hasattr(self, 'lines'):
                             event = response(ids=(7,)); event['meta_info']['finish_reason'] = None; event['meta_info']['id'] = conn.payload['rid']
@@ -444,7 +444,7 @@ class PerformanceTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); records = make_records(root)
             with patch.object(perf.http.client, 'HTTPConnection', SlowControl):
-                result = perf.benchmark_group('http://localhost:1', records, root/'out', ready_monotonic=time.monotonic()-1199.94)
+                result = perf.benchmark_group('http://localhost:1', records, root/'out', ready_monotonic=time.monotonic()-perf.GROUP_SECONDS+.06)
             self.assertEqual(result['timeout_count'], 1)
             self.assertEqual(result['records'][0]['status'], 'deadline')
             self.assertEqual(result['completed_count'], 0)

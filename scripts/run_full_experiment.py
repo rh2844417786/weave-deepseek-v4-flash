@@ -225,7 +225,7 @@ def main():
                     try: result=benchmark_group(url,args.records,out/label,ready_monotonic=ready,raw_root=args.work_root,
                                                 measurement_mode=measurement_mode)
                     finally: benchmark_active=False
-                    if before:
+                    if before and result.get('stop_reason')!='cache_flush_failed':
                         if args.execution_profile: wait_idle(url)
                         after=coverage(args.evidence_port_base)
                         validate_tiled_snapshot_metadata(after,core_gate,profiles,profiling_config)
@@ -242,6 +242,8 @@ def main():
             if result['cleanup']['cleanup_status'] not in ('absent','stopped'):
                 raise ValueError('formal service cleanup not confirmed')
             _atomic_json(out/label/'summary.json',result)
+            if result.get('stop_reason')=='cache_flush_failed':
+                report['performance']='not_compared_cache_flush_failure'
             ledger.record(label+'_formal',result);checkpoint()
         comparison=compare_groups(groups['native'],groups['weave'])
         ledger.record('comparison',comparison)

@@ -6,6 +6,7 @@
 
 - [分组 tile、实测校准与正式 GPQA 统一入口](docs/FORMAL_GPQA_EXPERIMENT.md)
 - [GPU编号动态读取调度器分配](docs/GPU_ALLOCATION.md)
+- [缓存清理失败恢复与服务器复测](docs/CACHE_FLUSH_RECOVERY.md)
 - [当前GPQA的设备端阶段诊断与服务器命令](docs/DECODE_EXECUTION_PROFILE.md)
 - [已返回的预算GPQA性能结果](reports/server/full-experiment-9d9ee0d02724/comparison.json)
 - [校准 CUDA 故障：单点定位与285点恢复](docs/CALIBRATION_FAULT_RECOVERY.md)

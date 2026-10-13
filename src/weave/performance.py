@@ -19,6 +19,31 @@ from .gpqa import load_prepared_records as _load_records
 GROUP_SECONDS = 600
 WARMUP_SECONDS = 120
 MAX_WARMUPS = 2
+CACHE_FLUSH_MAX_WAIT = 30.
+CACHE_FLUSH_ATTEMPT_SECONDS = 2.
+CACHE_FLUSH_RETRY_SECONDS = .1
+_BUSY_FLUSH_MESSAGES = {
+    'Flush cache failed.',
+    'Another flush_cache is already in progress.',
+    'Timed out waiting for idle state.',
+}
+
+
+class ControlHTTPError(RuntimeError):
+    """Keep response details private; public diagnostics contain status and hash."""
+    def __init__(self,status,endpoint,body):
+        self.status,self.endpoint=status,endpoint
+        self.body_prefix=body[:4096].decode('utf-8',errors='replace')
+        self.body_sha256=hashlib.sha256(body).hexdigest()
+        self.body_bytes=len(body)
+        super().__init__(f'HTTP {status} at {endpoint}')
+
+
+class CacheFlushError(RuntimeError):
+    def __init__(self,diagnostic,private_errors):
+        self.diagnostic,self.private_errors=diagnostic,private_errors
+        reason=(diagnostic.get('last_error') or {}).get('reason','deadline')
+        super().__init__(f'cache flush {diagnostic["status"]}: {reason}')
 
 
 def _sha(value):
@@ -245,7 +270,7 @@ def _json_request(url, endpoint, payload=None, *, timeout=2, deadline=None, cloc
             response = conn.getresponse()
             data = response.read()
             if response.status != 200:
-                raise RuntimeError(f'HTTP {response.status} at {endpoint}')
+                raise ControlHTTPError(response.status,endpoint,data)
             if not data:
                 value = None
             else:
@@ -269,6 +294,64 @@ def _json_request(url, endpoint, payload=None, *, timeout=2, deadline=None, cloc
             return value
     finally:
         lifetime.close()
+
+
+def flush_cache_when_idle(url,*,deadline,clock=time.monotonic,max_wait=None,private_errors=None):
+    """Retry immediate idle checks on this record, within the existing deadline.
+
+    Keep server timeout at zero: a timed-out client must not leave a deferred
+    cache mutation queued for a later generation. Only positive ACK permits it.
+    """
+    max_wait=CACHE_FLUSH_MAX_WAIT if max_wait is None else max_wait
+    if not math.isfinite(deadline) or not math.isfinite(max_wait) or max_wait<=0:
+        raise ValueError('finite cache flush deadline and positive wait required')
+    started=clock();end=min(deadline,started+max_wait)
+    attempts=retries=0;history=[];private=[] if private_errors is None else private_errors;last=None
+
+    def diagnostic(status):
+        return {'status':status,'attempts':attempts,'retryable_failures':retries,
+                'elapsed_s':max(0.,clock()-started),'max_wait_s':max_wait,
+                'last_error':last,'history':list(history),
+                'history_dropped':max(0,attempts-len(history))}
+
+    while True:
+        now=clock()
+        if now>=end:
+            raise CacheFlushError(diagnostic('deadline' if now>=deadline else 'timeout'),private)
+        attempts+=1;attempt_started=now
+        retryable=False;details=None
+        try:
+            value=_json_request(url,'/flush_cache',timeout=min(CACHE_FLUSH_ATTEMPT_SECONDS,end-now),
+                                deadline=end,clock=clock)
+            if isinstance(value,str) and value.startswith('Cache flushed.'):
+                history.append({'attempt':attempts,'outcome':'flushed','elapsed_s':max(0.,clock()-attempt_started)})
+                history=history[-16:]
+                return diagnostic('flushed')
+            encoded=repr(value).encode()
+            last={'reason':'invalid_acknowledgement','http_status':200,
+                  'body_sha256':hashlib.sha256(encoded).hexdigest()}
+            details={'attempt':attempts,'http_status':200,'reply_repr':repr(value)[:4096]}
+        except ControlHTTPError as error:
+            retryable=(error.status==400 and error.body_bytes<=4096
+                       and error.body_prefix.strip() in _BUSY_FLUSH_MESSAGES)
+            last={'reason':'scheduler_busy' if retryable else 'http_error','http_status':error.status,
+                  'body_sha256':error.body_sha256,'body_bytes':error.body_bytes}
+            details={'attempt':attempts,'http_status':error.status,'body_prefix':error.body_prefix,
+                     'body_truncated':error.body_bytes>4096,'body_sha256':error.body_sha256}
+        except (OSError,http.client.HTTPException) as error:
+            retryable=True
+            last={'reason':'timeout' if isinstance(error,TimeoutError) else 'transport_error',
+                  'error_type':type(error).__name__}
+            details={'attempt':attempts,'error_type':type(error).__name__,'detail':str(error)[:4096]}
+        history.append({'attempt':attempts,'outcome':'retryable_error' if retryable else 'error',
+                        'elapsed_s':max(0.,clock()-attempt_started),**last})
+        history=history[-16:]
+        if details is not None:
+            private.append(details);del private[:-16]
+        if not retryable: raise CacheFlushError(diagnostic('failed'),private)
+        retries+=1
+        remaining=end-clock()
+        if remaining>0: time.sleep(min(CACHE_FLUSH_RETRY_SECONDS,remaining))
 
 
 def _abort_request(url, rid):
@@ -390,6 +473,9 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
                'deadline_monotonic': deadline, 'record_sha256': manifest['record_sha256'],
                'order_seed': 42, 'records': [], 'warmups': [], 'warmup_count': 0,
                'timeout_count': 0, 'warmup_timeout_count': 0,
+               'cache_flush_policy':{'max_wait_s':CACHE_FLUSH_MAX_WAIT,
+                    'attempt_timeout_s':CACHE_FLUSH_ATTEMPT_SECONDS,'retry_interval_s':CACHE_FLUSH_RETRY_SECONDS,
+                    'requires_positive_ack':True},
                'raw_artifact_relative_path': str(raw_dir.relative_to(repo)) if raw_dir.is_relative_to(repo) else None,
                'raw_artifact_directory': str(raw_dir),
                'request_settings': {'sampling_params': {'temperature': 0, 'max_new_tokens': 32768, 'ignore_eos': False},
@@ -403,6 +489,7 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
         _atomic_json(output_dir/'summary.json', summary)
 
     checkpoint()
+    halted=False
     for warmup, selected, phase_deadline in (
         (True, records[:MAX_WARMUPS], min(deadline, ready_monotonic+WARMUP_SECONDS)),
         (False, records, deadline),
@@ -412,14 +499,20 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
             rid = 'weave-gpqa-'+uuid.uuid4().hex
             payload = dict(summary['request_settings'], rid=rid, input_ids=record['input_token_ids'])
             # A standalone batch1 service is required; flush makes each natural input uncached.
+            flush_diagnostic=None;flush_private=[]
             try:
-                _json_request(url, '/flush_cache', timeout=max(.001, min(2, phase_deadline-clock())),
-                              deadline=phase_deadline, clock=clock)
+                flush_diagnostic=flush_cache_when_idle(url,deadline=phase_deadline,clock=clock,private_errors=flush_private)
             except BaseException as error:
                 interrupted = isinstance(error, (KeyboardInterrupt, SystemExit))
                 state = 'cancelled' if interrupted else ('deadline' if clock() >= phase_deadline else 'cache_flush_error')
                 row = summarize_response(record['row_index'], rid, payload['input_ids'], {}, state=state)
                 accumulator = StreamAccumulator(rid)
+                if isinstance(error,CacheFlushError):
+                    flush_diagnostic=error.diagnostic;flush_private=error.private_errors
+                else:
+                    flush_diagnostic={'status':state,'error_type':type(error).__name__}
+                if state=='cache_flush_error':
+                    halted=True;summary['stop_reason']='cache_flush_failed'
                 if interrupted:
                     accumulator.interruption = error
             else:
@@ -429,16 +522,20 @@ def benchmark_group(url, records_path, output_dir, *, ready_monotonic, clock=tim
                 if row['status'] == 'invalid':
                     _abort_request(url, rid)
             row['prompt_sha256'] = record.get('prompt_sha256')
+            row['cache_flush']=flush_diagnostic
             (summary['warmups'] if warmup else summary['records']).append(row)
             summary['warmup_count'] += int(warmup)
             summary['warmup_timeout_count' if warmup else 'timeout_count'] += int(row['status'] == 'deadline')
             _atomic_json(raw_dir/(rid+'.json'), {'row_index': record['row_index'], 'warmup': warmup,
-                'output_ids': accumulator.ids, 'first_token_logprobs': accumulator.first_token_logprobs})
+                'output_ids': accumulator.ids, 'first_token_logprobs': accumulator.first_token_logprobs,
+                'cache_flush_private_errors':flush_private})
             checkpoint()
             if hasattr(accumulator, 'interruption'):
                 summary['status'] = row['status']; checkpoint()
                 raise accumulator.interruption
-    summary['status'] = ('complete' if len(summary['records']) == len(records) and summary['completed_count'] == len(records)
+            if halted: break
+        if halted: break
+    summary['status'] = ('incomplete' if halted else 'complete' if len(summary['records']) == len(records) and summary['completed_count'] == len(records)
                          else 'deadline' if clock() >= deadline else 'incomplete')
     checkpoint()
     return summary

@@ -7,6 +7,15 @@ from scripts.run_full_experiment import measuring_deadline
 
 
 class FullExperimentTest(unittest.TestCase):
+    def test_failed_cache_barrier_cannot_advance_to_another_group_or_comparison(self):
+        ledger=ExperimentLedger()
+        for name,status in [('core','passed'),('calibration','measured'),('model_acceptance','passed')]:
+            ledger.record(name,{'status':status})
+        with self.assertRaisesRegex(ValueError,'cache flush'):
+            ledger.record('native_formal',{'status':'incomplete','stop_reason':'cache_flush_failed'})
+        self.assertEqual(ledger.completed,['core','calibration','model_acceptance'])
+        self.assertEqual(ledger.outcome,'incomplete')
+
     def test_old_calibration_marker_cannot_expire_new_invocation(self):
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/'progress.json'
