@@ -25,6 +25,23 @@ CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
 
+def _concurrency_env(name: str) -> str:
+    """Positive serving-parallelism value from the environment (default 1).
+
+    The formal contract serves batch one. A concurrency experiment raises the
+    server-side running-request cap and the decode-graph batch size together so
+    the service can actually keep N requests in flight.
+    """
+    raw = os.environ.get(name, '1')
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError(f'{name} must be an integer: {raw!r}') from exc
+    if value < 1:
+        raise ValueError(f'{name} must be positive: {value}')
+    return str(value)
+
+
 def docker_command(args, image: str, name: str, run_name='preview',allocation=None) -> list:
     allocation=allocation or allocated_gpus()
     docker = [
@@ -73,8 +90,8 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         '--tp-size', '4', '--ep-size', '4',
         '--moe-runner-backend', 'marlin', '--moe-a2a-backend', 'none',
         '--context-length', '131072', '--mem-fraction-static', '0.80',
-        '--chunked-prefill-size', '8192', '--max-running-requests', '1',
-        '--cuda-graph-backend-decode', args.decode_graph, '--cuda-graph-max-bs-decode', '1',
+        '--chunked-prefill-size', '8192', '--max-running-requests', _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS'),
+        '--cuda-graph-backend-decode', args.decode_graph, '--cuda-graph-max-bs-decode', _concurrency_env('WEAVE_CUDA_GRAPH_MAX_BS_DECODE'),
         '--watchdog-timeout', '1800', '--disable-custom-all-reduce',
         '--disable-shared-experts-fusion', '--reasoning-parser', 'deepseek-v4',
         '--decode-log-interval', '10', '--enable-metrics',
