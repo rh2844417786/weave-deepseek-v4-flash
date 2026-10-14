@@ -1,0 +1,55 @@
+{
+ "schema_version": 1,
+ "scope": "concurrency_32_serving_throughput_probe",
+ "date": "2026-10-13",
+ "method": {
+  "concurrency": 32,
+  "server_side": "WEAVE_MAX_RUNNING_REQUESTS=32 and WEAVE_CUDA_GRAPH_MAX_BS_DECODE=32 (new environment overrides, default 1)",
+  "load_generator": "sglang.bench_serving --max-concurrency 32 --dataset-name custom (nine SWE-Bench cases x200, fixed 1024-token outputs), killed at the 600 s window",
+  "metric": "mean of the scheduler's own 'gen throughput (token/s)' samples inside the 600 s window (service logs are UTC)",
+  "graph": "native: full decode graph; weave: eager (the functional adapter rejects any graph candidate with max-running-requests != 1)",
+  "profile": "weave ran without the measured profile: with 32 running requests it is rejected (\"profile is not a measured match for this kernel/device/shape\")",
+  "private_data": "the SWE-Bench prompts and the bench dataset stay in the work directory and are not committed"
+ },
+ "jobs": {
+  "r2": "job-20261013-121725-2b820843 (superseded)",
+  "r6": "job-20261013-143041-d19848da (succeeded)"
+ },
+ "native_concurrency_32": {
+  "r2-600s": {
+   "samples": 3639,
+   "mean_tokens_per_second": 1973.54,
+   "steady_last_100_mean": 1978.83,
+   "min": 0.21,
+   "max": 2537.04
+  },
+  "r6-600s": {
+   "samples": 3624,
+   "mean_tokens_per_second": 1969.87,
+   "steady_last_100_mean": 1949.59,
+   "min": 0.38,
+   "max": 2550.13
+  }
+ },
+ "weave_concurrency_32": {
+  "window_seconds": 600.0,
+  "truncated": true,
+  "decode_samples": 3,
+  "mean_sampled_tokens_per_second": 0.45,
+  "max_running_requests": 1,
+  "max_queue_requests": 17,
+  "generate_200_ok_count": 34,
+  "kv_full_token_usage_seen": "0.00",
+  "reading": "the functional adapter serialises concurrent work: running-req stayed at 1 with the queue growing, the KV pool stayed essentially empty and the scheduler sampled ~0.45 token/s. This is a batch-one eager path (see the adapter constraint below), not a slow-but-parallel service.",
+  "log_excerpts": [
+   "[2026-10-13 15:09:27] INFO:     127.0.0.1:34254 - \"POST /generate HTTP/1.1\" 200 OK",
+   "[2026-10-13 15:09:27] INFO:     127.0.0.1:34266 - \"POST /generate HTTP/1.1\" 200 OK",
+   "[2026-10-13 15:12:33 TP0 EP0] Prefill batch, #new-seq: 1, #new-token: 256, #cached-token: 2048, full token usage: 0.00, swa token usage: 0.03, #running-req: 0, #queue-req: 17, #pending-token: 0, cuda graph: False, input throughput (token/s): 1.09"
+  ]
+ },
+ "adapter_constraints_observed": [
+  "graph candidate requires max-running-requests=1 and decode graph buckets=[1] (src/weave/sglang_backend.py)",
+  "profile is not a measured match for this kernel/device/shape (src/weave/ops.py, profile bound to the batch-one contract)"
+ ],
+ "host_side_note": "compiled by the operator agent from the GPUQ run logs on the work disk; raw logs and private prompts are not in Git. native C32 was reproduced three times (1973.5 / 1981.9 / 1969.8 mean tokens/s); the r4 attempt (78.5 over 4 samples) failed before the load ran and is excluded."
+}
