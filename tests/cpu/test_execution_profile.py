@@ -50,6 +50,36 @@ def fixture():
 
 
 class ExecutionProfileTest(unittest.TestCase):
+    def test_fixed_eager_report_binds_plan_without_inventing_a_bank(self):
+        identity,heads,totals,records=fixture()
+        identity.update(graph_enabled=False,profile_bank_sha256=None,
+                        schedule_mode='explicit_fixed',fixed_plan=[1,1,1])
+        result=summarize_profile(TraceConfig(stride=2,capacity=2,layers=1),identity,
+                                 heads,totals,records,workers=2)
+        self.assertEqual(result['fixed_plan'],[1,1,1])
+        self.assertIsNone(result['profile_bank_sha256'])
+        self.assertFalse(result['graph_enabled'])
+        self.assertFalse(result['used_for_formal_performance'])
+        identity['fixed_plan']=[0,1,1]
+        with self.assertRaises(ValueError):
+            summarize_profile(TraceConfig(stride=2,capacity=2,layers=1),identity,
+                              heads,totals,records,workers=2)
+
+    def test_fixed_profile_preview_requires_explicit_eager_and_checkpoint(self):
+        base=[sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--backend','weave_functional',
+              '--kernel','tiled','--execution-profile','--execution-profile-fixed-plan',
+              '--checkpoint-content-sha256','a'*64]
+        env={**os.environ,'CUDA_VISIBLE_DEVICES':'0,2,4,6',
+             'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'}
+        good=subprocess.run(base+['--decode-graph','disabled'],env=env,capture_output=True,text=True)
+        self.assertEqual(good.returncode,0,good.stderr)
+        argv=json.loads(good.stdout)['docker_argv']
+        self.assertIn('WEAVE_FORWARD_PROFILE=1',argv)
+        self.assertIn('WEAVE_FIXED_PLAN=1,1,0',argv)
+        for suffix in (['--decode-graph','full'],['--profile','/tmp/profile.json']):
+            bad=subprocess.run(base+suffix,env=env,capture_output=True,text=True)
+            self.assertNotEqual(bad.returncode,0)
+
     def test_overlapping_worker_time_is_not_summed_as_layer_latency(self):
         self.assertIsNotNone(summarize_profile)
         identity,heads,totals,records=fixture()
@@ -147,6 +177,18 @@ class ExecutionProfileTest(unittest.TestCase):
             self.assertEqual(len(manifest['files']),5)
             self.assertTrue((out/'weave/execution-profile-rank3.json').is_file())
             self.assertFalse((out/'weave/private.json').exists())
+
+    def test_fixed_diagnostic_export_keeps_launch_and_summary_but_excludes_raw_logs(self):
+        from src.weave.experiment_export import export_run
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);run=root/'run';(run/'weave').mkdir(parents=True)
+            (run/'experiment.json').write_text(json.dumps({'status':'failed','scope':'c32_fixed_eager_diagnostic'}))
+            (run/'launch.json').write_text(json.dumps({'docker_argv':['--fixed-plan','1,1,0']}))
+            (run/'weave/diagnostic-summary.json').write_text(json.dumps({'model_decode_rows_rank0':32}))
+            (run/'benchmark-private.log').write_text('private prompt text')
+            (run/'bench-private.jsonl').write_text(json.dumps({'text':'private output'}))
+            manifest=export_run(run,root/'public')
+            self.assertEqual(set(manifest['files']),{'experiment.json','launch.json','weave/diagnostic-summary.json'})
 
     def test_diagnostic_mode_is_recorded_even_when_setup_fails(self):
         from tests.cpu.test_gpqa_performance import make_records

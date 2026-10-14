@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-13",
+  "scope": "local_validation_of_c32_fixed_eager_diagnostic",
+  "base_commit": "4613c6db56ea5a5dda1a98f3f28815d3d9d925f4",
+  "kernel_source_sha256": "95e8d6c87ab67514c2b090834d7cc43ec352acfb24f088bb749f8482e5a9d7c0",
+  "profiling_source_sha256": "7c5e08fce8d530af8648fe8f3f9dba6153450e7289587857c76d4f8772e36fa0",
+  "diagnostic_source_sha256": "0789863d2c0e7aaed4a0dd43be4df7b7f55900fbc06357947b8e2caacb972cd8",
+  "focused_cpu": {
+    "tests": 41,
+    "failures": 0,
+    "errors": 0,
+    "modules": [
+      "test_concurrency_diagnostic",
+      "test_execution_profile",
+      "test_forward_profile",
+      "test_profile_collection",
+      "test_profile_endpoint",
+      "test_profile_gates",
+      "test_experiment_export",
+      "test_native_ep_launch",
+      "test_acceptance_child_cleanup"
+    ]
+  },
+  "full_cpu": {
+    "tests": 180,
+    "failures": 7,
+    "errors": 3,
+    "preexisting_failures_reproduced_at_base": true,
+    "affected_methods": [
+      "PerformanceTest.test_formal_reuse_rejects_contradictory_or_missing_saved_provenance",
+      "PerformanceTest.test_wrong_order_and_modified_prepared_data_rejected",
+      "ServiceAcceptanceTest.test_logprob_drift_is_recorded_without_failing_generation"
+    ],
+    "cause": "existing generic-data reader conflicts with older GPQA provenance/order assertions"
+  },
+  "review": {
+    "important_findings_resolved": 3,
+    "remaining_p1_p2": 0
+  },
+  "python_compile": "passed",
+  "git_diff_check": "passed",
+  "command_preview": "passed",
+  "gpu_event_smoke": "not_run_locally",
+  "c32_server_diagnostic": "not_run",
+  "performance_claim": "none"
+}

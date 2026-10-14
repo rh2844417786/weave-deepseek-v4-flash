@@ -40,6 +40,11 @@ def export_run(run_dir,destination):
         source=Path(source)
         if source.is_file(): files[name]=source.read_bytes()
     add(run_dir/'comparison.json','comparison.json')
+    if report.get('scope')=='c32_fixed_eager_diagnostic':
+        for name in ('launch.json','runtime.json','server-lifecycle.json','load-lifecycle.json','load-window.json',
+                     'forward-profile-smoke.json','smoke-lifecycle.json','load-progress.json'):
+            add(run_dir/name,name)
+        add(run_dir/'weave'/'diagnostic-summary.json','weave/diagnostic-summary.json')
     for group in ('native','weave'): add(run_dir/group/'summary.json',f'{group}/summary.json')
     for rank in range(4):
         name=f'execution-profile-rank{rank}.json'

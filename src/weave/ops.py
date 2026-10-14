@@ -139,6 +139,7 @@ class PeerRuntime:
         self.torch.cuda.synchronize(self.device)
         for buffer in self.trace_buffers: buffer.zero_()
         self.torch.cuda.synchronize(self.device)
+        if getattr(self,'forward_sampler',None) is not None:self.forward_sampler.reset()
 
     def execution_profile_snapshot(self,identity):
         """Idle only; detect forwards interleaved with the multi-buffer copy."""
@@ -155,7 +156,10 @@ class PeerRuntime:
                 error=ValueError('service is active during execution profile snapshot')
                 continue
             try:
-                return summarize_profile(self.trace_config,identity,before,*values,workers=self.trace_workers)
+                result=summarize_profile(self.trace_config,identity,before,*values,workers=self.trace_workers)
+                if getattr(self,'forward_sampler',None) is not None:
+                    result['forward_profile']=self.forward_sampler.snapshot()
+                return result
             except ValueError as exc: error=exc
         raise error
 

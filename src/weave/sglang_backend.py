@@ -113,8 +113,15 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
             raise ValueError('unsupported expert/scaling/shared-expert path; no partial fallback')
     runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256, kernel=kernel)
     runtime.allow_decode_graph = allow_decode_graph
+    runtime.fixed_plan=tuple(fixed_plan)
     profile = runtime.profile_from_file(profile_path) if profile_path else None
     if execution_profile is not None: runtime.enable_execution_profile(execution_profile)
+    if os.environ.get('WEAVE_FORWARD_PROFILE')=='1':
+        if execution_profile is None or allow_decode_graph or profile is not None:
+            raise ValueError('full-forward diagnostics require profiled fixed/eager execution')
+        from .forward_profile import ForwardSampler
+        runtime.forward_sampler=ForwardSampler(torch.cuda,stride=execution_profile.stride,
+                                               capacity=execution_profile.capacity)
     for layer in layers:
         raw = load_raw_experts(model_path, layer.mlp.layer_id, runtime.rank, runtime.ep,
                                device=torch.device('cuda', runtime.device))
@@ -134,6 +141,8 @@ def execution_profile(model):
     return runtime.execution_profile_snapshot({'rank':runtime.rank,'kernel':runtime.kernel,
         'source_sha256':runtime.source_sha256,'graph_enabled':runtime.allow_decode_graph,
         'profile_bank_sha256':getattr(profile,'sha256',None),
+        'schedule_mode':'measured_dynamic' if profile is not None else 'explicit_fixed',
+        'fixed_plan':None if profile is not None else list(runtime.fixed_plan),
         'checkpoint_content_sha256':os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
         'image_id':os.environ.get('WEAVE_IMAGE_ID'),'host_gpu_allocation':os.environ.get('WEAVE_HOST_ALLOCATION'),
         'device_key':f'{prop.name};sm{prop.major}{prop.minor};{prop.multi_processor_count}'})
@@ -144,6 +153,7 @@ def coverage(model):
             'source_sha256': model.weave_runtime.source_sha256,
             'graph_enabled': model.weave_runtime.allow_decode_graph,
             'schedule_mode': 'measured_dynamic' if model.model.layers[0].mlp.experts.profile is not None else 'explicit_fixed',
+            'fixed_plan': None if model.model.layers[0].mlp.experts.profile is not None else list(model.weave_runtime.fixed_plan),
             'profile_checkpoint_content_sha256': os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
             'profile_bank_sha256': getattr(model.model.layers[0].mlp.experts.profile,'sha256',None),
             'execution_profile_configuration':asdict(model.weave_runtime.trace_config) if model.weave_runtime.trace_config else None,

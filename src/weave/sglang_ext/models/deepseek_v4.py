@@ -31,7 +31,20 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
         mode = getattr(batch, 'forward_mode', None)
         self.weave_runtime.phase = ('decode' if mode is not None and mode.is_decode()
                                     else 'prefill' if mode is not None and mode.is_extend() else 'other')
-        return super().forward(*args, **kwargs)
+        sampler=getattr(self.weave_runtime,'forward_sampler',None)
+        if sampler is None:return super().forward(*args, **kwargs)
+        ids=kwargs.get('input_ids',args[0] if args else None)
+        if ids is None:raise ValueError('eager forward diagnostics require input_ids shape')
+        rows=int(ids.shape[0])
+        valid=getattr(batch,'batch_size',None) if self.weave_runtime.phase=='decode' else rows
+        ticket=sampler.begin(self.weave_runtime.phase,rows,valid)
+        try:
+            result=super().forward(*args, **kwargs)
+            sampler.end(ticket)
+            return result
+        except BaseException:
+            sampler.fail(ticket)
+            raise
 
 
 EntryClass = [DeepseekV4ForCausalLM]

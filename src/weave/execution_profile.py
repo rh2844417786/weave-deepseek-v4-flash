@@ -17,7 +17,7 @@ COUNTS=tuple(range(24,28))
 
 def profiling_source_sha256():
     root=Path(__file__).resolve().parents[2]
-    names=('src/weave/execution_profile.py','src/weave/ops.py','src/weave/sglang_backend.py',
+    names=('src/weave/execution_profile.py','src/weave/forward_profile.py','src/weave/ops.py','src/weave/sglang_backend.py',
            'src/weave/evidence_server.py','src/weave/sglang_ext/models/deepseek_v4.py',
            'scripts/collect_execution_profile.py')
     return hashlib.sha256(b''.join(name.encode()+b'\0'+(root/name).read_bytes() for name in names)).hexdigest()
@@ -108,7 +108,8 @@ def summarize_profile(config,identity,heads,totals,records,*,workers):
     """Aggregate synchronized buffers; envelopes include gaps and may overlap."""
     shapes=config.shapes(workers)
     allowed={'rank','source_sha256','profile_bank_sha256','checkpoint_content_sha256',
-             'kernel','graph_enabled','device_key','image_id','host_gpu_allocation'}
+             'kernel','graph_enabled','device_key','image_id','host_gpu_allocation',
+             'schedule_mode','fixed_plan'}
     if set(identity)-allowed:
         raise ValueError('execution profile identity cannot override diagnostic fields')
     for value,shape in zip((heads,totals,records),shapes):
@@ -117,7 +118,19 @@ def summarize_profile(config,identity,heads,totals,records,*,workers):
     if (type(identity.get('rank')) is not int or not 0<=identity['rank']<4
             or identity.get('kernel')!='tiled' or type(identity.get('graph_enabled')) is not bool):
         raise ValueError('execution profile identity missing')
-    for field in ('source_sha256','profile_bank_sha256','checkpoint_content_sha256'):
+    fixed=identity.get('schedule_mode','measured_dynamic')=='explicit_fixed'
+    if identity.get('schedule_mode','measured_dynamic') not in ('explicit_fixed','measured_dynamic'):
+        raise ValueError('unknown execution profile schedule mode')
+    plan=identity.get('fixed_plan')
+    if fixed:
+        if (not isinstance(plan,list) or len(plan)!=3 or any(type(v) is not int for v in plan)
+                or not 0<=plan[0]<workers or not 1<=plan[1]<=8 or plan[2]<0
+                or identity.get('profile_bank_sha256') is not None or identity['graph_enabled']):
+            raise ValueError('fixed profile requires an explicit bounded plan, no bank and eager execution')
+    elif plan is not None:
+        raise ValueError('measured profile cannot claim a fixed plan')
+    fields=('source_sha256','checkpoint_content_sha256')+(() if fixed else ('profile_bank_sha256',))
+    for field in fields:
         if not re.fullmatch('[0-9a-f]{64}',identity.get(field,'')):
             raise ValueError('execution profile source/profile/checkpoint identity missing')
     result={'schema_version':1,'status':'profiled','measurement_mode':'instrumented_diagnostic',
@@ -126,7 +139,8 @@ def summarize_profile(config,identity,heads,totals,records,*,workers):
             'scope':'persistent_worker_entry_through_completion_barrier_excludes_prepare_and_outer_runtime',
             'aggregation':'worker totals are CTA wall time; concurrent phase envelopes are not additive latency or hardware utilization; plan_wait includes planner work on CTA0',
             'sampling_window':'since explicit reset through idle snapshot; includes warmups and abort/drain completion',
-            **identity,'configuration':{'stride':config.stride,'capacity':config.capacity,
+            **identity,'schedule_mode':'explicit_fixed' if fixed else 'measured_dynamic',
+            'configuration':{'stride':config.stride,'capacity':config.capacity,
                                         'layers':config.layers,'workers':workers},'layers':{}}
     for phase_index,phase in enumerate(PHASES):
         for layer in range(config.layers):
@@ -151,7 +165,13 @@ def summarize_profile(config,identity,heads,totals,records,*,workers):
                 metadata=_row(rows[-1],FIELDS)
                 if metadata[13]!=phase_index or metadata[14]!=layer:
                     raise ValueError('execution profile sample phase/layer mismatch')
-                recent.append(_sample(rows[:-1],rows[-1],index*config.stride,workers))
+                sample=_sample(rows[:-1],rows[-1],index*config.stride,workers)
+                if fixed and sample['schedule']!={'c':plan[0],
+                        'K':min(plan[1],max(1,sample['workload']['payloads'])),'steal':plan[2]}:
+                    raise ValueError('sampled schedule differs from fixed plan')
+                recent.append(sample)
+            if fixed and any(n and (i//8!=plan[0] or i%8+1>plan[1]) for i,n in enumerate(head[2:])):
+                raise ValueError('plan histogram differs from fixed plan')
             for worker,total in enumerate(worker_rows):
                 if any(total[field]<sum(records[plane][index%config.capacity][worker][field]
                         for index in range(max(0,sampled-config.capacity),sampled)) for field in range(12,31)):

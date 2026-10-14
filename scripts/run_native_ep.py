@@ -81,6 +81,8 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
             docker += ['-e','WEAVE_EXECUTION_PROFILE=1',
                        '-e',f'WEAVE_EXECUTION_PROFILE_STRIDE={args.execution_profile_stride}',
                        '-e',f'WEAVE_EXECUTION_PROFILE_CAPACITY={args.execution_profile_capacity}']
+            if args.execution_profile_fixed_plan:
+                docker += ['-e','WEAVE_FORWARD_PROFILE=1']
     command = docker + [image, args.runtime_python, '/workspace/scripts/check_runtime.py',
         '--stage', 'adapter' if functional else 'native', '--output-dir', f'/work/{run_name}',
         '--exec-command', args.runtime_python, '-m', 'sglang.launch_server',
@@ -119,12 +121,17 @@ def main() -> int:
     parser.add_argument('--checkpoint-content-sha256', help='verified original checkpoint digest for measured tiled profiles')
     parser.add_argument('--execute', action='store_true', help='launch Docker; default only prints the candidate command')
     add_profile_arguments(parser)
+    parser.add_argument('--execution-profile-fixed-plan',action='store_true',
+                        help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
     try: profile_options(args)
     except ValueError as error: parser.error(str(error))
     if args.execution_profile and (args.backend!='weave_functional' or args.kernel!='tiled'):
         parser.error('execution-profile requires weave_functional and tiled kernel')
-    if args.execution_profile and args.execute and args.profile is None:
+    if args.execution_profile_fixed_plan and (not args.execution_profile or args.profile is not None
+            or args.decode_graph=='full' or not args.checkpoint_content_sha256):
+        parser.error('fixed-plan profiling requires execution-profile, eager, checkpoint identity and no profile bank')
+    if args.execution_profile and args.execute and args.profile is None and not args.execution_profile_fixed_plan:
         parser.error('execution-profile execution requires a measured profile bank and checkpoint identity')
     if args.checkpoint_content_sha256 and not re.fullmatch(r'[0-9a-f]{64}', args.checkpoint_content_sha256):
         parser.error('checkpoint-content-sha256 must be a full SHA256 digest')
