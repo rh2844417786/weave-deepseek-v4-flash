@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-smoke-c32-diagnostic-410c4a319663",
+  "started_utc": "2026-10-14T03:47:28.170349+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-14T03:47:39.879374+00:00"
+}
