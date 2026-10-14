@@ -58,5 +58,18 @@
   "weave_reading_superseded": true,
   "corrected_run": "job-20261014-015732-74ac4ded relaunches the same probe with --kernel tiled; its summary will carry kernel and decode_graph fields.",
   "recorded_by": "operator agent after the kernel default was pointed out"
+ },
+ "corrected_tiled_measurement": {
+  "job": "job-20261014-020203-8dae7a66 (weave only, --kernel tiled, eager)",
+  "window_seconds": 600.1,
+  "truncated": true,
+  "throughput_samples": 46,
+  "mean_gen_throughput_tokens_per_second": 46.43,
+  "min": 0.07,
+  "max": 65.07,
+  "max_running_requests": 32,
+  "queue_requests_in_tail": 0,
+  "reading": "with the tiled kernel the adapter does keep 32 requests in flight and sustains about 46 tokens/s aggregate over the window, i.e. it serves the concurrency rather than serialising it. Against native at the same concurrency (~1970 tokens/s) Weave is about 42x slower; against its own single-stream tiled result (~10.1 tokens/s) the C32 scaling is about 4.6x versus native 18.3x.",
+  "supersedes": "weave_concurrency_32 (scalar kernel, ~0.45 tokens/s)"
  }
 }
