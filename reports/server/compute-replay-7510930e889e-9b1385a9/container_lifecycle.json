@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-compute-replay-7510930e889e",
+  "started_utc": "2026-10-14T10:26:16.957439+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-14T10:31:20.982449+00:00"
+}

@@ -1,0 +1,160 @@
+{
+  "status": "synthetic_staged_checks_passed",
+  "source_sha256": "72592ee28337504ab90ef450541b0027f561e479c1fc61ba5c23281bcd8d847a",
+  "cases": [
+    {
+      "batch": 1,
+      "h": 32,
+      "i": 32,
+      "grid": 132,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 1,
+      "h": 32,
+      "i": 32,
+      "grid": 264,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 1,
+      "h": 32,
+      "i": 32,
+      "grid": 528,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 1,
+      "h": 32,
+      "i": 32,
+      "grid": 0,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 17,
+      "h": 96,
+      "i": 96,
+      "grid": 132,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 17,
+      "h": 96,
+      "i": 96,
+      "grid": 264,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 17,
+      "h": 96,
+      "i": 96,
+      "grid": 528,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 17,
+      "h": 96,
+      "i": 96,
+      "grid": 0,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 32,
+      "h": 128,
+      "i": 64,
+      "grid": 132,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 32,
+      "h": 128,
+      "i": 64,
+      "grid": 264,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 32,
+      "h": 128,
+      "i": 64,
+      "grid": 528,
+      "eager": "passed",
+      "graph": "passed"
+    },
+    {
+      "batch": 32,
+      "h": 128,
+      "i": 64,
+      "grid": 0,
+      "eager": "passed",
+      "graph": "passed"
+    }
+  ],
+  "empty_rank_graph": "passed",
+  "resources": {
+    "stages": {
+      "gate_up": {
+        "numRegs": 134,
+        "localSizeBytes": 32,
+        "sharedSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 49152,
+        "maxThreadsPerBlock": 384,
+        "dynamic_shared_bytes": 8192,
+        "threads_per_block": 128,
+        "active_blocks_per_sm": 3,
+        "binaryVersion": 90,
+        "ptxVersion": 90
+      },
+      "down": {
+        "numRegs": 96,
+        "localSizeBytes": 32,
+        "sharedSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 49152,
+        "maxThreadsPerBlock": 640,
+        "dynamic_shared_bytes": 8192,
+        "threads_per_block": 128,
+        "active_blocks_per_sm": 5,
+        "binaryVersion": 90,
+        "ptxVersion": 90
+      },
+      "reduce": {
+        "numRegs": 23,
+        "localSizeBytes": 0,
+        "sharedSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 49152,
+        "maxThreadsPerBlock": 1024,
+        "dynamic_shared_bytes": 0,
+        "threads_per_block": 128,
+        "active_blocks_per_sm": 16,
+        "binaryVersion": 90,
+        "ptxVersion": 90
+      }
+    },
+    "device": 0,
+    "multiprocessors": 132,
+    "grid_controls": [
+      132,
+      264,
+      528,
+      0
+    ],
+    "group_capacity": 2,
+    "scratch_group_capacity": 2,
+    "gate_tiles_per_group": 1,
+    "down_tiles_per_group": 1,
+    "reduce_grid_blocks": 1,
+    "output_dtype": "float32",
+    "slot_output_boundary": "BF16-rounded down output stored as float32"
+  },
+  "real_checkpoint": "not_checked_here",
+  "performance": "not_measured"
+}

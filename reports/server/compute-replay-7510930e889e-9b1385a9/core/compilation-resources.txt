@@ -1,0 +1,30 @@
+ptxas info    : 28 bytes gmem
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__67089ce4_17_staged_compute_cu_759ce57b14staged_computeILb0EEEvNS_12StagedConfigE' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__67089ce4_17_staged_compute_cu_759ce57b14staged_computeILb0EEEvNS_12StagedConfigE
+ptxas info    : Used 96 registers, used 1 barriers, 32 bytes cumulative stack size
+ptxas info    : Compile time = 48.419 ms
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__67089ce4_17_staged_compute_cu_759ce57b14staged_computeILb1EEEvNS_12StagedConfigE' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__67089ce4_17_staged_compute_cu_759ce57b14staged_computeILb1EEEvNS_12StagedConfigE
+ptxas info    : Used 134 registers, used 1 barriers, 32 bytes cumulative stack size
+ptxas info    : Compile time = 131.121 ms
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__67089ce4_17_staged_compute_cu_759ce57b13staged_reduceENS_12StagedConfigE' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__67089ce4_17_staged_compute_cu_759ce57b13staged_reduceENS_12StagedConfigE
+ptxas info    : Used 23 registers, used 0 barriers
+ptxas info    : Compile time = 10.704 ms
+ptxas info    : 28 bytes gmem
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_2167prepareILb0EEEvPNS_7ControlEiPyii' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_2167prepareILb0EEEvPNS_7ControlEiPyii
+ptxas info    : Used 8 registers, used 0 barriers
+ptxas info    : Compile time = 3.441 ms
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_2167prepareILb1EEEvPNS_7ControlEiPyii' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_2167prepareILb1EEEvPNS_7ControlEiPyii
+ptxas info    : Used 20 registers, used 0 barriers
+ptxas info    : Compile time = 11.719 ms
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_21610persistentILb1EEEvNS_6ConfigE' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_21610persistentILb1EEEvNS_6ConfigE
+ptxas info    : Used 190 registers, used 1 barriers, 112 bytes cumulative stack size, 32 bytes smem
+ptxas info    : Compile time = 609.983 ms
+ptxas info    : Compiling entry function '_ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_21610persistentILb0EEEvNS_6ConfigE' for 'sm_90a'
+ptxas info    : Function properties for _ZN50_GLOBAL__N__9f86f7fd_13_megakernel_cu_c0b84c93_21610persistentILb0EEEvNS_6ConfigE
+ptxas info    : Used 168 registers, used 1 barriers, 112 bytes cumulative stack size, 32 bytes smem
+ptxas info    : Compile time = 531.316 ms
