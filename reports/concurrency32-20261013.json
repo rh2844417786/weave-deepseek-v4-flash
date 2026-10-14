@@ -51,5 +51,12 @@
   "graph candidate requires max-running-requests=1 and decode graph buckets=[1] (src/weave/sglang_backend.py)",
   "profile is not a measured match for this kernel/device/shape (src/weave/ops.py, profile bound to the batch-one contract)"
  ],
- "host_side_note": "compiled by the operator agent from the GPUQ run logs on the work disk; raw logs and private prompts are not in Git. native C32 was reproduced three times (1973.5 / 1981.9 / 1969.8 mean tokens/s); the r4 attempt (78.5 over 4 samples) failed before the load ran and is excluded."
+ "host_side_note": "compiled by the operator agent from the GPUQ run logs on the work disk; raw logs and private prompts are not in Git. native C32 was reproduced three times (1973.5 / 1981.9 / 1969.8 mean tokens/s); the r4 attempt (78.5 over 4 samples) failed before the load ran and is excluded.",
+ "kernel_correction": {
+  "issue": "the first concurrency-32 probe launched both backends without --kernel, so run_native_ep.py used its scalar default (launch.json shows WEAVE_KERNEL=scalar). The formal contract uses --kernel tiled, so the reported weave figure is not comparable with the formal measurements and understates the tiled path.",
+  "native_impact": "none: the native group runs SGLang with the Marlin backend and does not use this kernel.",
+  "weave_reading_superseded": true,
+  "corrected_run": "job-20261014-015732-74ac4ded relaunches the same probe with --kernel tiled; its summary will carry kernel and decode_graph fields.",
+  "recorded_by": "operator agent after the kernel default was pointed out"
+ }
 }
