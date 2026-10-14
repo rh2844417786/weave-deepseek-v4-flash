@@ -59,6 +59,7 @@ def load_command(image,work,model,dataset,run_name,port,base):
     return ['docker','run','--rm','--pull=never','--name','weave-c32-load-'+run_name,
             '--network=host','-e','HF_HUB_OFFLINE=1','-e','TRANSFORMERS_OFFLINE=1',
             '-e','HF_DATASETS_OFFLINE=1','-e','PYTHONUNBUFFERED=1',
+            '-e','NVIDIA_VISIBLE_DEVICES=void','-e','CUDA_VISIBLE_DEVICES=',
             '-v',f'{ROOT}:/workspace:ro','-v',f'{work}:/work','-v',f'{model}:/model:ro',
             '-v',f'{dataset}:/dataset.jsonl:ro',image,load_contract()['python_executable'],
             '/workspace/scripts/bench_c32_profile.py','--marker',f'/work/{run_name}/load-window.json',

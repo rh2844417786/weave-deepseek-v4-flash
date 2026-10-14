@@ -57,6 +57,8 @@ class ConcurrencyDiagnosticTest(unittest.TestCase):
                           Path('/srv/work/cases.jsonl'),'diag-123',30001,30110)
         self.assertIn('--pull=never',argv)
         self.assertIn('HF_HUB_OFFLINE=1',argv)
+        self.assertIn('NVIDIA_VISIBLE_DEVICES=void',argv)
+        self.assertIn('CUDA_VISIBLE_DEVICES=',argv)
         self.assertIn('/models/v4:/model:ro',argv)
         self.assertEqual(argv[argv.index('--max-concurrency')+1],'32')
         self.assertEqual(argv[argv.index('--sharegpt-output-len')+1],'1024')
