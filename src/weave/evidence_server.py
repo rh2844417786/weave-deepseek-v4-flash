@@ -23,6 +23,8 @@ def start_evidence_server(model, base_port):
                            'coverage':capture.lifecycle.snapshot()}
                     self.respond(value)
                     return
+                counters=getattr(runtime,'model_batch_counters',None)
+                if counters is not None:counters.snapshot()  # Refuse an already active forward before any CUDA call.
                 runtime.torch.cuda.set_device(runtime.device)
                 runtime.torch.cuda.synchronize(runtime.device)
                 self.respond(coverage(model) if self.path=='/coverage' else execution_profile(model))

@@ -22,6 +22,7 @@ from src.weave.container_lifecycle import run_container
 from src.weave.gpu_allocation import allocated_gpus
 from src.weave.execution_profile import add_profile_arguments,profile_options,profile_configuration
 from src.weave.replay_trace import validate_capture_id
+from src.weave.staged_decode import validate_decode_configuration
 CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
@@ -75,6 +76,7 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
             '-e', f'WEAVE_KERNEL={args.kernel}', '-e', f'WEAVE_DECODE_GRAPH={int(args.decode_graph == "full")}',
             '-e', f'WEAVE_EVIDENCE_PORT_BASE={args.evidence_port_base}',
             '-e', f'WEAVE_HOT_CACHE={int(args.hot_cache)}',
+            '-e', f'WEAVE_DECODE_IMPLEMENTATION={args.decode_implementation}',
         ]
         if args.replay_capture_dir:
             relative=args.replay_capture_dir.relative_to(args.work_root)
@@ -121,6 +123,9 @@ def main() -> int:
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
+    parser.add_argument('--decode-implementation',choices=['persistent','staged_direct'],
+                        default=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'),
+                        help='routed expert decode implementation; staged_direct requires eager tiled hot-cache')
     parser.add_argument('--fixed-plan', default='1,1,0', help='explicit c,K,completed-task steal budget per comm worker')
     parser.add_argument('--evidence-port-base', type=int, default=30110)
     parser.add_argument('--run-name', help='fresh native-ep-* directory name, for acceptance orchestration')
@@ -138,6 +143,15 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    try:
+        staged_fixed=tuple(int(value) for value in args.fixed_plan.split(','))
+        if args.decode_implementation=='staged_direct' and args.backend!='weave_functional':
+            raise ValueError('staged_direct requires weave_functional')
+        validate_decode_configuration(decode_implementation=args.decode_implementation,kernel=args.kernel,
+            hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
+            profile_path=args.profile,execution_profile=True if args.execution_profile else None,
+            replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan)
+    except ValueError as error:parser.error(str(error))
     if args.replay_capture_dir and (args.backend!='weave_functional' or args.kernel!='tiled'
             or args.decode_graph=='full' or args.profile is not None or args.execution_profile
             or args.fixed_plan!='1,1,0' or not args.checkpoint_content_sha256
@@ -221,6 +235,7 @@ def main() -> int:
         'docker_argv': command, 'generation_status': 'not_verified',
         'backend': args.backend,
         'hot_cache':args.hot_cache,
+        'decode_implementation':args.decode_implementation if args.backend=='weave_functional' else 'native',
         'replay_capture_enabled':args.replay_capture_dir is not None,
         'execution_profile_configuration':profile_configuration(args),
         'runtime_contract': CONTRACT, 'runtime_report': str(run_dir/'runtime.json'),

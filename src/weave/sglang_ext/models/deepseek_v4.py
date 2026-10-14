@@ -21,7 +21,8 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
                 capacity=int(os.environ.get('WEAVE_CAPACITY', '2048')),
                 profile_path=os.environ.get('WEAVE_PROFILE'), fixed_plan=fixed,
                 kernel=os.environ.get('WEAVE_KERNEL', 'scalar'),
-                allow_decode_graph=os.environ.get('WEAVE_DECODE_GRAPH') == '1',execution_profile=profiling)
+                allow_decode_graph=os.environ.get('WEAVE_DECODE_GRAPH') == '1',execution_profile=profiling,
+                decode_implementation=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'))
             if os.environ.get('WEAVE_EVIDENCE_PORT_BASE'):
                 from weave.evidence_server import start_evidence_server
                 self.weave_evidence_server = start_evidence_server(self, int(os.environ['WEAVE_EVIDENCE_PORT_BASE']))
@@ -33,22 +34,30 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
                                     else 'prefill' if mode is not None and mode.is_extend() else 'other')
         sampler=getattr(self.weave_runtime,'forward_sampler',None)
         replay_capture=getattr(self.weave_runtime,'replay_capture',None)
-        if sampler is None and replay_capture is None:return super().forward(*args, **kwargs)
+        batch_counters=getattr(self.weave_runtime,'model_batch_counters',None)
+        if sampler is None and replay_capture is None and batch_counters is None:
+            return super().forward(*args, **kwargs)
         ids=kwargs.get('input_ids',args[0] if args else None)
-        if ids is None:raise ValueError('eager forward diagnostics require input_ids shape')
+        if ids is None:raise ValueError('model forward coverage requires input_ids shape')
         rows=int(ids.shape[0])
         valid=getattr(batch,'batch_size',None) if self.weave_runtime.phase=='decode' else rows
-        ticket=sampler.begin(self.weave_runtime.phase,rows,valid) if sampler is not None else None
-        if replay_capture is not None:replay_capture.lifecycle.begin(self.weave_runtime.phase,rows,valid)
+        if batch_counters is not None:batch_counters.begin(self.weave_runtime.phase,rows,valid)
+        success=False
         try:
-            result=super().forward(*args, **kwargs)
-        except BaseException:
-            if sampler is not None:sampler.fail(ticket)
-            if replay_capture is not None:replay_capture.lifecycle.end(success=False)
-            raise
-        if sampler is not None:sampler.end(ticket)
-        if replay_capture is not None:replay_capture.lifecycle.end()
-        return result
+            ticket=sampler.begin(self.weave_runtime.phase,rows,valid) if sampler is not None else None
+            if replay_capture is not None:replay_capture.lifecycle.begin(self.weave_runtime.phase,rows,valid)
+            try:
+                result=super().forward(*args, **kwargs)
+            except BaseException:
+                if sampler is not None:sampler.fail(ticket)
+                if replay_capture is not None:replay_capture.lifecycle.end(success=False)
+                raise
+            if sampler is not None:sampler.end(ticket)
+            if replay_capture is not None:replay_capture.lifecycle.end()
+            success=True
+            return result
+        finally:
+            if batch_counters is not None:batch_counters.end(success=success)
 
 
 EntryClass = [DeepseekV4ForCausalLM]

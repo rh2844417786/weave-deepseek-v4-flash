@@ -14,6 +14,7 @@ import torch
 from .ops import PeerRuntime
 from .weights import load_raw_experts
 from .runtime_contract import load_contract, verify_adapter_sources
+from .staged_decode import StagedDecodeRuntime, ModelBatchCounters, validate_decode_configuration
 
 
 class RoutedExperts(torch.nn.Module):
@@ -26,6 +27,8 @@ class RoutedExperts(torch.nn.Module):
         # Installation happens before any graph capture. The bound owner keeps
         # all six tensors alive and removes per-layer static host inspection.
         self.bound_weights = runtime.bind_weights(self.raw_weights) if runtime.hot_cache else None
+        self.staged_bound_weights = (runtime.staged_decode.bind_weights(self.raw_weights)
+                                     if runtime.staged_decode is not None else None)
         self.profile, self.fixed_plan, self.clamp = profile, fixed_plan, clamp
         self.layer_id=layer_id
         self.quant_method = native.quant_method
@@ -35,6 +38,8 @@ class RoutedExperts(torch.nn.Module):
         self.supports_deferred_finalize = False
         self.use_flashinfer_trtllm_moe = False
         self.coverage = {'prefill': 0, 'decode': 0, 'other': 0}
+        self.implementation_calls = {'staged_decode': 0, 'persistent_decode': 0,
+                                     'persistent_prefill': 0, 'persistent_other': 0}
         self.capture_calls = 0
         self.register_buffer('device_calls', torch.zeros(3, dtype=torch.int64, device=f'cuda:{runtime.device}'))
 
@@ -54,23 +59,33 @@ class RoutedExperts(torch.nn.Module):
         replay_capture = getattr(self.runtime, 'replay_capture', None)
         if replay_capture is not None:
             replay_capture.record_layer(self.layer_id, hidden_states, ids, weights)
-        chunk = (n + self.runtime.ep - 1) // self.runtime.ep
-        start = min(n, self.runtime.rank * chunk)
-        end = min(n, start + chunk)
-        raw = self.bound_weights if self.bound_weights is not None else self.raw_weights
-        own = self.runtime.run(hidden_states[start:end], ids[start:end], weights[start:end],
-                               raw, profile=self.profile, fixed_plan=self.fixed_plan, clamp=self.clamp,
-                               trace_layer=self.layer_id)
-        # Attention TP has replicated token rows. Each origin returns its owned
-        # rows only; the native outer all-reduce restores replicated routed output.
-        partial = torch.zeros_like(hidden_states)
-        partial[start:end].copy_(own)
         phase = self.runtime.phase
+        if phase == 'decode' and self.runtime.decode_implementation == 'staged_direct':
+            # The staged workspace consumes full replicated routing and returns
+            # an already origin-masked BF16 result after its slot SUM. The native
+            # outer shared/scaling/TP reduction is still applied by SGLang.
+            partial = self.runtime.staged_decode.run(hidden_states, ids, weights,
+                                                     self.staged_bound_weights, self.clamp)
+            implementation = 'staged_decode'
+        else:
+            chunk = (n + self.runtime.ep - 1) // self.runtime.ep
+            start = min(n, self.runtime.rank * chunk)
+            end = min(n, start + chunk)
+            raw = self.bound_weights if self.bound_weights is not None else self.raw_weights
+            own = self.runtime.run(hidden_states[start:end], ids[start:end], weights[start:end],
+                                   raw, profile=self.profile, fixed_plan=self.fixed_plan, clamp=self.clamp,
+                                   trace_layer=self.layer_id)
+            # Persistent prefill and the persistent decode control retain the
+            # existing contiguous origin partition and outer TP restoration.
+            partial = torch.zeros_like(hidden_states)
+            partial[start:end].copy_(own)
+            implementation = 'persistent_' + phase
         self.device_calls[{'prefill': 0, 'decode': 1, 'other': 2}[phase]].add_(1)
         if capturing:
             self.capture_calls += 1
         else:
             self.coverage[phase] += 1
+            self.implementation_calls[implementation] += 1
         return partial
 
     def forward_impl(self, hidden_states, topk_output):
@@ -81,7 +96,8 @@ class RoutedExperts(torch.nn.Module):
 
 
 def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None, fixed_plan=(1, 1, 0),
-                          kernel='scalar', allow_decode_graph=False,execution_profile=None):
+                          kernel='scalar', allow_decode_graph=False,execution_profile=None,
+                          decode_implementation='persistent'):
     expected_version = load_contract()['sglang_version']
     if importlib.metadata.version('sglang') != expected_version:
         raise RuntimeError(f'adapter requires the source-audited SGLang {expected_version}')
@@ -121,11 +137,20 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     hot_cache_value=os.environ.get('WEAVE_HOT_CACHE','1')
     if hot_cache_value not in ('0','1'):raise ValueError('WEAVE_HOT_CACHE must be 0 or 1')
     hot_cache=hot_cache_value=='1'
+    validate_decode_configuration(decode_implementation=decode_implementation,kernel=kernel,
+        hot_cache=hot_cache,allow_decode_graph=allow_decode_graph,fixed_plan=fixed_plan,
+        profile_path=profile_path,execution_profile=execution_profile,
+        replay_capture=bool(os.environ.get('WEAVE_REPLAY_CAPTURE_DIR')),
+        forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1')
     runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
                           kernel=kernel, cache_views=hot_cache)
     runtime.hot_cache=hot_cache
     runtime.allow_decode_graph = allow_decode_graph
     runtime.fixed_plan=tuple(fixed_plan)
+    runtime.decode_implementation=decode_implementation
+    runtime.staged_decode=(StagedDecodeRuntime(runtime,get_tp_group().device_group)
+                           if decode_implementation=='staged_direct' else None)
+    runtime.model_batch_counters=ModelBatchCounters()
     profile = runtime.profile_from_file(profile_path) if profile_path else None
     if execution_profile is not None: runtime.enable_execution_profile(execution_profile)
     if os.environ.get('WEAVE_FORWARD_PROFILE')=='1':
@@ -160,6 +185,10 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
             'graph_status': 'batch1_requires_source_specific_validation' if allow_decode_graph else 'disabled',
             'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed',
             'hot_cache':hot_cache,
+            'decode_implementation':decode_implementation,
+            'staged_max_batch':32 if runtime.staged_decode is not None else None,
+            'staged_additional_slot_collective':runtime.staged_decode is not None,
+            'staged_resources':dict(runtime.staged_decode.resources) if runtime.staged_decode is not None else None,
             'tile_rows': 16 if kernel=='tiled' else 1,
             'tile_columns': 64 if kernel=='tiled' else None}
 
@@ -179,7 +208,10 @@ def execution_profile(model):
 
 
 def coverage(model):
-    return {'rank': model.weave_runtime.rank, 'kernel': model.weave_runtime.kernel,
+    runtime=model.weave_runtime
+    batch_counts=runtime.model_batch_counters.snapshot()
+    staged=runtime.staged_decode
+    result={'rank': model.weave_runtime.rank, 'kernel': model.weave_runtime.kernel,
             'source_sha256': model.weave_runtime.source_sha256,
             'graph_enabled': model.weave_runtime.allow_decode_graph,
             'schedule_mode': 'measured_dynamic' if model.model.layers[0].mlp.experts.profile is not None else 'explicit_fixed',
@@ -188,8 +220,18 @@ def coverage(model):
             'profile_bank_sha256': getattr(model.model.layers[0].mlp.experts.profile,'sha256',None),
             'execution_profile_configuration':asdict(model.weave_runtime.trace_config) if model.weave_runtime.trace_config else None,
             'hot_cache':model.weave_runtime.hot_cache,
+            'decode_implementation':runtime.decode_implementation,
+            'staged_max_batch':32 if staged is not None else None,
+            'staged_slot_collective':'torch.distributed.all_reduce/SUM/tp_device_group' if staged is not None else None,
+            'additional_slot_collectives':staged.additional_slot_collectives if staged is not None else 0,
+            'staged_resources':dict(staged.resources) if staged is not None else None,
+            'model_batch_counts':batch_counts,
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
                 'capture_calls': layer.mlp.experts.capture_calls,
                 'python_decode_calls': layer.mlp.experts.coverage['decode'],
-                'python_calls': dict(layer.mlp.experts.coverage)} for layer in model.model.layers}}
+                'python_calls': dict(layer.mlp.experts.coverage),
+                'implementation_calls':dict(layer.mlp.experts.implementation_calls)} for layer in model.model.layers}}
+    if runtime.model_batch_counters.snapshot()['sequence'] != batch_counts['sequence']:
+        raise ValueError('service became active during model coverage snapshot')
+    return result

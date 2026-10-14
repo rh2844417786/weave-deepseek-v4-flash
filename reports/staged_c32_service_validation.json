@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "scope": "Online staged-direct decode, original slot assembly, matched C32 eager serving controller",
+  "status": "implementation_and_local_review_complete_server_gpu_pending",
+  "base_commit": "09f905e",
+  "kernel_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "serving_source_sha256": "5bd0f65275d295f2d186ab7df6c23e0574891ca2f9f9c47fb22afd633f83f9f2",
+  "local_environment": "macOS; no Torch CUDA, nvcc or H100",
+  "tests": {
+    "focused_independent_final_review": {
+      "command": ".venv-data/bin/python -m unittest tests.cpu.test_online_staged tests.cpu.test_staged_adapter tests.cpu.test_staged_decode tests.cpu.test_staged_launch tests.cpu.test_c32_comparison tests.cpu.test_c32_comparison_launch tests.cpu.test_c32_serving tests.cpu.test_replay_capture_endpoint -v",
+      "tests": 49,
+      "status": "passed"
+    },
+    "full_cpu_suite": {
+      "command": ".venv-data/bin/python -m unittest discover -s tests/cpu -v",
+      "tests": 268,
+      "failure_subcases": 7,
+      "error_subcases": 3,
+      "status": "known_baseline_GPQA_provenance_order_failures_remain",
+      "baseline_reproduced_on_primary_checkout": true,
+      "failing_methods": [
+        "PerformanceTest.test_formal_reuse_rejects_contradictory_or_missing_saved_provenance",
+        "PerformanceTest.test_wrong_order_and_modified_prepared_data_rejected",
+        "ServiceAcceptanceTest.test_logprob_drift_is_recorded_without_failing_generation"
+      ]
+    },
+    "python_compilation": "passed",
+    "git_diff_check": "passed"
+  },
+  "independent_reviews": {
+    "online_cuda_and_gate": "passed_source_review_no_confirmed_P1_P2",
+    "adapter_and_launcher": "passed",
+    "stream_client": "passed_after_run_unique_wire_RID_and_response_identity_fixes",
+    "whole_branch_and_controller": "passed_no_confirmed_P1_P2"
+  },
+  "server_gates": {
+    "new_source_core_all43": "not_run",
+    "online_staged": "not_run_49_cases_per_rank_including_all43_real_layers_B32",
+    "three_group_32_request_8_token_acceptance": "not_run",
+    "three_group_C32_throughput": "not_run"
+  },
+  "experiment": {
+    "groups": ["native", "persistent_cached", "staged_direct"],
+    "graph_mode": "disabled_eager_for_all_groups",
+    "concurrency": 32,
+    "output_tokens_per_request": 1024,
+    "default_window_seconds_per_group": 600,
+    "metric": "client_observed_streamed_decode_tokens_in_window_including_unfinished_excluding_first_tokens",
+    "staged_communication": "FP32_per_slot_NCCL_SUM_then_ordered_BF16_origin_mask_plus_existing_outer_shared_TP_reduction",
+    "prefill": "cached_persistent_for_both_custom_groups",
+    "native_expert_fallback": false,
+    "formal_GPQA_result": false,
+    "performance_improvement_claim": "none_until_server_evidence_returns"
+  },
+  "delivery": {
+    "image": "existing_lmsysorg/sglang:v0.5.17",
+    "online_installation": false,
+    "raw_content_public": false,
+    "gpu_allocation": "four_H100_from_scheduler",
+    "server_prompt": "docs/SERVER_PROMPT_STAGED_C32.md"
+  }
+}

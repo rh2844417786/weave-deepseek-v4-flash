@@ -2,10 +2,13 @@
 
 本项目使用原版 DeepSeek-V4-Flash 混合精度权重，routed专家保留MXFP4/E8M0。历史服务器提交2910864已回传完整374点校准、native/Weave eager/graph验收和两组各1200秒的GPQA预算对照。共同完成4题上，SGLang为107.64 tokens/s，当时Weave为11.31 tokens/s，约0.1051倍；全448题未完成，当轮Weave另有6次cache_flush_error。原始42文件摘要已核对。
 
-最新C32 tiled/eager固定计划诊断已在46a2e1d回传。本轮开始P0/P1计算组织优化：热路径缓存、probe编译/计时对照、真实B32 trace采集，以及相同M16算术的staged132/264/528/direct回放。相关47项CPU检查和源码审查通过；新CUDA源码的编译、全部43层数值和性能证据待服务器执行，当前没有新的吞吐收益结论。
+P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。本轮已把staged-direct接入实际eager decode，加入在线GPU分组、原slot顺序跨rank汇总及统一C32流式测量。49项相关CPU测试和独立审查通过，新源码的GPU检查、服务验收和吞吐测量待服务器执行。
 
 ## 入口
 
+- [Staged-direct实际decode与C32服务对照](docs/STAGED_C32_SERVICE.md)
+- [本轮服务器Claude Code + DeepSeek V4 Flash执行Prompt](docs/SERVER_PROMPT_STAGED_C32.md)
+- [本轮本地验证记录](reports/staged_c32_service_validation.json)
 - [P0/P1计算组织对照与分阶段运行](docs/P0_P1_COMPUTE_CONTROLS.md)
 - [服务器DeepSeek V4 Flash执行Prompt](docs/SERVER_PROMPT_P0_P1_COMPUTE_CONTROLS.md)
 - [P0/P1本地验证及服务器待办边界](reports/p0_p1_compute_controls_validation.json)
