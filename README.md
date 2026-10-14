@@ -1,9 +1,14 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-本项目使用原版 DeepSeek-V4-Flash 混合精度权重，routed专家保留MXFP4/E8M0。服务器提交2910864已回传完整374点校准、native/Weave eager/graph验收和两组各1200秒的GPQA预算对照。共同完成4题上，SGLang为107.64 tokens/s，当前Weave为11.31 tokens/s，约0.1051倍；全448题未完成，Weave另有6次cache_flush_error。原始42文件摘要已核对。当前增加设备端阶段采样与c/K/steal记录，诊断源码的H100 gate及数据待服务器执行。
+本项目使用原版 DeepSeek-V4-Flash 混合精度权重，routed专家保留MXFP4/E8M0。历史服务器提交2910864已回传完整374点校准、native/Weave eager/graph验收和两组各1200秒的GPQA预算对照。共同完成4题上，SGLang为107.64 tokens/s，当时Weave为11.31 tokens/s，约0.1051倍；全448题未完成，当轮Weave另有6次cache_flush_error。原始42文件摘要已核对。
+
+最新C32 tiled/eager固定计划诊断已在46a2e1d回传。本轮开始P0/P1计算组织优化：热路径缓存、probe编译/计时对照、真实B32 trace采集，以及相同M16算术的staged132/264/528/direct回放。相关47项CPU检查和源码审查通过；新CUDA源码的编译、全部43层数值和性能证据待服务器执行，当前没有新的吞吐收益结论。
 
 ## 入口
 
+- [P0/P1计算组织对照与分阶段运行](docs/P0_P1_COMPUTE_CONTROLS.md)
+- [服务器DeepSeek V4 Flash执行Prompt](docs/SERVER_PROMPT_P0_P1_COMPUTE_CONTROLS.md)
+- [P0/P1本地验证及服务器待办边界](reports/p0_p1_compute_controls_validation.json)
 - [分组 tile、实测校准与正式 GPQA 统一入口](docs/FORMAL_GPQA_EXPERIMENT.md)
 - [GPU编号动态读取调度器分配](docs/GPU_ALLOCATION.md)
 - [缓存清理失败恢复与服务器复测](docs/CACHE_FLUSH_RECOVERY.md)
@@ -53,4 +58,4 @@ python3 -m pip install -r requirements-data.txt
 python3 scripts/audit_gpqa_lengths.py --tokenizer-dir /mnt/public_data/Qwen/Qwen3.5-35B-A3B
 ```
 
-DeepSeek Think High 输入审计覆盖 GPQA Main 448 题：中位数 191、最长 2550 tokens，无 8K prefill 样本。用 `python3 scripts/prepare_gpqa.py --model-dir <DeepSeek模型目录>` 生成两组共用的 token ID 清单；清单位于 Git 忽略目录。上述数字是 CPU 编码结果，不是 GPU 生成或速度结果。原始数据与生成文本不加入 Git；同步来源和下载脚本。[私有 GitHub 仓库](https://github.com/rh2844417786/weave-deepseek-v4-flash) 已创建，DeepSeek 原生与自研后端的EP4实际启动记录已随服务器报告归档。
+DeepSeek Think High 输入审计覆盖 GPQA Main 448 题：中位数 191、最长 2550 tokens，无 8K prefill 样本。用 `python3 scripts/prepare_gpqa.py --model-dir <DeepSeek模型目录>` 生成两组共用的 token ID 清单；清单位于 Git 忽略目录。上述数字是 CPU 编码结果，不是 GPU 生成或速度结果。原始数据与生成文本不加入 Git；同步来源和下载脚本。[GitHub 仓库](https://github.com/rh2844417786/weave-deepseek-v4-flash)已创建，DeepSeek 原生与自研后端的EP4实际启动记录已随服务器报告归档。

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "scope": "P0 host binding/probe controls and P1 same-arithmetic frozen-trace staged compute",
+  "status": "local_validation_complete_server_gpu_pending",
+  "base_commit": "46a2e1d826874b2dde3341eb7d8b47c2de9ba686",
+  "kernel_source_sha256": "72592ee28337504ab90ef450541b0027f561e479c1fc61ba5c23281bcd8d847a",
+  "replay_source_sha256": "9ac46a5625b62cacca3274cd63c470448f74e336c222853a3e55810da74cfee2",
+  "local_environment": "macOS; no Torch CUDA, nvcc or H100",
+  "validation": {
+    "focused": {
+      "command": ".venv-data/bin/python -m unittest tests.cpu.test_compute_replay_launch tests.cpu.test_p0_hotpath tests.cpu.test_replay_benchmark tests.cpu.test_replay_capture_endpoint tests.cpu.test_replay_capture_launch tests.cpu.test_replay_forward_boundary tests.cpu.test_replay_trace tests.cpu.test_staged_plan tests.cpu.test_native_ep_launch -v",
+      "tests": 47,
+      "status": "passed"
+    },
+    "full_cpu_suite": {
+      "command": ".venv-data/bin/python -m unittest discover -s tests/cpu -v",
+      "tests": 219,
+      "failure_subcases": 7,
+      "error_subcases": 3,
+      "status": "known_baseline_failures_remain",
+      "run_note": "Full suite preceded one additional core compiler-log export regression test; that test passed in the final47-test focused run.",
+      "baseline_reproduced": true,
+      "failing_methods": [
+        "PerformanceTest.test_formal_reuse_rejects_contradictory_or_missing_saved_provenance",
+        "PerformanceTest.test_wrong_order_and_modified_prepared_data_rejected",
+        "ServiceAcceptanceTest.test_logprob_drift_is_recorded_without_failing_generation"
+      ],
+      "cause": "Existing GPQA provenance/order reader expectations; relevant implementation and test files unchanged from base. Logprob remains record-only."
+    },
+    "python_compilation": "passed",
+    "git_diff_check": "passed",
+    "independent_reviews": {
+      "p0_binding_and_source_snapshot": "passed_after_manifest_snapshot_fix",
+      "capture_provenance_and_lifecycle": "passed_after_tokenizer_and_capture_uuid_fixes",
+      "staged_cuda_math_and_planner": "source_review_passed_no_nvcc",
+      "replay_identity_and_public_export": "passed_after_dependency_closure_and_descriptor_fixes",
+      "final_cross_component_integration": "passed_no_actionable_P1_P2_findings"
+    }
+  },
+  "server_gates": {
+    "fresh_core_and_all43_checkpoint": "not_run_for_this_source",
+    "real_C32_capture": "not_run",
+    "staged_synthetic_gpu": "not_run",
+    "real_trace_all43_replay": "not_run",
+    "expected_points_per_rank": 602,
+    "expected_total_points": 2408,
+    "serving_throughput_improvement": "not_measured_or_claimed"
+  },
+  "constraints": {
+    "image": "lmsysorg/sglang:v0.5.17",
+    "model": "original_local_mixed_precision_DeepSeek_V4_Flash_readonly",
+    "gpus": "four_H100_from_scheduler_allocation",
+    "online_installation": false,
+    "private_trace_in_github": false,
+    "staged_service_integration": false,
+    "gpuq_time_budget": "configurable_user_authorized_extension"
+  }
+}

@@ -15,18 +15,17 @@
 #include <vector>
 #include "scheduler.h"
 #include "expert_numerics.h"
+#include "tile_math.cuh"
 #include "tile_scheduler.h"
 #include "execution_trace.h"
+#include "staged_compute.cuh"
 
 #define CUDA_OK(call) do { cudaError_t result=(call); TORCH_CHECK(result==cudaSuccess, "CUDA failure: ", cudaGetErrorString(result)); } while(0)
 namespace {
 using U64 = unsigned long long;
 constexpr int MAX_EP = 4, MAX_K = 8, THREADS = 128;
-struct RoundBF16 {
-  __device__ __forceinline__ float operator()(float value) const {
-    return __bfloat162float(__float2bfloat16_rn(value));
-  }
-};
+using weave::tile_math::RoundBF16;
+using weave::tile_math::weight;
 struct alignas(256) Control {
   U64 ready, done, planned;
   int n, dispatch_next, dispatch_done, return_next, return_done, final_next, ctas_done;
@@ -178,16 +177,6 @@ template<bool Profile> __global__ void prepare(Control* p,int capacity,U64* head
   __threadfence_system();
   release(&p->ready,acquire(&p->ready)+1);
 }
-__device__ float decode4(unsigned char byte,int nibble,unsigned char scale) {
-  int code=(byte>>(4*nibble))&15;
-  constexpr float values[8]={0.f,.5f,1.f,1.5f,2.f,3.f,4.f,6.f};
-  float v=values[code&7];
-  if(code&8) v=-v;
-  return scale==255 ? CUDART_NAN_F : ldexpf(v,int(scale)-127);
-}
-__device__ float weight(const unsigned char* w,const unsigned char* s,size_t row,int col,int width) {
-  return decode4(w[row*(width/2)+col/2],col&1,s[row*(width/32)+col/32]);
-}
 __device__ float warp_sum(float x) {
   for(int d=16;d;d>>=1) x+=__shfl_down_sync(0xffffffff,x,d);
   return x;
@@ -293,86 +282,53 @@ struct DeviceAdd {
   __device__ int operator()(int* ptr,int value) const { return add_i(ptr,value); }
 };
 
-// Four warps cover M16 x N64; weights are reused across all valid expert rows.
-// The original packed MXFP4 and E8M0 arrays are decoded directly in the load.
-__device__ void group_mma(Config cfg,int group_id,const Group& group,int projection,
-                          int first_column,__nv_bfloat16* scratch) {
-  using namespace nvcuda;
-  View view=cfg.peers[cfg.rank];
-  int lane=threadIdx.x%32;
-  int width=projection==2?cfg.i:cfg.h;
-  int outputs=projection==2?cfg.h:cfg.i;
-  const unsigned char* weights=projection==1?cfg.w1:projection==2?cfg.w2:cfg.w3;
-  const unsigned char* scales=projection==1?cfg.s1:projection==2?cfg.s2:cfg.s3;
-  auto a=scratch; auto b=a+256;
-  auto result=reinterpret_cast<float*>(b+256);
-  wmma::fragment<wmma::matrix_a,16,16,16,__nv_bfloat16,wmma::row_major> af;
-  wmma::fragment<wmma::matrix_b,16,16,16,__nv_bfloat16,wmma::col_major> bf;
-  wmma::fragment<wmma::accumulator,16,16,16,float> accum;
-  wmma::fill_fragment(accum,0.f);
-  for(int column=0;column<width;column+=16) {
-    for(int j=lane;j<256;j+=32) {
-      int row=j/16, k=j%16;
-      __nv_bfloat16 value=__float2bfloat16_rn(0.f);
-      if(row<group.rows) {
-        if(projection==2) value=view.group_mid[(size_t(group_id)*16+row)*cfg.i+column+k];
-        else {
-          int payload=view.tasks[group.tasks[row]].payload;
-          value=view.cache[size_t(payload)*cfg.h+column+k];
-        }
-      }
-      a[j]=value;
-      int output=first_column+j/16;
-      b[j]=output<outputs ? __float2bfloat16_rn(weight(weights,scales,
-                    size_t(group.expert)*outputs+output,column+j%16,width)) : __float2bfloat16_rn(0.f);
-    }
-    __syncwarp();
-    wmma::load_matrix_sync(af,a,16); wmma::load_matrix_sync(bf,b,16);
-    wmma::mma_sync(accum,af,bf,accum);
-    __syncwarp();
+// Storage adapters keep the persistent protocol separate from shared math.
+struct PersistentTileInput {
+  View view;
+  const Group* group;
+  int group_id,h,i;
+  bool down;
+  __device__ __nv_bfloat16 operator()(int row,int column) const {
+    if(down) return view.group_mid[(size_t(group_id)*16+row)*i+column];
+    int payload=view.tasks[group->tasks[row]].payload;
+    return view.cache[size_t(payload)*h+column];
   }
-  wmma::store_matrix_sync(result,accum,16,wmma::mem_row_major);
-  __syncwarp();
-}
+};
+struct PersistentMidStore {
+  __nv_bfloat16* mid;
+  int group_id,i;
+  __device__ void operator()(int row,int column,__nv_bfloat16 value) const {
+    mid[(size_t(group_id)*16+row)*i+column]=value;
+  }
+};
+struct PersistentDownStore {
+  float* output;
+  const Group* group;
+  int h;
+  __device__ void operator()(int row,int column,float value) const {
+    output[size_t(group->tasks[row])*h+column]=value;
+  }
+};
 
 template<bool Profile> __device__ void compute_tile(Config cfg,weave::TileClaim claim,U64 epoch,__nv_bfloat16* mid,DeviceTrace<Profile>& trace) {
   View view=cfg.peers[cfg.rank]; Group group=view.groups[claim.group];
-  int lane=threadIdx.x%32,warp=threadIdx.x/32;
+  int warp=threadIdx.x/32;
   int first=claim.column*weave::TILE_COLUMNS+warp*16;
   auto scratch=mid+cfg.i+warp*1024;
-  auto result=reinterpret_cast<float*>(scratch+512);
   U64 start=trace.now();
   if(threadIdx.x==0 && claim.stage==0)
     for(int row=0;row<group.rows;++row)
       wait_epoch(&view.cache_ready[view.tasks[group.tasks[row]].payload],epoch,cfg.timeout);
   __syncthreads();
   trace.elapsed(weave::trace::InputWait,start); start=trace.now();
-  if(claim.stage==0) {
-    float gate[8];
-    if(cfg.calibration!=1) {
-      group_mma(cfg,claim.group,group,1,first,scratch);
-      for(int q=0;q<8;++q) gate[q]=result[lane+32*q];
-      group_mma(cfg,claim.group,group,3,first,scratch);
-    }
-    for(int q=0;q<8;++q) {
-      int j=lane+32*q,row=j/16,column=first+j%16;
-      if(row<group.rows && column<cfg.i) {
-        float value=0.f;
-        if(cfg.calibration!=1) {
-          float g=RoundBF16{}(gate[q]),u=RoundBF16{}(result[j]);
-          value=weave::swiglu_product(g,u,cfg.clamp,RoundBF16{});
-        }
-        view.group_mid[(size_t(claim.group)*16+row)*cfg.i+column]=__float2bfloat16_rn(value);
-      }
-    }
-  } else {
-    if(cfg.calibration!=1) group_mma(cfg,claim.group,group,2,first,scratch);
-    for(int j=lane;j<256;j+=32) {
-      int row=j/16,column=first+j%16;
-      if(row<group.rows && column<cfg.h)
-        view.task_out[size_t(group.tasks[row])*cfg.h+column]=cfg.calibration==1?0.f:RoundBF16{}(result[j]);
-    }
-  }
+  weave::tile_math::Weights weights{cfg.w1,cfg.w3,cfg.w2,cfg.s1,cfg.s3,cfg.s2};
+  PersistentTileInput input{view,&group,claim.group,cfg.h,cfg.i,claim.stage!=0};
+  if(claim.stage==0)
+    weave::tile_math::gate_up(weights,group.expert,group.rows,cfg.h,cfg.i,first,cfg.clamp,
+        input,PersistentMidStore{view.group_mid,claim.group,cfg.i},scratch,cfg.calibration!=1);
+  else
+    weave::tile_math::down(weights,group.expert,group.rows,cfg.h,cfg.i,first,
+        input,PersistentDownStore{view.task_out,&group,cfg.h},scratch,cfg.calibration!=1);
   __syncthreads(); __threadfence();
   if(threadIdx.x==0) {
     add_i(&view.ctl->actual_tiles,1);
@@ -599,6 +555,17 @@ template<bool Profile> __global__ void persistent(Config cfg) {
   trace.elapsed(weave::trace::EndWait,phase_start); trace.finish(cfg);
 }
 
+class Workspace;
+struct BoundWeights {
+  // Own the workspace and the immutable checkpoint storage used by Config.
+  // Checkpoint tensors must not be resized or rebound while this object lives.
+  std::shared_ptr<Workspace> owner;
+  std::vector<torch::Tensor> weights;
+  Config config;
+  BoundWeights(std::shared_ptr<Workspace> owner_,const std::vector<torch::Tensor>& weights_,Config config_)
+    :owner(std::move(owner_)),weights(weights_),config(config_) {}
+};
+
 class Workspace : public std::enable_shared_from_this<Workspace> {
  public:
   int rank,ep,cap,h,i,topk,experts,device,workers;
@@ -606,6 +573,10 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
   void* base=nullptr;
   void* pointers[MAX_EP]{};
   bool connected=false;
+  int clock_khz=0;
+  int cached_occupancy[2][2]{};
+  cudaFuncAttributes kernel_attributes[2]{};
+  Config static_config{};
   torch::Tensor trace_heads,trace_totals,trace_records;
   int trace_layers=0,trace_stride=0,trace_capacity=0;
   Workspace(int rank_,int ep_,int cap_,int h_,int i_,int topk_,int experts_)
@@ -617,6 +588,15 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     TORCH_CHECK(device==rank,"functional IPC runtime requires CUDA device ordinal == EP rank");
     cudaDeviceProp prop; CUDA_OK(cudaGetDeviceProperties(&prop,device));
     TORCH_CHECK(prop.major==9,"functional kernel targets Hopper SM90"); workers=prop.multiProcessorCount;
+    CUDA_OK(cudaDeviceGetAttribute(&clock_khz,cudaDevAttrClockRate,device));
+    TORCH_CHECK(clock_khz>0,"device clock rate unavailable");
+    CUDA_OK(cudaFuncGetAttributes(&kernel_attributes[0],persistent<false>));
+    CUDA_OK(cudaFuncGetAttributes(&kernel_attributes[1],persistent<true>));
+    for(int tc=0;tc<2;++tc) {
+      int shared_bytes=i*2+(tc?8192:0);
+      CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&cached_occupancy[0][tc],persistent<false>,THREADS,shared_bytes));
+      CUDA_OK(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&cached_occupancy[1][tc],persistent<true>,THREADS,shared_bytes));
+    }
     CUDA_OK(cudaMalloc(&base,layout.bytes));
     auto stream=at::cuda::getCurrentCUDAStream(device).stream();
     CUDA_OK(cudaMemsetAsync(base,0,layout.bytes,stream)); CUDA_OK(cudaStreamSynchronize(stream));
@@ -644,7 +624,54 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
       cudaIpcMemHandle_t handle; memcpy(&handle,handles[p].data(),sizeof(handle));
       CUDA_OK(cudaIpcOpenMemHandle(&pointers[p],handle,cudaIpcMemLazyEnablePeerAccess));
     }
+    for(int p=0;p<ep;++p) static_config.peers[p]=layout.view(pointers[p]);
+    static_config.rank=rank; static_config.ep=ep; static_config.capacity=cap;
+    static_config.h=h; static_config.i=i; static_config.topk=topk;
+    static_config.experts=experts; static_config.workers=workers;
+    static_config.max_groups=weave::tile_group_capacity(ep*cap*topk,experts/ep,MAX_K);
     connected=true;
+  }
+  std::shared_ptr<BoundWeights> bind_weights(const std::vector<torch::Tensor>& w) {
+    c10::cuda::CUDAGuard guard(device);
+    TORCH_CHECK(connected && w.size()==6,"bind six raw tensors after peer connection");
+    std::vector<std::vector<int64_t>> shapes={{experts/ep,i,h/2},{experts/ep,i,h/2},{experts/ep,h,i/2},
+                                            {experts/ep,i,h/32},{experts/ep,i,h/32},{experts/ep,h,i/32}};
+    for(int j=0;j<6;++j) TORCH_CHECK(w[j].is_cuda() && w[j].get_device()==device && w[j].is_contiguous() && w[j].scalar_type()==torch::kUInt8 && w[j].sizes().vec()==shapes[j],"bad raw MXFP4 weight tensor ",j);
+    Config cfg=static_config;
+    cfg.w1=w[0].data_ptr<unsigned char>(); cfg.w3=w[1].data_ptr<unsigned char>(); cfg.w2=w[2].data_ptr<unsigned char>();
+    cfg.s1=w[3].data_ptr<unsigned char>(); cfg.s3=w[4].data_ptr<unsigned char>(); cfg.s2=w[5].data_ptr<unsigned char>();
+    return std::make_shared<BoundWeights>(shared_from_this(),w,cfg);
+  }
+  pybind11::dict resources() const {
+    namespace py=pybind11;
+    py::dict dimensions;
+    dimensions["rank"]=rank; dimensions["ep"]=ep; dimensions["capacity"]=cap;
+    dimensions["hidden_size"]=h; dimensions["intermediate_size"]=i;
+    dimensions["top_k"]=topk; dimensions["experts"]=experts;
+    py::dict specializations;
+    for(int traced=0;traced<2;++traced) {
+      const auto& attr=kernel_attributes[traced];
+      py::dict row,launches;
+      row["probe_enabled"]=bool(traced); row["numRegs"]=attr.numRegs;
+      row["localSizeBytes"]=attr.localSizeBytes; row["sharedSizeBytes"]=attr.sharedSizeBytes;
+      row["constSizeBytes"]=attr.constSizeBytes; row["maxThreadsPerBlock"]=attr.maxThreadsPerBlock;
+      row["binaryVersion"]=attr.binaryVersion; row["ptxVersion"]=attr.ptxVersion;
+      row["maxDynamicSharedSizeBytes"]=attr.maxDynamicSharedSizeBytes;
+      for(int tc=0;tc<3;++tc) {
+        py::dict launch;
+        launch["tensor_core"]=tc; launch["dynamic_shared_bytes"]=i*2+(tc?8192:0);
+        launch["active_blocks_per_sm"]=cached_occupancy[traced][tc?1:0];
+        launch["grid_blocks"]=workers; launch["threads_per_block"]=THREADS;
+        launches[tc==0?"scalar":(tc==1?"wmma":"tiled")]=launch;
+      }
+      row["launches"]=launches;
+      specializations[traced?"persistent<true>":"persistent<false>"]=row;
+    }
+    py::dict result;
+    result["device"]=device; result["clock_khz"]=clock_khz;
+    result["dimensions"]=dimensions; result["workspace_bytes"]=layout.bytes;
+    result["specializations"]=specializations;
+    return result;
   }
   torch::Tensor tensor(size_t offset,std::vector<int64_t> shape,torch::ScalarType dtype) {
     auto owner=shared_from_this();
@@ -718,10 +745,46 @@ class Workspace : public std::enable_shared_from_this<Workspace> {
     }
     CUDA_OK(cudaGetLastError());
   }
+  void run_bound(const std::shared_ptr<BoundWeights>& bound,torch::Tensor profile,int c,int k,int steal,double timeout_seconds,float clamp,int tensor_core,int calibration,int trace_layer,int trace_phase) {
+    c10::cuda::CUDAGuard guard(device);
+    TORCH_CHECK(bound && bound->owner.get()==this,"bound weights belong to a different workspace");
+    TORCH_CHECK(connected && timeout_seconds>0 && clamp>0);
+    TORCH_CHECK(c>=-1 && c<workers && k>=1 && k<=8 && steal>=0);
+    TORCH_CHECK(tensor_core>=0 && tensor_core<=2,"unknown expert compute implementation");
+    TORCH_CHECK(calibration>=0 && calibration<=2 && (!calibration || (tensor_core==2 && c>=0)),"calibration requires tiled fixed-plan execution");
+    TORCH_CHECK(profile.is_cuda() && profile.get_device()==device && profile.is_contiguous() && profile.scalar_type()==torch::kFloat64 && profile.dim()==2 && profile.size(1)==6);
+    TORCH_CHECK(c>=0 || profile.size(0)>0,"dynamic scheduling requires measured profile rows");
+    bool tracing=trace_layer>=0;
+    TORCH_CHECK(!tracing || (trace_heads.defined() && trace_layer<trace_layers && trace_phase>=0 && trace_phase<=1 && tensor_core==2 && calibration==0),"invalid configured tiled trace layer/phase");
+    TORCH_CHECK(cached_occupancy[tracing?1:0][tensor_core?1:0]>=1,"persistent worker cannot reside on an SM");
+    Config cfg=bound->config;
+    cfg.profile=profile.data_ptr<double>(); cfg.nprofile=profile.size(0);
+    cfg.fixed_c=c; cfg.fixed_k=k; cfg.fixed_steal=steal;
+    cfg.tensor_core=tensor_core; cfg.calibration=calibration;
+    cfg.timeout=U64(timeout_seconds*clock_khz*1000.); cfg.clamp=clamp;
+    if(tracing) {
+      int plane=trace_phase*trace_layers+trace_layer;
+      cfg.trace_heads=reinterpret_cast<U64*>(trace_heads.data_ptr<int64_t>())+size_t(plane)*(2+workers*MAX_K);
+      cfg.trace_totals=reinterpret_cast<U64*>(trace_totals.data_ptr<int64_t>())+size_t(plane)*workers*weave::trace::FIELDS;
+      cfg.trace_records=reinterpret_cast<U64*>(trace_records.data_ptr<int64_t>())+size_t(plane)*trace_capacity*(workers+1)*weave::trace::FIELDS;
+      cfg.trace_stride=trace_stride;cfg.trace_capacity=trace_capacity;cfg.trace_phase=trace_phase;cfg.trace_layer=trace_layer;
+    }
+    int shared_bytes=i*2+(tensor_core?8192:0);
+    auto stream=at::cuda::getCurrentCUDAStream(device).stream();
+    if(tracing) {
+      prepare<true><<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap,cfg.trace_heads,trace_stride,trace_capacity);
+      persistent<true><<<workers,THREADS,shared_bytes,stream>>>(cfg);
+    } else {
+      prepare<false><<<1,1,0,stream>>>(cfg.peers[rank].ctl,cap,nullptr,0,0);
+      persistent<false><<<workers,THREADS,shared_bytes,stream>>>(cfg);
+    }
+    CUDA_OK(cudaGetLastError());
+  }
 };
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME,m) {
+  pybind11::class_<BoundWeights,std::shared_ptr<BoundWeights>>(m,"BoundWeights");
   pybind11::class_<Workspace,std::shared_ptr<Workspace>>(m,"Workspace")
     .def(pybind11::init<int,int,int,int,int,int,int>())
     .def("handle",&Workspace::handle).def("connect",&Workspace::connect)
@@ -732,5 +795,9 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME,m) {
     .def_property_readonly("workload",&Workspace::workload)
     .def_property_readonly("tile_counters",&Workspace::tile_counters)
     .def("configure_trace",&Workspace::configure_trace)
-    .def("run",&Workspace::run);
+    .def("bind_weights",&Workspace::bind_weights)
+    .def("resources",&Workspace::resources)
+    .def("run",&Workspace::run)
+    .def("run_bound",&Workspace::run_bound);
+  bind_staged(m);
 }

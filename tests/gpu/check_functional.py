@@ -1,5 +1,6 @@
 """Run with torchrun --standalone --nproc-per-node=4; never reports performance."""
 import argparse
+import gc
 import json
 import os
 from pathlib import Path
@@ -62,6 +63,27 @@ def main():
     actual = runtime.run(x,ids,route_weights,raw,valid_count=valid,timeout_seconds=10.)
     torch.cuda.synchronize()
     torch.testing.assert_close(actual[:rows],reference(rows),rtol=.025,atol=.002)
+    # P0 owns the raw tensor storage even after the Python checkpoint list dies.
+    owned_raw = [value.clone() for value in raw]
+    bound = runtime.bind_weights(owned_raw)
+    del owned_raw
+    gc.collect()
+    actual = runtime.run(x,ids,route_weights,bound,valid_count=valid,timeout_seconds=10.)
+    torch.cuda.synchronize()
+    torch.testing.assert_close(actual[:rows],reference(rows),rtol=.025,atol=.002)
+    for bad in (list(raw[:-1]), [raw[0].cpu(), *raw[1:]],
+                [raw[0].reshape(-1), *raw[1:]], [raw[0].float(), *raw[1:]]):
+        try: runtime.bind_weights(bad)
+        except RuntimeError: pass
+        else: raise AssertionError('invalid raw weight count/device/shape/dtype was accepted')
+    resources = runtime.ws.resources()
+    for probe in ('persistent<false>', 'persistent<true>'):
+        attrs = resources['specializations'][probe]
+        assert attrs['numRegs'] > 0 and attrs['localSizeBytes'] >= 0, attrs
+        assert attrs['sharedSizeBytes'] >= 0, attrs
+        for launch in attrs['launches'].values():
+            assert launch['grid_blocks'] == torch.cuda.get_device_properties(device).multi_processor_count, launch
+            assert launch['active_blocks_per_sm'] >= 1, launch
     ids.copy_(torch.tensor([[rank*2,rank*2+1]]*2,dtype=torch.int32,device=device))
     valid.fill_(2)
     runtime.run(x,ids,route_weights,raw,valid_count=valid,fixed_plan=(0,1,0),timeout_seconds=10.)
@@ -69,6 +91,12 @@ def main():
     torch.testing.assert_close(runtime.ws.output[:2],reference(2),rtol=.025,atol=.002)
     # Instrumentation must preserve math and remain dynamic under replay.
     traced=PeerRuntime(None,2,32,32,2,8,kernel='tiled')
+    try:
+        traced.ws.run_bound(bound,traced.empty_profile,1,1,0,10.,10.,2,0,-1,-1)
+    except RuntimeError as exc:
+        assert 'different workspace' in str(exc), exc
+    else: raise AssertionError('foreign workspace accepted bound checkpoint storage')
+    traced_bound = traced.bind_weights(raw)
     traced.enable_execution_profile(TraceConfig(stride=2,capacity=2,layers=1))
     ids.copy_(torch.tensor([[(rank+1)%4*2,(rank+1)%4*2+1]]*2,dtype=torch.int32,device=device))
     traced.phase='decode';valid.fill_(1)
@@ -79,7 +107,7 @@ def main():
     dist.barrier()
     trace_graph=torch.cuda.CUDAGraph()
     with torch.cuda.graph(trace_graph):
-        traced.run(x,ids,route_weights,raw,valid_count=valid,fixed_plan=(1,1,1),
+        traced.run(x,ids,route_weights,traced_bound,valid_count=valid,fixed_plan=(1,1,1),
                    timeout_seconds=10.,trace_layer=0)
     for rows in (1,0,1,2,1):
         valid.fill_(rows);dist.barrier();trace_graph.replay();torch.cuda.synchronize()
@@ -110,6 +138,15 @@ def main():
         graph.replay()
         torch.cuda.synchronize()
         torch.testing.assert_close(runtime.ws.output[:rows],reference(rows),rtol=.025,atol=.002)
+    dist.barrier()
+    bound_graph = torch.cuda.CUDAGraph()
+    with torch.cuda.graph(bound_graph):
+        runtime.run(x,ids,route_weights,bound,valid_count=valid,timeout_seconds=10.)
+    for iteration, rows in enumerate((1,2,0,2)):
+        valid.fill_(rows)
+        ids.copy_(torch.tensor([[(rank+iteration)%4*2,(rank+iteration)%4*2+1]]*2,dtype=torch.int32,device=device))
+        dist.barrier(); bound_graph.replay(); torch.cuda.synchronize()
+        torch.testing.assert_close(runtime.ws.output[:rows],reference(rows),rtol=.025,atol=.002)
     # These rates are deliberately synthetic test fixtures, never calibration.
     test_rows=torch.tensor([[1,1,1e10,1e9,1,.5],[1,2,1e10,1e9,1,.5]],dtype=torch.float64,device=device)
     valid.fill_(2)
@@ -124,6 +161,8 @@ def main():
         'sglang_adapter':'not_run', 'full_model':'not_run', 'performance':'not_run',
         'profile':'synthetic_test_fixture_only', 'selected_plan':plan,
         'execution_profile_smoke':'passed_numeric_graph_replay_ring_wrap_phase_separation',
+        'p0_binding':'passed_storage_lifetime_validation_ownership_eager_and_graph',
+        'persistent_resources':resources,
     },indent=2)+'\n')
     dist.barrier()
     dist.destroy_process_group()

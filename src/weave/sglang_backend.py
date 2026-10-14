@@ -22,6 +22,10 @@ class RoutedExperts(torch.nn.Module):
         self.runtime = runtime
         for j, tensor in enumerate(raw):
             self.register_buffer(f'raw_{j}', tensor)
+        self.raw_weights = tuple(raw)
+        # Installation happens before any graph capture. The bound owner keeps
+        # all six tensors alive and removes per-layer static host inspection.
+        self.bound_weights = runtime.bind_weights(self.raw_weights) if runtime.hot_cache else None
         self.profile, self.fixed_plan, self.clamp = profile, fixed_plan, clamp
         self.layer_id=layer_id
         self.quant_method = native.quant_method
@@ -47,10 +51,13 @@ class RoutedExperts(torch.nn.Module):
         else:
             raise ValueError('unsupported native routing output; no fallback')
         n = hidden_states.shape[0]
+        replay_capture = getattr(self.runtime, 'replay_capture', None)
+        if replay_capture is not None:
+            replay_capture.record_layer(self.layer_id, hidden_states, ids, weights)
         chunk = (n + self.runtime.ep - 1) // self.runtime.ep
         start = min(n, self.runtime.rank * chunk)
         end = min(n, start + chunk)
-        raw = tuple(getattr(self, f'raw_{j}') for j in range(6))
+        raw = self.bound_weights if self.bound_weights is not None else self.raw_weights
         own = self.runtime.run(hidden_states[start:end], ids[start:end], weights[start:end],
                                raw, profile=self.profile, fixed_plan=self.fixed_plan, clamp=self.clamp,
                                trace_layer=self.layer_id)
@@ -111,7 +118,12 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
                 or mlp.experts.should_fuse_routed_scaling_factor_in_topk
                 or getattr(mlp, '_fuse_shared_experts_inside_sbo', False)):
             raise ValueError('unsupported expert/scaling/shared-expert path; no partial fallback')
-    runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256, kernel=kernel)
+    hot_cache_value=os.environ.get('WEAVE_HOT_CACHE','1')
+    if hot_cache_value not in ('0','1'):raise ValueError('WEAVE_HOT_CACHE must be 0 or 1')
+    hot_cache=hot_cache_value=='1'
+    runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
+                          kernel=kernel, cache_views=hot_cache)
+    runtime.hot_cache=hot_cache
     runtime.allow_decode_graph = allow_decode_graph
     runtime.fixed_plan=tuple(fixed_plan)
     profile = runtime.profile_from_file(profile_path) if profile_path else None
@@ -122,6 +134,23 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         from .forward_profile import ForwardSampler
         runtime.forward_sampler=ForwardSampler(torch.cuda,stride=execution_profile.stride,
                                                capacity=execution_profile.capacity)
+    if os.environ.get('WEAVE_REPLAY_CAPTURE_DIR'):
+        if (kernel!='tiled' or allow_decode_graph or profile is not None or execution_profile is not None
+                or tuple(fixed_plan)!=(1,1,0) or getattr(args,'max_running_requests',None)!=32):
+            raise ValueError('real replay capture requires tiled C32 fixed(1,1,0), eager and no profiling')
+        from .replay_trace import ReplayCapture,capture_source_sha256,tokenizer_manifest_sha256
+        tokenizer_sha256=tokenizer_manifest_sha256(model_path)
+        if tokenizer_sha256!=os.environ.get('WEAVE_REPLAY_TOKENIZER_MANIFEST_SHA256'):
+            raise ValueError('local capture tokenizer/config/encoding assets differ from launcher identity')
+        runtime.replay_capture=ReplayCapture(torch,runtime.device,runtime.rank,
+            os.environ['WEAVE_REPLAY_CAPTURE_DIR'],{
+                'kernel_source_sha256':runtime.source_sha256,
+                'checkpoint_content_sha256':os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
+                'dataset_sha256':os.environ.get('WEAVE_REPLAY_DATASET_SHA256'),
+                'tokenizer_manifest_sha256':tokenizer_sha256,
+                'capture_id':os.environ.get('WEAVE_REPLAY_CAPTURE_ID'),
+                'capture_source_sha256':capture_source_sha256(),
+                'image_id':os.environ.get('WEAVE_IMAGE_ID')})
     for layer in layers:
         raw = load_raw_experts(model_path, layer.mlp.layer_id, runtime.rank, runtime.ep,
                                device=torch.device('cuda', runtime.device))
@@ -130,6 +159,7 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     return {'backend': 'weave_functional', 'kernel': kernel, 'layers': len(layers),
             'graph_status': 'batch1_requires_source_specific_validation' if allow_decode_graph else 'disabled',
             'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed',
+            'hot_cache':hot_cache,
             'tile_rows': 16 if kernel=='tiled' else 1,
             'tile_columns': 64 if kernel=='tiled' else None}
 
@@ -157,6 +187,7 @@ def coverage(model):
             'profile_checkpoint_content_sha256': os.environ.get('WEAVE_CHECKPOINT_CONTENT_SHA256'),
             'profile_bank_sha256': getattr(model.model.layers[0].mlp.experts.profile,'sha256',None),
             'execution_profile_configuration':asdict(model.weave_runtime.trace_config) if model.weave_runtime.trace_config else None,
+            'hot_cache':model.weave_runtime.hot_cache,
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
                 'capture_calls': layer.mlp.experts.capture_calls,

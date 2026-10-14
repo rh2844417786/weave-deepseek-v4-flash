@@ -32,19 +32,23 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
         self.weave_runtime.phase = ('decode' if mode is not None and mode.is_decode()
                                     else 'prefill' if mode is not None and mode.is_extend() else 'other')
         sampler=getattr(self.weave_runtime,'forward_sampler',None)
-        if sampler is None:return super().forward(*args, **kwargs)
+        replay_capture=getattr(self.weave_runtime,'replay_capture',None)
+        if sampler is None and replay_capture is None:return super().forward(*args, **kwargs)
         ids=kwargs.get('input_ids',args[0] if args else None)
         if ids is None:raise ValueError('eager forward diagnostics require input_ids shape')
         rows=int(ids.shape[0])
         valid=getattr(batch,'batch_size',None) if self.weave_runtime.phase=='decode' else rows
-        ticket=sampler.begin(self.weave_runtime.phase,rows,valid)
+        ticket=sampler.begin(self.weave_runtime.phase,rows,valid) if sampler is not None else None
+        if replay_capture is not None:replay_capture.lifecycle.begin(self.weave_runtime.phase,rows,valid)
         try:
             result=super().forward(*args, **kwargs)
-            sampler.end(ticket)
-            return result
         except BaseException:
-            sampler.fail(ticket)
+            if sampler is not None:sampler.fail(ticket)
+            if replay_capture is not None:replay_capture.lifecycle.end(success=False)
             raise
+        if sampler is not None:sampler.end(ticket)
+        if replay_capture is not None:replay_capture.lifecycle.end()
+        return result
 
 
 EntryClass = [DeepseekV4ForCausalLM]

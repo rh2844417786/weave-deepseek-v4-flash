@@ -21,6 +21,7 @@ from src.weave.runtime_contract import load_contract
 from src.weave.container_lifecycle import run_container
 from src.weave.gpu_allocation import allocated_gpus
 from src.weave.execution_profile import add_profile_arguments,profile_options,profile_configuration
+from src.weave.replay_trace import validate_capture_id
 CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
@@ -73,7 +74,14 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
             '-e', f'WEAVE_FIXED_PLAN={args.fixed_plan}', '-e', 'TORCH_EXTENSIONS_DIR=/work/torch_extensions',
             '-e', f'WEAVE_KERNEL={args.kernel}', '-e', f'WEAVE_DECODE_GRAPH={int(args.decode_graph == "full")}',
             '-e', f'WEAVE_EVIDENCE_PORT_BASE={args.evidence_port_base}',
+            '-e', f'WEAVE_HOT_CACHE={int(args.hot_cache)}',
         ]
+        if args.replay_capture_dir:
+            relative=args.replay_capture_dir.relative_to(args.work_root)
+            docker += ['-e',f'WEAVE_REPLAY_CAPTURE_DIR=/work/{relative}',
+                       '-e',f'WEAVE_REPLAY_DATASET_SHA256={args.replay_dataset_sha256}',
+                       '-e',f'WEAVE_REPLAY_TOKENIZER_MANIFEST_SHA256={args.replay_tokenizer_manifest_sha256}',
+                       '-e',f'WEAVE_REPLAY_CAPTURE_ID={args.replay_capture_id}']
         if args.profile:
             relative = args.profile.relative_to(args.work_root)
             docker += ['-e', f'WEAVE_PROFILE=/work/{relative}']
@@ -119,11 +127,29 @@ def main() -> int:
     parser.add_argument('--profile', type=Path, help='measured profile JSON under WORK_ROOT; otherwise functional fixed plan')
     parser.add_argument('--request-timing', action='store_true', help='shared native token-ready timing for formal groups')
     parser.add_argument('--checkpoint-content-sha256', help='verified original checkpoint digest for measured tiled profiles')
+    parser.add_argument('--hot-cache',action=argparse.BooleanOptionalAction,default=True,
+                        help='bind immutable layer weights and cache workspace views before forward')
+    parser.add_argument('--replay-capture-dir',type=Path,help='private real B32 trace directory under WORK_ROOT')
+    parser.add_argument('--replay-dataset-sha256',help='existing custom9x200 workload SHA256 for capture identity')
+    parser.add_argument('--replay-tokenizer-manifest-sha256',help='verified local tokenizer/config/encoding content manifest digest')
+    parser.add_argument('--replay-capture-id',help='one canonical UUID4 shared by all ranks of this capture')
     parser.add_argument('--execute', action='store_true', help='launch Docker; default only prints the candidate command')
     add_profile_arguments(parser)
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if args.replay_capture_dir and (args.backend!='weave_functional' or args.kernel!='tiled'
+            or args.decode_graph=='full' or args.profile is not None or args.execution_profile
+            or args.fixed_plan!='1,1,0' or not args.checkpoint_content_sha256
+            or _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS')!='32'
+            or not re.fullmatch('[0-9a-f]{64}',args.replay_dataset_sha256 or '')
+            or not re.fullmatch('[0-9a-f]{64}',args.replay_tokenizer_manifest_sha256 or '')):
+        parser.error('replay capture requires tiled C32 fixed(1,1,0), eager, checkpoint/tokenizer/dataset identity and no profiling')
+    if args.replay_capture_dir:
+        try:validate_capture_id(args.replay_capture_id)
+        except ValueError as error:parser.error(str(error))
+    if (args.replay_dataset_sha256 or args.replay_tokenizer_manifest_sha256 or args.replay_capture_id) and not args.replay_capture_dir:
+        parser.error('replay identity requires replay capture')
     try: profile_options(args)
     except ValueError as error: parser.error(str(error))
     if args.execution_profile and (args.backend!='weave_functional' or args.kernel!='tiled'):
@@ -151,6 +177,12 @@ def main() -> int:
     if not args.model_path.is_absolute() or not args.work_root.is_absolute():
         parser.error('model-path and work-root must be absolute paths')
     args.work_root = args.work_root.resolve()
+    if args.replay_capture_dir:
+        if not args.replay_capture_dir.is_absolute() or '..' in args.replay_capture_dir.parts:
+            parser.error('replay capture directory must be absolute under WORK_ROOT')
+        args.replay_capture_dir=args.replay_capture_dir.resolve()
+        try:args.replay_capture_dir.relative_to(args.work_root)
+        except ValueError:parser.error('replay capture directory must be under WORK_ROOT')
     if not 1 <= args.port <= 65535:
         parser.error('port must be between 1 and 65535')
     if args.profile:
@@ -188,6 +220,8 @@ def main() -> int:
         'gpuq_job_id': os.environ.get('GPUQ_JOB_ID'),
         'docker_argv': command, 'generation_status': 'not_verified',
         'backend': args.backend,
+        'hot_cache':args.hot_cache,
+        'replay_capture_enabled':args.replay_capture_dir is not None,
         'execution_profile_configuration':profile_configuration(args),
         'runtime_contract': CONTRACT, 'runtime_report': str(run_dir/'runtime.json'),
         'ep_correctness_status': 'not_verified', 'performance_status': 'not_run',

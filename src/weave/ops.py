@@ -8,20 +8,46 @@ from pathlib import Path
 import sys
 
 
-def _kernel_source_bytes():
+CUDA_CFLAGS = ('-O3', '-lineinfo', '-std=c++17', '-Xptxas=-v')
+CXX_CFLAGS = ('-O3', '-std=c++17')
+
+
+def kernel_source_manifest():
+    """Deterministic identity of every runtime source/header and build setting."""
     root = Path(__file__).resolve().parents[2]
-    return b''.join((root/'csrc'/name).read_bytes() for name in
-                    ('megakernel.cu', 'scheduler.h', 'expert_numerics.h', 'tile_scheduler.h','execution_trace.h'))
+    paths = sorted(path for path in (root / 'csrc').rglob('*')
+                   if path.is_file() and path.suffix in ('.cu', '.cuh', '.h'))
+    if not paths:
+        raise RuntimeError('no runtime CUDA sources found under csrc')
+    return {'schema_version': 1,
+            'files': [{'path': path.relative_to(root).as_posix(),
+                       'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+                      for path in paths],
+            'cuda_cflags': list(CUDA_CFLAGS), 'cxx_cflags': list(CXX_CFLAGS),
+            'cuda_arch_list': os.environ.get('TORCH_CUDA_ARCH_LIST', '9.0a')}
+
+
+def _manifest_bytes(manifest):
+    return json.dumps(manifest, sort_keys=True,
+                      separators=(',', ':')).encode('utf-8')
+
+
+def _kernel_source_bytes():
+    return _manifest_bytes(kernel_source_manifest())
 
 
 def kernel_source_sha256():
     return hashlib.sha256(_kernel_source_bytes()).hexdigest()
 
 
-def extension_name(torch_version, cuda_version):
-    identity = f'{torch_version};{cuda_version};py{sys.version_info.major}.{sys.version_info.minor};{os.environ.get("TORCH_CUDA_ARCH_LIST", "9.0a")}'
-    content = _kernel_source_bytes()
+def _extension_name_from_manifest(torch_version, cuda_version, manifest):
+    identity = f'{torch_version};{cuda_version};py{sys.version_info.major}.{sys.version_info.minor};{manifest["cuda_arch_list"]}'
+    content = _manifest_bytes(manifest)
     return 'weave_functional_' + hashlib.sha256(content + identity.encode()).hexdigest()[:16]
+
+
+def extension_name(torch_version, cuda_version):
+    return _extension_name_from_manifest(torch_version, cuda_version, kernel_source_manifest())
 
 
 @lru_cache(maxsize=1)
@@ -31,16 +57,18 @@ def extension():
     if not torch.cuda.is_available():
         raise RuntimeError('CUDA/Hopper required; there is no native-MoE fallback')
     root = Path(__file__).resolve().parents[2]
-    source = root / 'csrc/megakernel.cu'
-    header = root / 'csrc/scheduler.h'
     os.environ.setdefault('TORCH_CUDA_ARCH_LIST', '9.0a')
-    source_digest = kernel_source_sha256()
-    module = load(name=extension_name(str(torch.__version__), torch.version.cuda), sources=[str(source)],
-                extra_cuda_cflags=['-O3', '-lineinfo', '-std=c++17'],
-                extra_cflags=['-O3', '-std=c++17'], verbose=True)
-    if kernel_source_sha256() != source_digest:
+    manifest = kernel_source_manifest()
+    source_digest = hashlib.sha256(_manifest_bytes(manifest)).hexdigest()
+    sources = [str(root / row['path']) for row in manifest['files']
+               if row['path'].endswith('.cu')]
+    module = load(name=_extension_name_from_manifest(str(torch.__version__), torch.version.cuda, manifest), sources=sources,
+                extra_cuda_cflags=list(manifest['cuda_cflags']),
+                extra_cflags=list(manifest['cxx_cflags']), verbose=True)
+    if kernel_source_manifest() != manifest:
         raise RuntimeError('CUDA source changed during extension build')
     module.weave_source_sha256 = source_digest
+    module.weave_source_manifest = manifest
     return module
 
 
@@ -69,7 +97,7 @@ class PeerRuntime:
     uses peer memory and the persistent kernel; no CPU routing statistics or
     NCCL dispatch are hidden outside the kernel.
     """
-    def __init__(self, group, capacity, hidden_size, intermediate_size, top_k, experts, *, kernel='scalar'):
+    def __init__(self, group, capacity, hidden_size, intermediate_size, top_k, experts, *, kernel='scalar', cache_views=True):
         import torch
         import torch.distributed as dist
         self.torch, self.group = torch, group
@@ -118,11 +146,18 @@ class PeerRuntime:
         if any(value[0] != self.source_sha256 for value in handles):
             raise ValueError('EP ranks loaded different compiled CUDA source')
         local_stage('IPC peer connection', lambda:self.ws.connect([value[1] for value in handles]))
+        self.cache_views = cache_views
+        self._views = local_stage('IPC tensor views', lambda:tuple(
+            getattr(self.ws, name) for name in ('x', 'ids', 'routing', 'n', 'output')) if cache_views else None)
         self.empty_profile = local_stage('IPC profile allocation', lambda:torch.empty(
             (0,6),dtype=torch.float64,device=f'cuda:{self.device}'))
         self.phase = 'other'
         self.trace_config=None
         self.trace_buffers=None
+
+    def bind_weights(self, raw_weights):
+        """Bind immutable raw checkpoint storage before graph capture."""
+        return self.ws.bind_weights(list(raw_weights))
 
     def enable_execution_profile(self,config):
         """Allocate immutable buffer addresses before any graph capture."""
@@ -217,15 +252,18 @@ class PeerRuntime:
             raise ValueError('native routing shape differs from the workspace')
         if any(t.device != x.device for t in (ids, weights)) or x.device.index != self.device:
             raise ValueError('all routing inputs must be on the workspace device')
-        self.ws.x[:n].copy_(x)
-        self.ws.ids[:n].copy_(ids.to(torch.int32))
-        self.ws.routing[:n].copy_(weights.to(torch.float32))
+        workspace_x, workspace_ids, workspace_routing, workspace_n, workspace_output = (
+            self._views if self._views is not None else
+            tuple(getattr(self.ws, name) for name in ('x', 'ids', 'routing', 'n', 'output')))
+        workspace_x[:n].copy_(x)
+        workspace_ids[:n].copy_(ids.to(torch.int32))
+        workspace_routing[:n].copy_(weights.to(torch.float32))
         if valid_count is None:
-            self.ws.n.fill_(n)
+            workspace_n.fill_(n)
         else:
             if valid_count.dtype != torch.int32 or valid_count.numel() != 1 or valid_count.device != x.device:
                 raise ValueError('valid_count must be one device int32 value')
-            self.ws.n.copy_(valid_count.reshape(1))
+            workspace_n.copy_(valid_count.reshape(1))
         if profile is None:
             if fixed_plan is None:
                 raise ValueError('provide a measured profile or an explicit functional fixed plan')
@@ -235,7 +273,9 @@ class PeerRuntime:
             if isinstance(profile, ProfileBank): profile = profile.for_tokens(n)
             c, k, steal = -1, 1, 0
         traced=self.trace_config is not None and trace_layer is not None and self.phase in ('prefill','decode')
-        self.ws.run(list(raw_weights), profile, c, k, steal, timeout_seconds, clamp,
+        raw = isinstance(raw_weights, (list, tuple))
+        launch = self.ws.run if raw else self.ws.run_bound
+        launch(list(raw_weights) if raw else raw_weights, profile, c, k, steal, timeout_seconds, clamp,
                     {'scalar': 0, 'wmma': 1, 'tiled': 2}[self.kernel], modes[calibration_mode],
                     trace_layer if traced else -1,('prefill','decode').index(self.phase) if traced else -1)
-        return self.ws.output[:n]
+        return workspace_output[:n]
