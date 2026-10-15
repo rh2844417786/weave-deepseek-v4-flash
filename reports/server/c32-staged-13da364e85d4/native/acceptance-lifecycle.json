@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-staged-13da364e85d4-native-accept",
+  "started_utc": "2026-10-15T08:52:36.655695+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-15T08:52:43.768995+00:00"
+}
