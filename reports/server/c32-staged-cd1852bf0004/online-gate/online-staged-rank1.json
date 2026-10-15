@@ -1,0 +1,1105 @@
+{
+  "status": "online_staged_checks_passed",
+  "rank": 1,
+  "layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42
+  ],
+  "source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+  "checkpoint_index_sha256": "7e975ba3bef8947a94e7da0abd60888375b232b4dfad883d59653e65c6ba522a",
+  "cases": [
+    {
+      "layer": -1,
+      "batch": 1,
+      "variant": 0,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": -1,
+      "batch": 7,
+      "variant": 1,
+      "group_count": 2,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": -1,
+      "batch": 17,
+      "variant": 2,
+      "group_count": 8,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": -1,
+      "batch": 32,
+      "variant": 3,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": -1,
+      "batch": 7,
+      "variant": 4,
+      "group_count": 2,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": -1,
+      "batch": 1,
+      "variant": 5,
+      "group_count": 2,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 0,
+      "batch": 32,
+      "variant": 0,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.000128053521621041,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 1,
+      "batch": 32,
+      "variant": 1,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00030086690094321966,
+        "max_abs": 0.0001220703125
+      },
+      "reference": {
+        "relative_l2": 0.0004890300333499908,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 2,
+      "batch": 32,
+      "variant": 2,
+      "group_count": 36,
+      "local_slots": {
+        "relative_l2": 0.00023226569464895874,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 2.5094865122810006e-05,
+        "max_abs": 3.0517578125e-05
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 3,
+      "batch": 32,
+      "variant": 3,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00010795585694722831,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 4,
+      "batch": 32,
+      "variant": 4,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00012112976401112974,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0001526728447061032,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 5,
+      "batch": 32,
+      "variant": 5,
+      "group_count": 35,
+      "local_slots": {
+        "relative_l2": 3.0465593226836063e-05,
+        "max_abs": 3.0517578125e-05
+      },
+      "reference": {
+        "relative_l2": 0.00015856869868002832,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 6,
+      "batch": 32,
+      "variant": 6,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00012645864626392722,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 7,
+      "batch": 32,
+      "variant": 7,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 5.55245133000426e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 7.357132562901825e-05,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 8,
+      "batch": 32,
+      "variant": 8,
+      "group_count": 34,
+      "local_slots": {
+        "relative_l2": 0.00022348848870024085,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0003295611822977662,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 9,
+      "batch": 32,
+      "variant": 9,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00020217617566231638,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 10,
+      "batch": 32,
+      "variant": 10,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.0001721303997328505,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00017777777975425124,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 11,
+      "batch": 32,
+      "variant": 11,
+      "group_count": 34,
+      "local_slots": {
+        "relative_l2": 0.00017856703198049217,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0001218575271195732,
+        "max_abs": 6.103515625e-05
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 12,
+      "batch": 32,
+      "variant": 12,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00030579164740629494,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 13,
+      "batch": 32,
+      "variant": 13,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00013278040569275618,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 7.099376671249047e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 14,
+      "batch": 32,
+      "variant": 14,
+      "group_count": 33,
+      "local_slots": {
+        "relative_l2": 0.00018417282262817025,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00019741767027880996,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 15,
+      "batch": 32,
+      "variant": 15,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.000694848713465035,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 16,
+      "batch": 32,
+      "variant": 16,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00018431790522299707,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0002618535072542727,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 17,
+      "batch": 32,
+      "variant": 17,
+      "group_count": 31,
+      "local_slots": {
+        "relative_l2": 9.22876934055239e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00014652148820459843,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 18,
+      "batch": 32,
+      "variant": 18,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0002962313301395625,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 19,
+      "batch": 32,
+      "variant": 19,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00012157803575973958,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00025608946452848613,
+        "max_abs": 0.000244140625
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 20,
+      "batch": 32,
+      "variant": 20,
+      "group_count": 30,
+      "local_slots": {
+        "relative_l2": 0.0002082283463096246,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0005021036486141384,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 21,
+      "batch": 32,
+      "variant": 21,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00015410364721901715,
+        "max_abs": 6.103515625e-05
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 22,
+      "batch": 32,
+      "variant": 22,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.0001326539204455912,
+        "max_abs": 0.0001220703125
+      },
+      "reference": {
+        "relative_l2": 0.0003298833908047527,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 23,
+      "batch": 32,
+      "variant": 23,
+      "group_count": 30,
+      "local_slots": {
+        "relative_l2": 9.476906416239217e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0003515986609272659,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 24,
+      "batch": 32,
+      "variant": 24,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00013940119242761284,
+        "max_abs": 6.103515625e-05
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 25,
+      "batch": 32,
+      "variant": 25,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.0001835995353758335,
+        "max_abs": 0.0001220703125
+      },
+      "reference": {
+        "relative_l2": 0.00039079636917449534,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 26,
+      "batch": 32,
+      "variant": 26,
+      "group_count": 29,
+      "local_slots": {
+        "relative_l2": 0.00015872980293352157,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00022621016250923276,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 27,
+      "batch": 32,
+      "variant": 27,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.0001837165473261848,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 28,
+      "batch": 32,
+      "variant": 28,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.0001691837387625128,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00023506754951085895,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 29,
+      "batch": 32,
+      "variant": 29,
+      "group_count": 28,
+      "local_slots": {
+        "relative_l2": 0.00029786015511490405,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0001837013114709407,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 30,
+      "batch": 32,
+      "variant": 30,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00013106378901284188,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 31,
+      "batch": 32,
+      "variant": 31,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00013375097478274256,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0001982122630579397,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 32,
+      "batch": 32,
+      "variant": 32,
+      "group_count": 28,
+      "local_slots": {
+        "relative_l2": 0.0002559878339525312,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.0003643492527771741,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 33,
+      "batch": 32,
+      "variant": 33,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00026537003577686846,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 34,
+      "batch": 32,
+      "variant": 34,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 0.00023581451387144625,
+        "max_abs": 0.0001220703125
+      },
+      "reference": {
+        "relative_l2": 0.00022775142861064523,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 35,
+      "batch": 32,
+      "variant": 35,
+      "group_count": 28,
+      "local_slots": {
+        "relative_l2": 8.727049134904519e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00029059051303192973,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 36,
+      "batch": 32,
+      "variant": 36,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 6.541302718687803e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 37,
+      "batch": 32,
+      "variant": 37,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 7.317171548493207e-05,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00021257781190797687,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 38,
+      "batch": 32,
+      "variant": 38,
+      "group_count": 27,
+      "local_slots": {
+        "relative_l2": 0.0002465897414367646,
+        "max_abs": 0.0001220703125
+      },
+      "reference": {
+        "relative_l2": 0.00028388178907334805,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 39,
+      "batch": 32,
+      "variant": 39,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.00026414162130095065,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 40,
+      "batch": 32,
+      "variant": 40,
+      "group_count": 4,
+      "local_slots": {
+        "relative_l2": 8.940424595493823e-05,
+        "max_abs": 0.0001220703125
+      },
+      "reference": {
+        "relative_l2": 0.00011091917258454487,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 41,
+      "batch": 32,
+      "variant": 41,
+      "group_count": 27,
+      "local_slots": {
+        "relative_l2": 0.00010913058940786868,
+        "max_abs": 6.103515625e-05
+      },
+      "reference": {
+        "relative_l2": 0.00013737640983890742,
+        "max_abs": 0.0001220703125
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    },
+    {
+      "layer": 42,
+      "batch": 32,
+      "variant": 42,
+      "group_count": 0,
+      "local_slots": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "reference": {
+        "relative_l2": 0.000351982656866312,
+        "max_abs": 0.000244140625
+      },
+      "persistent": {
+        "relative_l2": 0.0,
+        "max_abs": 0.0
+      },
+      "metadata": "exact_p1_match",
+      "assembly": "exact_fp32_slots_then_ordered_sum_bf16_origin_mask"
+    }
+  ],
+  "resources": {
+    "stages": {
+      "gate_up": {
+        "numRegs": 134,
+        "localSizeBytes": 32,
+        "sharedSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 49152,
+        "maxThreadsPerBlock": 384,
+        "dynamic_shared_bytes": 8192,
+        "threads_per_block": 128,
+        "active_blocks_per_sm": 3,
+        "binaryVersion": 90,
+        "ptxVersion": 90
+      },
+      "down": {
+        "numRegs": 96,
+        "localSizeBytes": 32,
+        "sharedSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 49152,
+        "maxThreadsPerBlock": 640,
+        "dynamic_shared_bytes": 8192,
+        "threads_per_block": 128,
+        "active_blocks_per_sm": 5,
+        "binaryVersion": 90,
+        "ptxVersion": 90
+      },
+      "reduce": {
+        "numRegs": 23,
+        "localSizeBytes": 0,
+        "sharedSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 49152,
+        "maxThreadsPerBlock": 1024,
+        "dynamic_shared_bytes": 0,
+        "threads_per_block": 128,
+        "active_blocks_per_sm": 16,
+        "binaryVersion": 90,
+        "ptxVersion": 90
+      }
+    },
+    "device": 1,
+    "multiprocessors": 132,
+    "grid_controls": [
+      132,
+      264,
+      528,
+      0
+    ],
+    "group_capacity": 0,
+    "scratch_group_capacity": 192,
+    "gate_tiles_per_group": 32,
+    "down_tiles_per_group": 64,
+    "reduce_grid_blocks": 1024,
+    "output_dtype": "float32",
+    "slot_output_boundary": "BF16-rounded down output stored as float32",
+    "online_group_capacity": 72,
+    "online_gate_grid_bound": 2304,
+    "online_down_grid_bound": 4608,
+    "online_grid_policy": "capacity_bound_direct_with_device_count_guard",
+    "online_max_batch": 32,
+    "online_slot_output_dtype": "float32",
+    "online_output_dtype": "bfloat16",
+    "online_slot_output_boundary": "BF16-rounded routed products in zeroed float32 slots before NCCL SUM",
+    "online_output_boundary": "ordered global slot FP32 sum then BF16 contiguous origin mask"
+  },
+  "rtol": 0.03,
+  "atol": 0.02,
+  "relative_l2_limit": 0.025,
+  "cpu_collective": "gloo",
+  "device_collective": "nccl_sum_fp32_original_slots",
+  "assembly": "BF16_rounded_routed_product_FP32_slot_SUM_then_ordered_slots_0_to_5_BF16_origin_mask",
+  "performance": "not_measured"
+}

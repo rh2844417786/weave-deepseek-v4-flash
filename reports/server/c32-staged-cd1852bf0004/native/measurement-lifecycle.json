@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-staged-cd1852bf0004-native-load",
+  "started_utc": "2026-10-14T14:48:26.306434+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-14T14:58:28.682391+00:00"
+}
