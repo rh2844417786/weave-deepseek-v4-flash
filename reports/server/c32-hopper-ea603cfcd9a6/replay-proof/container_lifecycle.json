@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-hopper-candidate-115da040aca7",
+  "started_utc": "2026-10-17T12:45:54.184717+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-17T12:50:07.065266+00:00"
+}

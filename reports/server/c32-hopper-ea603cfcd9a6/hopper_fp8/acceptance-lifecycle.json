@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-hopper-ea603cfcd9a6-hopper_fp8-accept",
+  "started_utc": "2026-10-17T14:28:59.989155+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-17T14:30:35.720092+00:00"
+}
