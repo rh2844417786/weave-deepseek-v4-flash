@@ -1,0 +1,100 @@
+{
+  "rank": 1,
+  "status": "functional_checks_passed",
+  "core_graph_replay": "passed",
+  "sglang_adapter": "not_run",
+  "full_model": "not_run",
+  "performance": "not_run",
+  "profile": "synthetic_test_fixture_only",
+  "selected_plan": [
+    1,
+    2,
+    0
+  ],
+  "execution_profile_smoke": "passed_numeric_graph_replay_ring_wrap_phase_separation",
+  "p0_binding": "passed_storage_lifetime_validation_ownership_eager_and_graph",
+  "persistent_resources": {
+    "device": 1,
+    "clock_khz": 1980000,
+    "dimensions": {
+      "rank": 1,
+      "ep": 4,
+      "capacity": 2,
+      "hidden_size": 32,
+      "intermediate_size": 32,
+      "top_k": 2,
+      "experts": 8
+    },
+    "workspace_bytes": 25600,
+    "specializations": {
+      "persistent<false>": {
+        "probe_enabled": false,
+        "numRegs": 168,
+        "localSizeBytes": 112,
+        "sharedSizeBytes": 32,
+        "constSizeBytes": 0,
+        "maxThreadsPerBlock": 384,
+        "binaryVersion": 90,
+        "ptxVersion": 90,
+        "maxDynamicSharedSizeBytes": 49120,
+        "launches": {
+          "scalar": {
+            "tensor_core": 0,
+            "dynamic_shared_bytes": 64,
+            "active_blocks_per_sm": 3,
+            "grid_blocks": 132,
+            "threads_per_block": 128
+          },
+          "wmma": {
+            "tensor_core": 1,
+            "dynamic_shared_bytes": 8256,
+            "active_blocks_per_sm": 3,
+            "grid_blocks": 132,
+            "threads_per_block": 128
+          },
+          "tiled": {
+            "tensor_core": 2,
+            "dynamic_shared_bytes": 8256,
+            "active_blocks_per_sm": 3,
+            "grid_blocks": 132,
+            "threads_per_block": 128
+          }
+        }
+      },
+      "persistent<true>": {
+        "probe_enabled": true,
+        "numRegs": 190,
+        "localSizeBytes": 112,
+        "sharedSizeBytes": 32,
+        "constSizeBytes": 0,
+        "maxThreadsPerBlock": 256,
+        "binaryVersion": 90,
+        "ptxVersion": 90,
+        "maxDynamicSharedSizeBytes": 49120,
+        "launches": {
+          "scalar": {
+            "tensor_core": 0,
+            "dynamic_shared_bytes": 64,
+            "active_blocks_per_sm": 2,
+            "grid_blocks": 132,
+            "threads_per_block": 128
+          },
+          "wmma": {
+            "tensor_core": 1,
+            "dynamic_shared_bytes": 8256,
+            "active_blocks_per_sm": 2,
+            "grid_blocks": 132,
+            "threads_per_block": 128
+          },
+          "tiled": {
+            "tensor_core": 2,
+            "dynamic_shared_bytes": 8256,
+            "active_blocks_per_sm": 2,
+            "grid_blocks": 132,
+            "threads_per_block": 128
+          }
+        }
+      }
+    }
+  }
+}

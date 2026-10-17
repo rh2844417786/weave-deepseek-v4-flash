@@ -1,0 +1,104 @@
+{
+  "captured_utc": "2026-10-17T21:19:18.698309+00:00",
+  "kernel_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "container_hostname": "h100-8",
+  "host_hostname": null,
+  "requested_image": "lmsysorg/sglang:v0.5.17",
+  "resolved_image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "host_gpu_allocation": "0,3,6,7",
+  "python": "3.12.3",
+  "python_executable": "/usr/bin/python3",
+  "packages": {
+    "torch": "2.11.0+cu130",
+    "sglang": "0.5.17",
+    "transformers": "5.12.1",
+    "triton": "3.6.0",
+    "sgl-kernel": "no_distribution_metadata; module found at /usr/local/lib/python3.12/dist-packages/sgl_kernel/__init__.py",
+    "flashinfer-python": "0.6.15.post1"
+  },
+  "torch_cuda": "13.0",
+  "cuda_available": true,
+  "devices": [
+    {
+      "ordinal": 0,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    },
+    {
+      "ordinal": 1,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    },
+    {
+      "ordinal": 2,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    },
+    {
+      "ordinal": 3,
+      "name": "NVIDIA H100 80GB HBM3",
+      "capability": [
+        9,
+        0
+      ],
+      "memory_bytes": 85017493504
+    }
+  ],
+  "nvcc_release": "13.0",
+  "cuda_home": "/usr/local/cuda",
+  "nvcc_executable": "/usr/local/cuda/bin/nvcc",
+  "nvcc_output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Wed_Aug_20_01:58:59_PM_PDT_2025\nCuda compilation tools, release 13.0, V13.0.88\nBuild cuda_13.0.r13.0/compiler.36424714_0",
+  "adapter_source_sha256": {
+    "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+    "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+    "srt/models/registry.py": "3c5b4e87c5943147c28cb5b68e187cdf8f8f9d880c42f1f6941fce99fe757e41",
+    "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+    "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+    "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+    "srt/runtime_context.py": "d257c381d2d05b90b16d3e3ece41d65c3c4dcd5dcd22028a4cb3bd9b322784ab",
+    "srt/layers/moe/utils.py": "e903bc2ca42a70694ee685f7b4744b7f967458420410295061b0dc35160db334",
+    "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+    "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+    "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+    "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+    "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+    "srt/entrypoints/http_server.py": "1de1fbce4c87b11b01ab99c802d0684053dc4539b95d8b3a8d88c80d7d238e9a",
+    "srt/observability/req_time_stats.py": "f4ac4d7c0f01c0fa4b147201453a88471eae5ccc4b2196de87788acfef87ebd9",
+    "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+    "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+    "srt/layers/logits_processor.py": "cf3f0f71ff54870362698ebf2b67ced9d668ee59bfc9e0e97510f6f99a4aa016",
+    "srt/layers/logprob_processor.py": "d8fc9ce621d3130f6c586b6288e888c2d4cc117336f86e8384f9486d49d3048d",
+    "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1"
+  },
+  "validation_stage": "native",
+  "validation_errors": [],
+  "runtime_status": "passed",
+  "expected_contract": {
+    "image": "lmsysorg/sglang:v0.5.17",
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.12.3",
+    "torch_version": "2.11.0+cu130",
+    "torch_cuda": "13.0",
+    "nvcc_release": "13.0",
+    "sglang_version": "0.5.17",
+    "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+    "transformers_version": "5.12.1",
+    "work_directory": "work",
+    "gpu_count": 4,
+    "gpu_allocation_source": "CUDA_VISIBLE_DEVICES from the scheduler",
+    "provenance": "Selected from the user's measured inventory of the current server on 2026-09-30; verify actual versions and image ID for every job."
+  },
+  "child_exit_code": 0
+}

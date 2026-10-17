@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-hopper-e88b0cf597df-staged_direct-load",
+  "started_utc": "2026-10-17T21:57:50.417821+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-17T22:07:55.507589+00:00"
+}
