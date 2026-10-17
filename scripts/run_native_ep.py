@@ -64,6 +64,9 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     functional = args.backend == 'weave_functional'
     if args.checkpoint_content_sha256:
         docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
+    if getattr(args,'stall_diagnostic',False):
+        docker += ['-e','WEAVE_STALL_DIAGNOSTIC=1','-e',f'WEAVE_STALL_PORT_BASE={args.stall_port_base}',
+                   '-e',f'WEAVE_STALL_CANDIDATE={args.decode_implementation if functional else "native"}']
     if args.request_timing:
         docker += ['-e','WEAVE_REQUEST_TIMING=1','-e','PYTHONPATH=/workspace/timing_hooks:/workspace/src']
     elif functional:
@@ -130,6 +133,8 @@ def main() -> int:
     parser.add_argument('--evidence-port-base', type=int, default=30110)
     parser.add_argument('--run-name', help='fresh native-ep-* directory name, for acceptance orchestration')
     parser.add_argument('--profile', type=Path, help='measured profile JSON under WORK_ROOT; otherwise functional fixed plan')
+    parser.add_argument('--stall-diagnostic',action='store_true')
+    parser.add_argument('--stall-port-base',type=int,default=30210)
     parser.add_argument('--request-timing', action='store_true', help='shared native token-ready timing for formal groups')
     parser.add_argument('--checkpoint-content-sha256', help='verified original checkpoint digest for measured tiled profiles')
     parser.add_argument('--hot-cache',action=argparse.BooleanOptionalAction,default=True,
@@ -143,6 +148,13 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if args.stall_diagnostic:
+        if (args.decode_graph!='disabled' or not args.request_timing or args.profile is not None
+                or args.execution_profile or args.execution_profile_fixed_plan or args.replay_capture_dir):
+            parser.error('stall diagnostic requires explicit eager, request timing and no profiles/capture')
+        ports=[args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))+list(range(args.stall_port_base,args.stall_port_base+4))
+        if not 1<=args.stall_port_base<=65532 or len(set(ports))!=9:
+            parser.error('stall ports must be valid and distinct from serving/evidence ports')
     try:
         staged_fixed=tuple(int(value) for value in args.fixed_plan.split(','))
         if args.decode_implementation in ('staged_direct','hopper_fp8') and args.backend!='weave_functional':
@@ -242,6 +254,8 @@ def main() -> int:
         'ep_correctness_status': 'not_verified', 'performance_status': 'not_run',
         'exit_code': None,
     }
+    if args.stall_diagnostic:
+        report.update(instrumented_diagnostic=True,used_for_formal_performance=False)
     report_path = run_dir / 'launch.json'
     report_path.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{args.backend} EP4 candidate; log: {run_dir / "server.log"}', flush=True)

@@ -45,18 +45,20 @@ def serving_source_manifest():
         'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(paths)]}
 
 
-def service_command(variant,work,model,run_name,port,base,checkpoint):
+def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210):
     if variant not in set(VARIANTS)|set(HOPPER_VARIANTS):raise ValueError('unknown C32 group')
-    return [sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--execute',
+    result = [sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--execute',
         '--backend','native' if variant=='native' else 'weave_functional',
         '--kernel','tiled','--decode-graph','disabled','--fixed-plan','1,1,0','--hot-cache',
         '--decode-implementation',variant if variant in ('staged_direct','hopper_fp8') else 'persistent',
         '--request-timing','--work-root',str(work),'--model-path',str(model),
         '--run-name',run_name,'--port',str(port),'--evidence-port-base',str(base),
         '--checkpoint-content-sha256',checkpoint]
+    if stall_diagnostic:result += ['--stall-diagnostic','--stall-port-base',str(stall_port_base)]
+    return result
 
 
-def client_command(image,work,dataset,output_relative,name,port,seconds,acceptance):
+def client_command(image,work,dataset,output_relative,name,port,seconds,acceptance,*,stall_diagnostic=False,stall_port_base=30210):
     result=['docker','run','--rm','--pull=never','--name','weave-'+name,'--network=host',
         '-e','NVIDIA_VISIBLE_DEVICES=void','-e','CUDA_VISIBLE_DEVICES=',
         '-e','HF_HUB_OFFLINE=1','-e','TRANSFORMERS_OFFLINE=1','-e','HF_DATASETS_OFFLINE=1',
@@ -66,10 +68,11 @@ def client_command(image,work,dataset,output_relative,name,port,seconds,acceptan
         '--base-url',f'http://127.0.0.1:{port}','--output-dir',f'/work/{output_relative}',
         '--seconds',str(seconds),'--concurrency','32','--output-tokens','1024','--execute']
     if acceptance:result+=['--acceptance-only']
+    elif stall_diagnostic:result+=['--stall-diagnostic','--stall-port-base',str(stall_port_base)]
     return result
 
 
-def gate_command(image,work,model,run_name,allocation,comparison_suite='staged'):
+def gate_command(image,work,model,run_name,allocation,comparison_suite='staged',*,stall_diagnostic=False):
     if comparison_suite not in ('staged','hopper'):raise ValueError('unknown comparison suite')
     devices=GPUAllocation.parse(allocation);python=load_contract()['python_executable']
     command=['docker','run','--rm','--pull=never','--name','weave-online-gate-'+run_name,
@@ -90,7 +93,37 @@ def gate_command(image,work,model,run_name,allocation,comparison_suite='staged')
     if comparison_suite=='hopper':
         offset=command.index('/workspace/tests/gpu/check_online_staged.py')
         command[offset:]=['/workspace/tests/gpu/check_hopper_serving.py','--output-dir',f'/work/{run_name}/online-gate']
+    if stall_diagnostic:
+        if comparison_suite!='hopper':raise ValueError('stall diagnostic requires Hopper suite')
+        offset=command.index('--exec-command')+1
+        command[offset:]=[python,'/workspace/scripts/run_stall_gate.py','--output-dir',f'/work/{run_name}/online-gate']
     return command
+
+
+def validate_stall_smoke(folder):
+    for rank in range(4):
+        value=json.loads((folder/f'stall-smoke-rank{rank}.json').read_text())
+        if value.get('rank')!=rank or value.get('status')!='passed':raise ValueError('stall_smoke_incomplete')
+
+
+def snapshot_stalls(folder,base,*,expected_source=None,expected_image=None,expected_candidate=None):
+    """Called only after abort/drain/idle; snapshot GPU reads never enter measurement."""
+    from src.weave.stall_analysis import analyze_stalls
+    reports=[]
+    for rank in range(4):
+        value=http_json(f'http://127.0.0.1:{base+rank}/snapshot',timeout=120)
+        if value.get('rank')!=rank:raise ValueError('stall_rank_identity_differs')
+        if ((expected_source is not None and value.get('source_sha256')!=expected_source)
+                or (expected_image is not None and value.get('identity',{}).get('image')!=expected_image)
+                or (expected_candidate is not None and value.get('identity',{}).get('candidate')!=expected_candidate)):
+            raise ValueError('stall_source_identity_differs')
+        value.update(instrumented_diagnostic=True,used_for_formal_performance=False)
+        atomic_json(folder/f'stall-rank{rank}.json',value);reports.append(value)
+    analysis=analyze_stalls(reports,json.loads((folder/'client-stall.json').read_text()),
+        json.loads((folder/'load-window.json').read_text()))
+    analysis.update(instrumented_diagnostic=True,used_for_formal_performance=False)
+    atomic_json(folder/'stall-analysis.json',analysis)
+    if analysis.get('status')!='passed':raise ValueError('stall_diagnostic_incomplete')
 
 
 def export_public(run,destination):
@@ -101,13 +134,15 @@ def export_public(run,destination):
            'online-gate/checkpoint_identity.json','online-gate/gate-check.json']
     names += ['replay-proof-check.json']
     names += [f'online-gate/hopper-serving-rank{r}.json' for r in range(4)]
+    names += [f'online-gate/stall-smoke-rank{r}.json' for r in range(4)]
     names += [f'replay-proof/{name}' for name in sorted(REPLAY_FILES|{'manifest.json'})]
     names += [f'online-gate/online-staged-rank{r}.json' for r in range(4)]
     names += [f'online-gate/online-staged-progress-rank{r}.json' for r in range(4)]
     group_names=('group.json','launch.json','runtime.json','server-lifecycle.json','acceptance-lifecycle.json',
         'measurement-lifecycle.json','acceptance-summary.json','acceptance-check.json','client-summary.json',
         'load-window.json','load-progress.json','coverage-before.json','coverage-after.json',
-        'coverage-check.json','scheduler-summary.json')
+        'coverage-check.json','scheduler-summary.json','client-stall.json','stall-analysis.json',
+        *(f'stall-rank{r}.json' for r in range(4)))
     names += [f'{group}/{name}' for group in sorted(set(VARIANTS)|set(HOPPER_VARIANTS)) for name in group_names]
     files={name:(run/name).read_bytes() for name in names if (run/name).is_file()}
     report=json.loads(files['experiment.json'])
@@ -149,8 +184,15 @@ def main(argv=None):
     parser.add_argument('--drain-timeout',type=float,default=600.)
     parser.add_argument('--port',type=int,default=30001)
     parser.add_argument('--evidence-port-base',type=int,default=30110)
+    parser.add_argument('--stall-diagnostic',action='store_true')
+    parser.add_argument('--stall-port-base',type=int,default=30210)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
+    if args.stall_diagnostic:
+        if args.comparison_suite!='hopper':parser.error('stall diagnostic only supports Hopper suite')
+        ports=[args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))+list(range(args.stall_port_base,args.stall_port_base+4))
+        if not 1<=args.stall_port_base<=65532 or len(set(ports))!=9:parser.error('stall ports must be valid and distinct')
+    diagnostic_options={'stall_diagnostic':args.stall_diagnostic,'stall_port_base':args.stall_port_base}
     for key in ('work_root','dataset','core_run_dir','model_path','export_root','hopper_evidence_dir'):
         value=getattr(args,key)
         if value is not None:
@@ -169,13 +211,13 @@ def main(argv=None):
     allocation=allocated_gpus();contract=load_contract();name='c32-'+args.comparison_suite+'-'+uuid.uuid4().hex[:12]
     out=args.work_root/name;destination=(args.export_root or args.work_root/'public-reports')/name
     preview={v:service_command(v,args.work_root,args.model_path,'native-ep-'+name+'-'+v,
-                 args.port,args.evidence_port_base,'0'*64) for v in variants}
+                 args.port,args.evidence_port_base,'0'*64,**diagnostic_options) for v in variants}
     if not args.execute:
         print(json.dumps({'status':'preview_not_executed','comparison_suite':args.comparison_suite,'groups':preview,
             'hopper_evidence_dir':str(args.hopper_evidence_dir) if args.hopper_evidence_dir else None,
             'generation_comparison_policy':'record_only' if args.comparison_suite=='hopper' else 'legacy_exact',
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
-            'online_gate':gate_command(contract['image'],args.work_root,args.model_path,name,allocation.csv,args.comparison_suite)},indent=2));return 0
+            'online_gate':gate_command(contract['image'],args.work_root,args.model_path,name,allocation.csv,args.comparison_suite,stall_diagnostic=args.stall_diagnostic)},indent=2));return 0
     out.mkdir(parents=True,exist_ok=False)
     owner=OwnedChild();client_owner=OwnedChild();code=1
     report={'schema_version':1,'scope':args.comparison_suite+'_C32_eager_serving','comparison_suite':args.comparison_suite,'status':'running','stage':'validating',
@@ -183,6 +225,7 @@ def main(argv=None):
         'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),'host_gpu_allocation':allocation.csv,
         'kernel_source_sha256':kernel_source_sha256(),'serving_source_sha256':digest(serving_source_manifest()),
         'formal_gpqa':False,'groups':{}}
+    if args.stall_diagnostic:report.update(instrumented_diagnostic=True,used_for_formal_performance=False)
     if args.comparison_suite=='hopper':report.update(numerical_policy='record_only',generation_comparison_policy='record_only')
     def save():atomic_json(out/'experiment.json',report)
     def cancel(number,frame):
@@ -222,6 +265,9 @@ def main(argv=None):
             'tokenizer_manifest_sha256':tokenizer_manifest_sha256(args.model_path),'seconds':args.seconds,
             'decode_graph':'disabled','concurrency':32,'max_new_tokens':1024,'temperature':0,'ignore_eos':True,
             'host_gpu_allocation':allocation.csv}
+        if args.stall_diagnostic:
+            from src.weave.stall_hooks import stall_source_sha256
+            identity.update(instrumented_diagnostic=True,used_for_formal_performance=False,stall_source_sha256=stall_source_sha256())
         if args.comparison_suite=='hopper':
             replay_current={'candidate_source_sha256':candidate_source_sha256(),'bf16_source_sha256':identity['source_sha256'],
                 'checkpoint_content_sha256':identity['checkpoint_content_sha256'],'image_id':image,
@@ -238,7 +284,8 @@ def main(argv=None):
         report.update(identity=identity,core_gate=gate,stage='hopper_assembly_gate' if args.comparison_suite=='hopper' else 'online_staged_gate');save()
         atomic_json(out/'source-manifest.json',kernel_source_manifest());atomic_json(out/'serving-source-manifest.json',serving_source_manifest())
         gate_folder=out/'online-gate';gate_folder.mkdir()
-        managed(gate_command(image,args.work_root,args.model_path,name,allocation.csv,args.comparison_suite),gate_folder,'container',args.gate_timeout)
+        managed(gate_command(image,args.work_root,args.model_path,name,allocation.csv,args.comparison_suite,stall_diagnostic=args.stall_diagnostic),gate_folder,'container',args.gate_timeout)
+        if args.stall_diagnostic:validate_stall_smoke(gate_folder)
         # Preserve the manager's public name consistently with other gates.
         atomic_json(gate_folder/'container_lifecycle.json',json.loads((gate_folder/'container-lifecycle.json').read_text()))
         if args.comparison_suite=='hopper':
@@ -258,11 +305,13 @@ def main(argv=None):
             server_dir=args.work_root/run_name;url=f'http://127.0.0.1:{args.port}'
             group={'status':'running','identity':identity,'variant':variant,'decode_implementation':
                 variant if variant in ('staged_direct','hopper_fp8') else 'persistent','stage':'starting'}
+            if args.stall_diagnostic:group.update(instrumented_diagnostic=True,used_for_formal_performance=False)
             try:
-                assert_ports_free([args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4)))
+                assert_ports_free([args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))
+                    +(list(range(args.stall_port_base,args.stall_port_base+4)) if args.stall_diagnostic else []))
                 with (folder/'server-launch-private.log').open('w') as log:
                     server=owner.spawn(service_command(variant,args.work_root,args.model_path,run_name,args.port,
-                        args.evidence_port_base,gate['checkpoint_content_sha256']),server_dir/'container_lifecycle.json',
+                        args.evidence_port_base,gate['checkpoint_content_sha256'],**diagnostic_options),server_dir/'container_lifecycle.json',
                         env=env,stdout=log,stderr=subprocess.STDOUT)
                     wait_ready(url,timeout=args.setup_timeout,process=server)
                     runtime=json.loads((server_dir/'runtime.json').read_text())
@@ -293,11 +342,17 @@ def main(argv=None):
                     log_offset=(server_dir/'server.log').stat().st_size
                     group['stage']='measurement';atomic_json(folder/'group.json',group)
                     managed(client_command(image,args.work_root,args.dataset,f'{name}/{variant}',name+'-'+variant+'-load',
-                        args.port,args.seconds,False),folder,'measurement',args.setup_timeout,service=server,measurement=True)
+                        args.port,args.seconds,False,**diagnostic_options),folder,'measurement',args.setup_timeout,service=server,measurement=True)
                     client=json.loads((folder/'client-summary.json').read_text());validate_client_summary(client,args.seconds,dataset['sha256'])
+                    if args.stall_diagnostic:
+                        client.update(instrumented_diagnostic=True,used_for_formal_performance=False)
+                        atomic_json(folder/'client-summary.json',client)
                     if client['request_order_sha256']!=accept['request_order_sha256']:raise ValueError('client_order_changed')
                     http_json(url+'/abort_request',{'abort_all':True},timeout=30)
                     flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
+                    if args.stall_diagnostic:
+                        snapshot_stalls(folder,args.stall_port_base,expected_source=identity['stall_source_sha256'],
+                            expected_image=image,expected_candidate=variant)
                     with (server_dir/'server.log').open('rb') as stream:stream.seek(log_offset);logs=stream.read().decode(errors='replace')
                     scheduler=scheduler_counts(logs);atomic_json(folder/'scheduler-summary.json',scheduler)
                     if variant!='native':
@@ -330,7 +385,12 @@ def main(argv=None):
                     or assembly_source_sha256()!=identity['assembly_source_sha256']
                     or validate_replay_bundle(args.hopper_evidence_dir,**replay_current)!=replay_check):
                 raise ValueError('hopper_source_or_replay_changed_during_run')
-        comparison=summarize_comparison(report['groups'],comparison_suite=args.comparison_suite);atomic_json(out/'comparison.json',comparison)
+        comparison=summarize_comparison(report['groups'],comparison_suite=args.comparison_suite)
+        if args.stall_diagnostic:
+            comparison={k:v for k,v in comparison.items() if not k.endswith('_ratio')}
+            comparison.update(instrumented_diagnostic=True,used_for_formal_performance=False,
+                scope='instrumented C32 stall diagnostic; rates are diagnostic observations')
+        atomic_json(out/'comparison.json',comparison)
         report.update(status='comparison_complete',stage='complete');code=0
     except BaseException as exc:
         report.update(status='failed',error_type=type(exc).__name__)

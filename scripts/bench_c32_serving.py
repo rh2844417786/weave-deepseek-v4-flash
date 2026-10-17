@@ -37,7 +37,8 @@ async def execute(args, workload):
                                             concurrency=args.concurrency)
             return await run_measurement(session, args.base_url, workload, args.output_dir,
                                          seconds=args.seconds, concurrency=args.concurrency,
-                                         output_tokens=args.output_tokens)
+                                         output_tokens=args.output_tokens,
+                                         stall_port_base=args.stall_port_base if args.stall_diagnostic else None)
     finally:
         for sig in (signal.SIGINT, signal.SIGTERM):
             loop.remove_signal_handler(sig)
@@ -52,6 +53,8 @@ def main(argv=None):
     parser.add_argument("--concurrency", type=int, default=32, choices=[32])
     parser.add_argument("--output-tokens", type=int, default=1024, choices=[1024])
     parser.add_argument("--acceptance-only", action="store_true")
+    parser.add_argument("--stall-diagnostic", action="store_true")
+    parser.add_argument("--stall-port-base", type=int, default=30210)
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
     for key in ("HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE", "HF_DATASETS_OFFLINE"):

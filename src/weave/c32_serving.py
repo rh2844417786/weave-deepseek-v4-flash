@@ -421,7 +421,7 @@ async def run_acceptance(session, base_url, workload, output_dir, *, concurrency
     return summary
 
 
-async def _stream_request(session, base_url, payload, index, meter):
+async def _stream_request(session, base_url, payload, index, meter, stall=None):
     parser = SSEParser()
     async with session.post(base_url + "/generate", json=payload, allow_redirects=False) as response:
         if response.status != 200:
@@ -436,6 +436,8 @@ async def _stream_request(session, base_url, payload, index, meter):
                 if value is None:
                     raise ClientError("stream_done_without_terminal")
                 _validate_response_identity(value, payload["rid"])
+                if stall is not None:
+                    stall.observe(index, value, received)
                 if meter.observe(index, value, received):
                     return True
         parser.finish()
@@ -443,7 +445,7 @@ async def _stream_request(session, base_url, payload, index, meter):
 
 
 async def run_measurement(session, base_url, workload, output_dir, *, seconds=600.0,
-                          concurrency=CONCURRENCY, output_tokens=OUTPUT_TOKENS):
+                          concurrency=CONCURRENCY, output_tokens=OUTPUT_TOKENS, stall_port_base=None):
     base_url = validate_base_url(base_url)
     if concurrency != CONCURRENCY or output_tokens != OUTPUT_TOKENS:
         raise ClientError("measurement_requires_C32_output1024")
@@ -460,8 +462,17 @@ async def run_measurement(session, base_url, workload, output_dir, *, seconds=60
     meter = progress = None
     cancelled = None
     reached_deadline = False
+    from .stall_client import StallClient, arm_ranks
+    stall = StallClient() if stall_port_base is not None else None
+    if stall is not None:
+        summary.update(instrumented_only=True, instrumented_diagnostic=True, used_for_formal_performance=False, numerical_policy="record_only")
     try:
         summary["warmup"] = await _warmup(session, base_url, workload, wire_prefix)
+        if stall is not None:
+            try:
+                await arm_ranks(session, stall_port_base)
+            except ValueError as error:
+                raise ClientError(str(error)) from None
         start = time.monotonic()
         meter = WindowMetrics(start, start + seconds, output_tokens=output_tokens)
         atomic_json(output_dir / "load-window.json", {
@@ -485,9 +496,12 @@ async def run_measurement(session, base_url, workload, output_dir, *, seconds=60
                 next_index += 1
                 rid = f"{wire_prefix}-measure-{index:04d}"
                 meter.start(index, dispatched)
+                if stall is not None:
+                    stall.start(index, dispatched)
                 owned.add(rid)
                 try:
-                    complete = await _stream_request(session, base_url, _payload(workload.prompts[index], rid), index, meter)
+                    args = (session, base_url, _payload(workload.prompts[index], rid), index, meter)
+                    complete = await _stream_request(*args, stall=stall) if stall is not None else await _stream_request(*args)
                     if complete:
                         owned.remove(rid)
                     else:
@@ -555,6 +569,8 @@ async def run_measurement(session, base_url, workload, output_dir, *, seconds=60
         if summary["status"] != "passed":
             summary["decode_tokens_per_second"] = None
             summary["output_tokens_per_second"] = None
+        if stall is not None:
+            atomic_json(output_dir / "client-stall.json", stall.report(summary["status"], summary["error_codes"]))
         atomic_json(output_dir / "client-summary.json", summary)
     if cancelled:
         raise cancelled

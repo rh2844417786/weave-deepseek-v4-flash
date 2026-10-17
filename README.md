@@ -4,9 +4,12 @@
 
 P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。随后714af26回传的两次C32作业均通过core/online GPU门，但在cached persistent生成token验收处停止，staged服务吞吐尚未测得。
 
-独立 Hopper FP8 激活/MXFP4 候选已在 `dbe03bd` 回传完整 1376 点真实 B32 回放，数值差异采用 record-only。相对 BF16 的配对时间比几何均值为 eager 2.749、graph 2.768；这仍是本地专家计算时间。当前新增实际 EP4 decode 接入和 native/BF16 staged/Hopper FP8 三组 C32 eager 服务入口，完整模型吞吐待服务器测量。历史 `a60a250` 的旧阈值失败记录保留。
+独立 Hopper FP8 激活/MXFP4 候选已在 `dbe03bd` 回传完整 1376 点真实 B32 回放，数值差异采用 record-only。相对 BF16 的配对时间比几何均值为 eager 2.749、graph 2.768；这仍是本地专家计算时间。`e8498aa` 已回传三组实际 C32 eager 服务吞吐：Native 235.47、BF16 staged 75.68、Hopper FP8 166.40 tokens/s。Hopper 相对 BF16 提升到 2.20 倍，但首 token 等待仍长；当前新增 prefill/首 token/输出停顿诊断入口，诊断结果待服务器执行。历史 `a60a250` 的旧阈值失败记录保留。
 
 ## 入口
+
+- [Prefill、首 token 与输出停顿诊断](docs/PREFILL_STALL_DIAGNOSTIC.md)
+- [本轮诊断服务器执行 Prompt](docs/SERVER_PROMPT_PREFILL_STALL.md)
 
 - [Hopper FP8 实际 EP4 decode 与 C32 对照](docs/HOPPER_C32_SERVICE.md)
 - [本轮服务器执行 Prompt](docs/SERVER_PROMPT_HOPPER_C32.md)

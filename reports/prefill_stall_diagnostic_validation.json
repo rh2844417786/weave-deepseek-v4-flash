@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "cpu_verified_gpu_pending",
+  "base_commit": "e8498aa",
+  "scope": "instrumented_C32_prefill_stall_diagnostic",
+  "numerical_policy": "record_only",
+  "generation_comparison_policy": "record_only",
+  "used_for_formal_performance": false,
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "assembly_source_sha256": "8ed74ed9c02e136673dc6c6aa6eea63552d5affa7fb3bdc7c7276a0d73bae311",
+  "stall_source_sha256": "1e981b9091324664ef58f4522cd14ac7d4898321972a9b4926a21bbea44933fe",
+  "focused_cpu": {
+    "tests": 98,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_cpu": {
+    "tests": 368,
+    "failures": 7,
+    "errors": 3,
+    "skips": 2,
+    "baseline_failures_unchanged": true,
+    "stage": "before sample/client validation fixes and direct-duration regression tests; affected paths covered by final focused suite",
+    "known_methods": [
+      "PerformanceTest.test_formal_reuse_rejects_contradictory_or_missing_saved_provenance",
+      "PerformanceTest.test_wrong_order_and_modified_prepared_data_rejected",
+      "ServiceAcceptanceTest.test_logprob_drift_is_recorded_without_failing_generation"
+    ]
+  },
+  "source_audit": [
+    "pinned native model forward",
+    "pinned scheduler/API stats serialization",
+    "pinned tokenizer perchunk vs terminal stats conversion"
+  ],
+  "cli_preview": "passed_all3_eager_diagnostic_groups_and_chained_smoke",
+  "task_reviews": {
+    "server": "passed including cross-thread/nondefault-stream smoke rereview",
+    "client_analysis": "passed after sample-bijection and client-completeness fixes",
+    "controller": "passed"
+  },
+  "whole_branch_review": "passed_after_direct_event_duration_fix",
+  "gpu_execution": "not_run_locally",
+  "server_pending": [
+    "four-rank collector smoke on actual CUDA",
+    "pinned native/custom hook serving integration",
+    "all3 C32 diagnostic run and phase/queue/gap attribution"
+  ],
+  "decisions": [
+    {
+      "choice": "retain three matched eager groups",
+      "cost": "three model startups and windows; no added ablation"
+    },
+    {
+      "choice": "all prefill and every32decode GPU samples plus allhostcalls",
+      "cost": "unsampled decode lacks GPU timing; instrumented runs are not formal performance"
+    },
+    {
+      "choice": "shared source-pinned hook and dedicated localhost control",
+      "cost": "new hook/stream lifecycle needs actual server evidence"
+    },
+    {
+      "choice": "direct event pairs for costs; anchor offsets only approximate alignment",
+      "cost": "overlap remains approximate and subject to anchor uncertainty"
+    },
+    {
+      "choice": "report unchanged legacy GPQA failures outside diagnostic scope",
+      "cost": "existing GPQA test failures remain unresolved"
+    }
+  ],
+  "direct_duration_fix": {
+    "status": "passed_scoped_rereview",
+    "fields": [
+      "gpu_duration_ms",
+      "routed.duration_ms"
+    ],
+    "regression": "float32 offsets near600000ms collapse20us interval; directduration retained"
+  }
+}

@@ -3,6 +3,7 @@ import hashlib
 import importlib.abc
 import importlib.machinery
 import math
+import os
 from pathlib import Path
 import sys
 
@@ -51,6 +52,8 @@ def patch_timing_class(cls, native_source_sha256=NATIVE_SHA256):
             meta['weave_timing'] = {'valid': False, 'error': str(error), 'boundary': BOUNDARY,
                 'clock': 'perf_counter', 'source': SOURCE, 'source_sha256': source_sha256(),
                 'native_source_sha256': native_source_sha256, 'output_tokens': completion_tokens}
+        if os.environ.get('WEAVE_STALL_DIAGNOSTIC') == '1':
+            meta['weave_stall_timing'] = stall_timing_metadata(self, scheduler_time_stats)
         return meta
 
     cls.convert_to_output_meta_info = convert
@@ -71,6 +74,8 @@ class TimingLoader(importlib.abc.Loader):
                 raise ImportError(f'Weave timing requires pinned SGLang 0.5.17 source: {path}')
         self.loader.exec_module(module)
         patch_timing_class(module.APIServerReqTimeStats)
+        if os.environ.get('WEAVE_STALL_DIAGNOSTIC') == '1':
+            patch_scheduler_timing_class(module.SchedulerReqTimeStats)
 
 
 class TimingFinder(importlib.abc.MetaPathFinder):
@@ -89,3 +94,31 @@ def install_timing_hook():
         raise RuntimeError('timing hook must be installed before SGLang import')
     if not any(isinstance(finder, TimingFinder) for finder in sys.meta_path):
         sys.meta_path.insert(0, TimingFinder())
+
+
+API_STALL_FIELDS = ('created_time', 'tokenize_finish_time', 'api_server_dispatch_finish_time', 'first_token_time')
+SCHEDULER_STALL_FIELDS = ('wait_queue_entry_time', 'forward_entry_time', 'prefill_finished_time')
+
+
+def stall_timing_metadata(api, scheduler):
+    result = {'clock': 'CLOCK_MONOTONIC', 'missing': []}
+    for obj, fields in ((api, API_STALL_FIELDS), (scheduler, SCHEDULER_STALL_FIELDS)):
+        for field in fields:
+            value = getattr(obj, field, None)
+            if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0:
+                result[field] = value
+            else:
+                result['missing'].append(field)
+    return result
+
+
+def patch_scheduler_timing_class(cls):
+    if getattr(cls, '_weave_stall_timing_installed', False):
+        return
+    original = cls.convert_to_output_meta_info
+    def convert(self):
+        meta = original(self)
+        meta['weave_stall_timing'] = stall_timing_metadata(None, self)
+        return meta
+    cls.convert_to_output_meta_info = convert
+    cls._weave_stall_timing_installed = True
