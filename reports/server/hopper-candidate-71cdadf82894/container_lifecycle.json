@@ -1,0 +1,45 @@
+{
+  "container_name": "weave-hopper-candidate-71cdadf82894",
+  "started_utc": "2026-10-17T12:10:08.243341+00:00",
+  "termination_signal": null,
+  "exit_code": 1,
+  "cleanup_status": "absent",
+  "cleanup_attempts": [
+    {
+      "command": [
+        "docker",
+        "stop",
+        "--timeout",
+        "2",
+        "weave-hopper-candidate-71cdadf82894"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such container: weave-hopper-candidate-71cdadf82894\n"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "--force",
+        "weave-hopper-candidate-71cdadf82894"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such container: weave-hopper-candidate-71cdadf82894\n"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{{.State.Running}}",
+        "weave-hopper-candidate-71cdadf82894"
+      ],
+      "returncode": 1,
+      "stdout": "\n",
+      "stderr": "error: no such object: weave-hopper-candidate-71cdadf82894\n"
+    }
+  ],
+  "finished_utc": "2026-10-17T12:18:16.319572+00:00"
+}
