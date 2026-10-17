@@ -57,6 +57,7 @@ def capture_source_sha256():
     names=('src/weave/replay_trace.py','src/weave/sglang_backend.py',
            'src/weave/sglang_ext/models/deepseek_v4.py','src/weave/evidence_server.py',
            'src/weave/ops.py','src/weave/weights.py','src/weave/runtime_contract.py','src/weave/staged_decode.py',
+           'src/weave/hopper_decode.py','src/weave/hopper_finalize.py','src/weave/hopper_candidate.py',
            'configs/runtime.json','configs/sglang_adapter_sources.json',
            'scripts/run_replay_capture.py','scripts/run_native_ep.py',
            'scripts/run_concurrency_diagnostic.py')

@@ -4,9 +4,12 @@
 
 P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。随后714af26回传的两次C32作业均通过core/online GPU门，但在cached persistent生成token验收处停止，staged服务吞吐尚未测得。
 
-独立Hopper FP8激活/MXFP4候选已在a60a250回传：编译、合成和核心graph检查完成，真实回放在layer20/sample128按旧数值策略停止，保留656个有效计时点。用户随后明确删除有限数值误差门限，当前schema2将relative L2/最大绝对误差全部改为record-only，不再因误差大小停止或拒绝计时。新策略下的全部1376点仍待完整复跑，历史失败报告不改写。
+独立 Hopper FP8 激活/MXFP4 候选已在 `dbe03bd` 回传完整 1376 点真实 B32 回放，数值差异采用 record-only。相对 BF16 的配对时间比几何均值为 eager 2.749、graph 2.768；这仍是本地专家计算时间。当前新增实际 EP4 decode 接入和 native/BF16 staged/Hopper FP8 三组 C32 eager 服务入口，完整模型吞吐待服务器测量。历史 `a60a250` 的旧阈值失败记录保留。
 
 ## 入口
+
+- [Hopper FP8 实际 EP4 decode 与 C32 对照](docs/HOPPER_C32_SERVICE.md)
+- [本轮服务器执行 Prompt](docs/SERVER_PROMPT_HOPPER_C32.md)
 
 - [Hopper专家计算候选与真实B32对照](docs/HOPPER_EXPERT_CANDIDATE.md)
 - [Hopper候选服务器执行Prompt](docs/SERVER_PROMPT_HOPPER_CANDIDATE.md)
@@ -48,7 +51,7 @@ P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，st
 
 已有代码包括：只读预检、DeepSeek GPQA token ID 准备、decode 计数、EP 路由去重/合并 CPU 参考，以及原生 EP4 Docker 启动入口。现已加入 CUDA IPC persistent 功能核心、GPU 端 c/K 选择和连续 stealing、raw MXFP4 专家加载器，以及源码核对后的 SGLang 0.5.17 eager adapter。默认使用当前服务器已有的 `lmsysorg/sglang:v0.5.17`，工作目录为 `<repo>/work`。后端名为 `weave_functional`：历史 H100 CUDA 编译、两轮四卡小张量功能与 core graph replay 已通过并核对原始报告；修正后的 BF16 WMMA、真实 checkpoint 与 batch=1 SGLang graph 在 e59e064 的服务器摘要中报告通过。9906ca7c源码的完整rank/coverage、实测bank及GPQA报告已回传；新增诊断源码需要重新执行源码绑定的H100 gates。证据见 `reports/core_acceptance.json`，状态见 `reports/implementation_status.json`。
 
-当前服务验收中，logprob 和 top-k 候选集合仅保存诊断，不作为通过/失败门限；实际生成 token 一致性、checkpoint、43 层执行与 graph replay 按验收入口检查。
+当前服务验收中，logprob 和 top-k 候选集合仅保存诊断，不作为通过/失败门限；旧入口的实际生成 token 一致性、checkpoint、43 层执行与 graph replay 按原验收入口检查。新 Hopper C32 套件的 token 内容差异也只记录，仍要求有效完整响应和实际路径覆盖。
 
 `tests/gpu/check_checkpoint.py` 覆盖全部 43 层 scalar/WMMA/tiled 差分、实际窃取设备计数和 core graph；另有分组 K=1/2/4/8 检查。`python3 scripts/run_full_experiment.py` 在 GPUQ 分配内串起新源码 gate、校准、原生 EP4、Weave eager/graph 验收以及正式两组 GPQA。新增诊断改变CUDA源码digest，旧profile和验收不能代替新gate；使用 --execution-profile 运行时，计时结果明确标为instrumented_diagnostic。
 

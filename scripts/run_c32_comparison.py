@@ -21,11 +21,15 @@ from scripts.run_concurrency_diagnostic import validate_dataset
 from scripts.run_model_acceptance import OwnedChild,assert_ports_free
 from src.weave.calibration import atomic_json
 from src.weave.checkpoint_identity import checkpoint_stats
-from src.weave.c32_comparison import (VARIANTS,digest,compare_acceptance,validate_coverage_delta,
+from src.weave.c32_comparison import (VARIANTS,HOPPER_VARIANTS,digest,compare_acceptance,validate_coverage_delta,
     validate_client_summary,scheduler_counts,summarize_comparison,validate_online_gate)
 from src.weave.c32_serving import DATASET_SHA256
 from src.weave.experiment_export import ensure_public
 from src.weave.gpu_allocation import allocated_gpus,GPUAllocation
+from src.weave.hopper_candidate import source_sha256 as candidate_source_sha256
+from src.weave.hopper_decode import assembly_source_sha256
+from src.weave.hopper_serving_evidence import (REPLAY_FILES,validate_replay_bundle,replay_bundle_bytes,
+    record_generation_comparison,validate_generation_proof,validate_assembly_reports)
 from src.weave.ops import kernel_source_sha256,kernel_source_manifest
 from src.weave.performance import flush_cache_when_idle
 from src.weave.replay_trace import tokenizer_manifest_sha256
@@ -42,11 +46,11 @@ def serving_source_manifest():
 
 
 def service_command(variant,work,model,run_name,port,base,checkpoint):
-    if variant not in VARIANTS:raise ValueError('unknown C32 group')
+    if variant not in set(VARIANTS)|set(HOPPER_VARIANTS):raise ValueError('unknown C32 group')
     return [sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--execute',
         '--backend','native' if variant=='native' else 'weave_functional',
         '--kernel','tiled','--decode-graph','disabled','--fixed-plan','1,1,0','--hot-cache',
-        '--decode-implementation','staged_direct' if variant=='staged_direct' else 'persistent',
+        '--decode-implementation',variant if variant in ('staged_direct','hopper_fp8') else 'persistent',
         '--request-timing','--work-root',str(work),'--model-path',str(model),
         '--run-name',run_name,'--port',str(port),'--evidence-port-base',str(base),
         '--checkpoint-content-sha256',checkpoint]
@@ -65,9 +69,10 @@ def client_command(image,work,dataset,output_relative,name,port,seconds,acceptan
     return result
 
 
-def gate_command(image,work,model,run_name,allocation):
+def gate_command(image,work,model,run_name,allocation,comparison_suite='staged'):
+    if comparison_suite not in ('staged','hopper'):raise ValueError('unknown comparison suite')
     devices=GPUAllocation.parse(allocation);python=load_contract()['python_executable']
-    return ['docker','run','--rm','--pull=never','--name','weave-online-gate-'+run_name,
+    command=['docker','run','--rm','--pull=never','--name','weave-online-gate-'+run_name,
         '--gpus',devices.docker_argument,'--network=host','--shm-size=8g',
         '-v',f'{ROOT}:/workspace:ro','-v',f'{work}:/work','-v',f'{model}:/model:ro',
         '-e',f'CUDA_VISIBLE_DEVICES={devices.container_visible}','-e','GLOO_SOCKET_IFNAME=lo',
@@ -82,6 +87,10 @@ def gate_command(image,work,model,run_name,allocation):
         '-m','torch.distributed.run','--standalone','--nproc-per-node=4',
         '/workspace/tests/gpu/check_online_staged.py','--model-path','/model',
         '--output-dir',f'/work/{run_name}/online-gate']
+    if comparison_suite=='hopper':
+        offset=command.index('/workspace/tests/gpu/check_online_staged.py')
+        command[offset:]=['/workspace/tests/gpu/check_hopper_serving.py','--output-dir',f'/work/{run_name}/online-gate']
+    return command
 
 
 def export_public(run,destination):
@@ -90,13 +99,16 @@ def export_public(run,destination):
     names=['experiment.json','comparison.json','source-manifest.json','serving-source-manifest.json',
            'online-gate/runtime.json','online-gate/container_lifecycle.json',
            'online-gate/checkpoint_identity.json','online-gate/gate-check.json']
+    names += ['replay-proof-check.json']
+    names += [f'online-gate/hopper-serving-rank{r}.json' for r in range(4)]
+    names += [f'replay-proof/{name}' for name in sorted(REPLAY_FILES|{'manifest.json'})]
     names += [f'online-gate/online-staged-rank{r}.json' for r in range(4)]
     names += [f'online-gate/online-staged-progress-rank{r}.json' for r in range(4)]
     group_names=('group.json','launch.json','runtime.json','server-lifecycle.json','acceptance-lifecycle.json',
         'measurement-lifecycle.json','acceptance-summary.json','acceptance-check.json','client-summary.json',
         'load-window.json','load-progress.json','coverage-before.json','coverage-after.json',
         'coverage-check.json','scheduler-summary.json')
-    names += [f'{group}/{name}' for group in VARIANTS for name in group_names]
+    names += [f'{group}/{name}' for group in sorted(set(VARIANTS)|set(HOPPER_VARIANTS)) for name in group_names]
     files={name:(run/name).read_bytes() for name in names if (run/name).is_file()}
     report=json.loads(files['experiment.json'])
     if report.get('core_run_dir'):
@@ -104,7 +116,11 @@ def export_public(run,destination):
         for name in ['runtime.json','checkpoint_identity.json']+[f'{prefix}{r}.json'
                     for prefix in ('rank','checkpoint-rank') for r in range(4)]:
             if (core/name).is_file():files['core/'+name]=(core/name).read_bytes()
-    for raw in files.values():
+    for name,raw in files.items():
+        if name=='replay-proof/compilation-resources.txt':
+            if any(line and not line.lstrip().startswith(('ptxas info','ptxas warning')) for line in raw.decode().splitlines()):
+                raise ValueError('only compiler resource lines may be exported')
+            continue
         value=json.loads(raw);ensure_public(value)
         if any(key in json.dumps(value) for key in ('"output_token_ids":','"records":')):
             raise ValueError('private acceptance records cannot be exported')
@@ -121,7 +137,9 @@ def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--work-root',type=Path,required=True)
     parser.add_argument('--dataset',type=Path,required=True)
-    parser.add_argument('--core-run-dir',type=Path,required=True)
+    parser.add_argument('--core-run-dir',type=Path)
+    parser.add_argument('--comparison-suite',choices=('staged','hopper'),default='staged')
+    parser.add_argument('--hopper-evidence-dir',type=Path,help='immutable complete schema2 public 1376-point Hopper replay bundle')
     parser.add_argument('--model-path',type=Path,default=Path('/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash'))
     parser.add_argument('--export-root',type=Path)
     parser.add_argument('--seconds',type=float,default=600.)
@@ -133,31 +151,39 @@ def main(argv=None):
     parser.add_argument('--evidence-port-base',type=int,default=30110)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
-    for key in ('work_root','dataset','core_run_dir','model_path','export_root'):
+    for key in ('work_root','dataset','core_run_dir','model_path','export_root','hopper_evidence_dir'):
         value=getattr(args,key)
         if value is not None:
             if not value.is_absolute():parser.error(f'{key} must be absolute')
             setattr(args,key,value.resolve())
+    if args.comparison_suite=='hopper' and args.hopper_evidence_dir is None:parser.error('Hopper suite requires --hopper-evidence-dir')
+    if args.core_run_dir is None:
+        if args.comparison_suite=='staged':parser.error('staged suite requires --core-run-dir')
+        args.core_run_dir=args.hopper_evidence_dir/'core'
+    variants=HOPPER_VARIANTS if args.comparison_suite=='hopper' else VARIANTS
     if any(not math.isfinite(v) or v<=0 for v in (args.seconds,args.setup_timeout,args.gate_timeout,args.acceptance_timeout,args.drain_timeout)):
         parser.error('finite positive budgets required')
     if (not 1<=args.port<=65535 or not 1<=args.evidence_port_base<=65532
             or args.port in range(args.evidence_port_base,args.evidence_port_base+4)):
         parser.error('valid distinct serving/evidence ports required')
-    allocation=allocated_gpus();contract=load_contract();name='c32-staged-'+uuid.uuid4().hex[:12]
+    allocation=allocated_gpus();contract=load_contract();name='c32-'+args.comparison_suite+'-'+uuid.uuid4().hex[:12]
     out=args.work_root/name;destination=(args.export_root or args.work_root/'public-reports')/name
     preview={v:service_command(v,args.work_root,args.model_path,'native-ep-'+name+'-'+v,
-                 args.port,args.evidence_port_base,'0'*64) for v in VARIANTS}
+                 args.port,args.evidence_port_base,'0'*64) for v in variants}
     if not args.execute:
-        print(json.dumps({'status':'preview_not_executed','groups':preview,
+        print(json.dumps({'status':'preview_not_executed','comparison_suite':args.comparison_suite,'groups':preview,
+            'hopper_evidence_dir':str(args.hopper_evidence_dir) if args.hopper_evidence_dir else None,
+            'generation_comparison_policy':'record_only' if args.comparison_suite=='hopper' else 'legacy_exact',
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
-            'online_gate':gate_command(contract['image'],args.work_root,args.model_path,name,allocation.csv)},indent=2));return 0
+            'online_gate':gate_command(contract['image'],args.work_root,args.model_path,name,allocation.csv,args.comparison_suite)},indent=2));return 0
     out.mkdir(parents=True,exist_ok=False)
     owner=OwnedChild();client_owner=OwnedChild();code=1
-    report={'schema_version':1,'scope':'staged_direct_C32_eager_serving','status':'running','stage':'validating',
+    report={'schema_version':1,'scope':args.comparison_suite+'_C32_eager_serving','comparison_suite':args.comparison_suite,'status':'running','stage':'validating',
         'started_utc':datetime.now(timezone.utc).isoformat(),'core_run_dir':str(args.core_run_dir),
         'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),'host_gpu_allocation':allocation.csv,
         'kernel_source_sha256':kernel_source_sha256(),'serving_source_sha256':digest(serving_source_manifest()),
         'formal_gpqa':False,'groups':{}}
+    if args.comparison_suite=='hopper':report.update(numerical_policy='record_only',generation_comparison_policy='record_only')
     def save():atomic_json(out/'experiment.json',report)
     def cancel(number,frame):
         for child in (owner,client_owner):child.requested=number
@@ -196,24 +222,42 @@ def main(argv=None):
             'tokenizer_manifest_sha256':tokenizer_manifest_sha256(args.model_path),'seconds':args.seconds,
             'decode_graph':'disabled','concurrency':32,'max_new_tokens':1024,'temperature':0,'ignore_eos':True,
             'host_gpu_allocation':allocation.csv}
-        report.update(identity=identity,core_gate=gate,stage='online_staged_gate');save()
+        if args.comparison_suite=='hopper':
+            replay_current={'candidate_source_sha256':candidate_source_sha256(),'bf16_source_sha256':identity['source_sha256'],
+                'checkpoint_content_sha256':identity['checkpoint_content_sha256'],'image_id':image,
+                'tokenizer_manifest_sha256':identity['tokenizer_manifest_sha256']}
+            replay_check=validate_replay_bundle(args.hopper_evidence_dir,**replay_current)
+            identity.update(candidate_source_sha256=replay_current['candidate_source_sha256'],
+                assembly_source_sha256=assembly_source_sha256(),replay_manifest_sha256=replay_check['manifest_sha256'],
+                numerical_policy='record_only',generation_comparison_policy='record_only')
+            atomic_json(out/'replay-proof-check.json',replay_check)
+            for relative,raw in replay_bundle_bytes(args.hopper_evidence_dir).items():
+                path=out/'replay-proof'/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+            if validate_replay_bundle(out/'replay-proof',**replay_current)!=replay_check:
+                raise ValueError('replay_changed_while_copying')
+        report.update(identity=identity,core_gate=gate,stage='hopper_assembly_gate' if args.comparison_suite=='hopper' else 'online_staged_gate');save()
         atomic_json(out/'source-manifest.json',kernel_source_manifest());atomic_json(out/'serving-source-manifest.json',serving_source_manifest())
         gate_folder=out/'online-gate';gate_folder.mkdir()
-        managed(gate_command(image,args.work_root,args.model_path,name,allocation.csv),gate_folder,'container',args.gate_timeout)
+        managed(gate_command(image,args.work_root,args.model_path,name,allocation.csv,args.comparison_suite),gate_folder,'container',args.gate_timeout)
         # Preserve the manager's public name consistently with other gates.
         atomic_json(gate_folder/'container_lifecycle.json',json.loads((gate_folder/'container-lifecycle.json').read_text()))
-        gate_reports=[json.loads((gate_folder/f'online-staged-rank{r}.json').read_text()) for r in range(4)]
-        online_check=validate_online_gate(gate_reports,identity['source_sha256'],gate['checkpoint_content_sha256'])
+        if args.comparison_suite=='hopper':
+            gate_reports=[json.loads((gate_folder/f'hopper-serving-rank{r}.json').read_text()) for r in range(4)]
+            online_check=validate_assembly_reports(gate_reports,candidate_source_sha256=identity['candidate_source_sha256'],
+                bf16_source_sha256=identity['source_sha256'],assembly_source_sha256=identity['assembly_source_sha256'],image_id=image)
+        else:
+            gate_reports=[json.loads((gate_folder/f'online-staged-rank{r}.json').read_text()) for r in range(4)]
+            online_check=validate_online_gate(gate_reports,identity['source_sha256'],gate['checkpoint_content_sha256'])
         atomic_json(gate_folder/'gate-check.json',online_check)
         native_proof=None
         env={**os.environ,'CUDA_VISIBLE_DEVICES':allocation.csv,'WEAVE_MAX_RUNNING_REQUESTS':'32',
             'WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32','IMAGE':contract['image'],'RUNTIME_PYTHON':contract['python_executable']}
-        for variant in VARIANTS:
+        for variant in variants:
             check_cancelled();report.update(stage='serving_'+variant);save()
             folder=out/variant;folder.mkdir();run_name='native-ep-'+name+'-'+variant
             server_dir=args.work_root/run_name;url=f'http://127.0.0.1:{args.port}'
             group={'status':'running','identity':identity,'variant':variant,'decode_implementation':
-                'staged_direct' if variant=='staged_direct' else 'persistent','stage':'starting'}
+                variant if variant in ('staged_direct','hopper_fp8') else 'persistent','stage':'starting'}
             try:
                 assert_ports_free([args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4)))
                 with (folder/'server-launch-private.log').open('w') as log:
@@ -235,7 +279,14 @@ def main(argv=None):
                             or accept.get('private_artifact_sha256')!=hashlib.sha256((folder/'acceptance-private.json').read_bytes()).hexdigest()):
                         raise ValueError('acceptance_proof_incomplete')
                     if native_proof is None:native_proof=proof
-                    group['acceptance']=compare_acceptance(native_proof,proof);atomic_json(folder/'acceptance-check.json',group['acceptance'])
+                    if args.comparison_suite=='hopper':
+                        validate_generation_proof(accept,proof,
+                            private_sha256=hashlib.sha256((folder/'acceptance-private.json').read_bytes()).hexdigest(),
+                            dataset_sha256=dataset['sha256'])
+                        if any(native_proof.get(k)!=proof.get(k) for k in ('dataset_sha256','request_order_sha256')):
+                            raise ValueError('generation_workload_identity_changed')
+                    compare=record_generation_comparison if args.comparison_suite=='hopper' else compare_acceptance
+                    group['acceptance']=compare(native_proof,proof);atomic_json(folder/'acceptance-check.json',group['acceptance'])
                     flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
                     before=coverage(args.evidence_port_base) if variant!='native' else None
                     if before is not None:atomic_json(folder/'coverage-before.json',before)
@@ -251,7 +302,8 @@ def main(argv=None):
                     scheduler=scheduler_counts(logs);atomic_json(folder/'scheduler-summary.json',scheduler)
                     if variant!='native':
                         after=coverage(args.evidence_port_base);atomic_json(folder/'coverage-after.json',after)
-                        checked=validate_coverage_delta(before,after,group['decode_implementation'],identity['source_sha256'],gate['checkpoint_content_sha256'])
+                        checked=validate_coverage_delta(before,after,group['decode_implementation'],identity['source_sha256'],gate['checkpoint_content_sha256'],
+                            **({'candidate_source_sha256':identity['candidate_source_sha256'],'assembly_source_sha256':identity['assembly_source_sha256']} if variant=='hopper_fp8' else {}))
                         atomic_json(folder/'coverage-check.json',checked)
                         batch={'max_running_requests':32,'evidence':'all_rank_adapter_decode_batch_histograms',
                             'rank0_batch32_forwards':checked['decode_batch32_forwards_rank0']}
@@ -273,7 +325,12 @@ def main(argv=None):
         if tokenizer_manifest_sha256(args.model_path)!=identity['tokenizer_manifest_sha256']:raise ValueError('tokenizer_changed')
         if kernel_source_sha256()!=identity['source_sha256'] or digest(serving_source_manifest())!=identity['serving_source_sha256']:
             raise ValueError('source_changed_during_run')
-        comparison=summarize_comparison(report['groups']);atomic_json(out/'comparison.json',comparison)
+        if args.comparison_suite=='hopper':
+            if (candidate_source_sha256()!=identity['candidate_source_sha256']
+                    or assembly_source_sha256()!=identity['assembly_source_sha256']
+                    or validate_replay_bundle(args.hopper_evidence_dir,**replay_current)!=replay_check):
+                raise ValueError('hopper_source_or_replay_changed_during_run')
+        comparison=summarize_comparison(report['groups'],comparison_suite=args.comparison_suite);atomic_json(out/'comparison.json',comparison)
         report.update(status='comparison_complete',stage='complete');code=0
     except BaseException as exc:
         report.update(status='failed',error_type=type(exc).__name__)

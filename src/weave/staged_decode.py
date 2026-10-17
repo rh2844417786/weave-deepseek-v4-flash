@@ -12,13 +12,13 @@ def validate_decode_configuration(*, decode_implementation, kernel, hot_cache,
                                   allow_decode_graph, fixed_plan, profile_path=None,
                                   execution_profile=None, replay_capture=False,
                                   forward_profile=False):
-    if decode_implementation not in ('persistent', 'staged_direct'):
-        raise ValueError('decode implementation must be persistent or staged_direct')
-    if decode_implementation == 'staged_direct' and (
+    if decode_implementation not in ('persistent', 'staged_direct', 'hopper_fp8'):
+        raise ValueError('decode implementation must be persistent, staged_direct or hopper_fp8')
+    if decode_implementation in ('staged_direct', 'hopper_fp8') and (
             kernel != 'tiled' or not hot_cache or allow_decode_graph
             or tuple(fixed_plan) != (1, 1, 0) or profile_path is not None
             or execution_profile is not None or replay_capture or forward_profile):
-        raise ValueError('staged_direct requires tiled, hot-cache, eager, fixed(1,1,0), '
+        raise ValueError(f'{decode_implementation} requires tiled, hot-cache, eager, fixed(1,1,0), '
                          'and no profile bank, execution profiling or replay capture')
 
 

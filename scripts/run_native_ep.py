@@ -123,9 +123,9 @@ def main() -> int:
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
-    parser.add_argument('--decode-implementation',choices=['persistent','staged_direct'],
+    parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8'],
                         default=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'),
-                        help='routed expert decode implementation; staged_direct requires eager tiled hot-cache')
+                        help='routed expert decode implementation; staged_direct/hopper_fp8 require eager tiled hot-cache')
     parser.add_argument('--fixed-plan', default='1,1,0', help='explicit c,K,completed-task steal budget per comm worker')
     parser.add_argument('--evidence-port-base', type=int, default=30110)
     parser.add_argument('--run-name', help='fresh native-ep-* directory name, for acceptance orchestration')
@@ -145,8 +145,8 @@ def main() -> int:
     args = parser.parse_args()
     try:
         staged_fixed=tuple(int(value) for value in args.fixed_plan.split(','))
-        if args.decode_implementation=='staged_direct' and args.backend!='weave_functional':
-            raise ValueError('staged_direct requires weave_functional')
+        if args.decode_implementation in ('staged_direct','hopper_fp8') and args.backend!='weave_functional':
+            raise ValueError(f'{args.decode_implementation} requires weave_functional')
         validate_decode_configuration(decode_implementation=args.decode_implementation,kernel=args.kernel,
             hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
             profile_path=args.profile,execution_profile=True if args.execution_profile else None,

@@ -6,6 +6,7 @@ import re
 from collections import Counter
 
 VARIANTS=('native','persistent_cached','staged_direct')
+HOPPER_VARIANTS=('native','staged_direct','hopper_fp8')
 
 
 def digest(value):
@@ -55,12 +56,18 @@ def compare_acceptance(reference,candidate):
             'sequence_commitment_sha256':digest(before),'logprob_policy':'record_only'}
 
 
-def validate_coverage_delta(before,after,mode,source,checkpoint):
-    if mode not in ('persistent','staged_direct'):raise ValueError('unsupported decode implementation')
+def validate_coverage_delta(before,after,mode,source,checkpoint, *, candidate_source_sha256=None,assembly_source_sha256=None):
+    if mode not in ('persistent','staged_direct','hopper_fp8'):raise ValueError('unsupported decode implementation')
     def index(values):
         if len(values)!=4 or {v.get('rank') for v in values}!={0,1,2,3}:
             raise ValueError('four distinct ranks required')
         for v in values:
+            if mode=='hopper_fp8' and (not candidate_source_sha256 or not assembly_source_sha256
+                    or v.get('candidate_source_sha256')!=candidate_source_sha256
+                    or v.get('assembly_source_sha256')!=assembly_source_sha256
+                    or v.get('numerical_policy')!='record_only' or v.get('hopper_max_batch')!=32
+                    or v.get('hopper_slot_collective')!='torch.distributed.all_reduce/SUM/tp_device_group'):
+                raise ValueError('Hopper candidate/assembly source or runtime contract differs')
             if (v.get('source_sha256')!=source or v.get('profile_checkpoint_content_sha256')!=checkpoint
                     or v.get('kernel')!='tiled' or v.get('graph_enabled') is not False
                     or v.get('hot_cache') is not True or v.get('decode_implementation')!=mode
@@ -84,13 +91,14 @@ def validate_coverage_delta(before,after,mode,source,checkpoint):
             x,y=old['layers'][layer],new['layers'][layer]
             delta=[end-start for start,end in zip(x['device_calls'],y['device_calls'])]
             if len(delta)!=3 or min(delta)<0 or delta[1]<1:raise ValueError('missing all43 decode execution')
-            calls={k:y['implementation_calls'][k]-x['implementation_calls'][k]
-                   for k in ('staged_decode','persistent_decode','persistent_prefill','persistent_other')}
-            wanted='staged_decode' if mode=='staged_direct' else 'persistent_decode'
-            other='persistent_decode' if mode=='staged_direct' else 'staged_decode'
-            if any(type(v) is not int or v<0 for v in calls.values()) or calls[wanted]!=delta[1] or calls[other]!=0:
+            keys=('staged_decode','persistent_decode','persistent_prefill','persistent_other')
+            if mode=='hopper_fp8' or 'hopper_decode' in x['implementation_calls'] or 'hopper_decode' in y['implementation_calls']:keys+=('hopper_decode',)
+            calls={k:y['implementation_calls'][k]-x['implementation_calls'][k] for k in keys}
+            wanted={'staged_direct':'staged_decode','persistent':'persistent_decode','hopper_fp8':'hopper_decode'}[mode]
+            other=[k for k in ('staged_decode','persistent_decode','hopper_decode') if k!=wanted]
+            if any(type(v) is not int or v<0 for v in calls.values()) or calls[wanted]!=delta[1] or any(calls.get(k,0)!=0 for k in other):
                 raise ValueError('decode silently changed implementation or coverage is incomplete')
-            collectives+=calls['staged_decode'];layers[layer]={'device_delta':delta,'implementation_delta':calls}
+            collectives+=calls['staged_decode']+calls.get('hopper_decode',0);layers[layer]={'device_delta':delta,'implementation_delta':calls}
         if new['additional_slot_collectives']-old['additional_slot_collectives']!=collectives:
             raise ValueError('exactly one slot all-reduce per staged layer call required')
         result['ranks'][str(rank)]={'layers':layers,'decode_batch_histogram':histogram,
@@ -134,20 +142,30 @@ def validate_client_summary(value,seconds,dataset_sha256):
         raise ValueError('decode TPS must include all in-window streamed tokens with the declared denominator')
 
 
-def summarize_comparison(groups):
-    if set(groups)!=set(VARIANTS):raise ValueError('all three eager groups required')
-    identities=[groups[v]['identity'] for v in VARIANTS]
+def summarize_comparison(groups,comparison_suite='staged'):
+    if comparison_suite not in ('staged','hopper'):raise ValueError('unknown comparison suite')
+    variants=HOPPER_VARIANTS if comparison_suite=='hopper' else VARIANTS
+    if set(groups)!=set(variants):raise ValueError('all three eager groups required')
+    identities=[groups[v]['identity'] for v in variants]
     if any(x!=identities[0] for x in identities[1:]) or identities[0].get('decode_graph')!='disabled':
         raise ValueError('groups differ in workload/runtime/source/execution mode')
     rates={}
-    for variant in VARIANTS:
+    for variant in variants:
         group=groups[variant];client=group['client'];rate=client.get('decode_tokens_per_second')
         if (group['status']!='passed' or client.get('status')!='passed'
-                or group['acceptance'].get('status')!='passed'
+                or group['acceptance'].get('status')!=('recorded' if comparison_suite=='hopper' else 'passed')
                 or group['batch_evidence'].get('max_running_requests')!=32
                 or type(rate) not in (int,float) or not math.isfinite(rate) or rate<=0):
             raise ValueError('complete accepted C32 measurement required before ratio')
         rates[variant]=rate
+    if comparison_suite=='hopper':
+        return {'schema_version':2,'status':'passed','scope':'Hopper C32 eager serving comparison on fixed custom workload',
+            'metric':'client-observed decode tokens/s; cumulative stream counts inside window; first token excluded',
+            'formal_gpqa':False,'identity':identities[0],'numerical_policy':'record_only',
+            'generation_comparison_policy':'record_only','decode_tokens_per_second':rates,
+            'hopper_vs_native_ratio':rates['hopper_fp8']/rates['native'],
+            'hopper_vs_bf16_staged_ratio':rates['hopper_fp8']/rates['staged_direct'],
+            'communication_note':'BF16 staged and Hopper include one slot all-reduce plus unchanged outer shared/TP reduction'}
     return {'schema_version':1,'status':'passed','scope':'C32 eager serving comparison on fixed custom workload',
         'metric':'client-observed decode tokens/s; cumulative stream counts inside window; first token excluded',
         'formal_gpqa':False,'identity':identities[0],'decode_tokens_per_second':rates,

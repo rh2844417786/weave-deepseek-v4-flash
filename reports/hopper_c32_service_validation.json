@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "cpu_verified_gpu_pending",
+  "base_commit": "dbe03bd",
+  "numerical_policy": "record_only",
+  "generation_comparison_policy": "record_only",
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "assembly_source_sha256": "8ed74ed9c02e136673dc6c6aa6eea63552d5affa7fb3bdc7c7276a0d73bae311",
+  "focused_cpu": {
+    "tests": 102,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "full_cpu": {
+    "tests": 341,
+    "failures": 7,
+    "errors": 3,
+    "skips": 2,
+    "baseline_failures_unchanged": true,
+    "known_methods": [
+      "PerformanceTest.test_formal_reuse_rejects_contradictory_or_missing_saved_provenance",
+      "PerformanceTest.test_wrong_order_and_modified_prepared_data_rejected",
+      "ServiceAcceptanceTest.test_logprob_drift_is_recorded_without_failing_generation"
+    ],
+    "revision_stage": "before private diagnostics-only fix; final focused suite includes all 3 added logging tests"
+  },
+  "independent_task_reviews": {
+    "adapter": "passed",
+    "controller": "passed",
+    "gpu_smoke_source": "passed"
+  },
+  "whole_branch_review": "passed_after_private_diagnostics_fix",
+  "gpu_execution": "not_run_locally",
+  "server_entrypoint": "scripts/run_c32_comparison.py --comparison-suite hopper",
+  "groups": [
+    "native",
+    "staged_direct",
+    "hopper_fp8"
+  ],
+  "server_pending": [
+    "Triton compilation and four-rank actual-runtime smoke",
+    "all43 actual Hopper decode coverage",
+    "matched three-group C32 eager service throughput"
+  ],
+  "decisions": [
+    {
+      "choice": "matched eager groups",
+      "reason": "isolate compute change under same communication and load",
+      "cost_if_wrong": "additional graph comparison needed later"
+    },
+    {
+      "choice": "new suite generation content record-only",
+      "reason": "user removed numerical-error gates; preserve valid response identity checks",
+      "cost_if_wrong": "throughput does not establish task accuracy"
+    },
+    {
+      "choice": "reuse immutable replay native evidence while preserving historical Python hashes",
+      "reason": "native kernels unchanged; new assembly checked separately",
+      "cost_if_wrong": "new smoke and service must detect integration defects"
+    },
+    {
+      "choice": "deliver scoped feature with unchanged baseline GPQA test failures reported",
+      "reason": "no new failures in full run; feature and affected regression tests pass",
+      "cost_if_wrong": "existing GPQA test failures remain unresolved outside this suite"
+    }
+  ],
+  "cli_preview": {
+    "status": "passed",
+    "groups": [
+      "native",
+      "staged_direct",
+      "hopper_fp8"
+    ],
+    "decode_graph": "disabled",
+    "gate": "tests/gpu/check_hopper_serving.py",
+    "generation_comparison_policy": "record_only"
+  },
+  "diagnostic_fix": {
+    "status": "implemented",
+    "smoke_cpu_tests": 7,
+    "private_traceback": true,
+    "public_and_gather_payloads_sanitized": true,
+    "independent_rereview": "passed"
+  }
+}

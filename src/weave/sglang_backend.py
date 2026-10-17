@@ -15,6 +15,7 @@ from .ops import PeerRuntime
 from .weights import load_raw_experts
 from .runtime_contract import load_contract, verify_adapter_sources
 from .staged_decode import StagedDecodeRuntime, ModelBatchCounters, validate_decode_configuration
+from .hopper_decode import HopperDecodeRuntime
 
 
 class RoutedExperts(torch.nn.Module):
@@ -29,6 +30,8 @@ class RoutedExperts(torch.nn.Module):
         self.bound_weights = runtime.bind_weights(self.raw_weights) if runtime.hot_cache else None
         self.staged_bound_weights = (runtime.staged_decode.bind_weights(self.raw_weights)
                                      if runtime.staged_decode is not None else None)
+        hopper = getattr(runtime, 'hopper_decode', None)
+        self.hopper_bound_weights = hopper.bind_weights(self.raw_weights) if hopper is not None else None
         self.profile, self.fixed_plan, self.clamp = profile, fixed_plan, clamp
         self.layer_id=layer_id
         self.quant_method = native.quant_method
@@ -40,6 +43,8 @@ class RoutedExperts(torch.nn.Module):
         self.coverage = {'prefill': 0, 'decode': 0, 'other': 0}
         self.implementation_calls = {'staged_decode': 0, 'persistent_decode': 0,
                                      'persistent_prefill': 0, 'persistent_other': 0}
+        if hopper is not None:
+            self.implementation_calls['hopper_decode'] = 0
         self.capture_calls = 0
         self.register_buffer('device_calls', torch.zeros(3, dtype=torch.int64, device=f'cuda:{runtime.device}'))
 
@@ -60,7 +65,13 @@ class RoutedExperts(torch.nn.Module):
         if replay_capture is not None:
             replay_capture.record_layer(self.layer_id, hidden_states, ids, weights)
         phase = self.runtime.phase
-        if phase == 'decode' and self.runtime.decode_implementation == 'staged_direct':
+        if phase == 'decode' and self.runtime.decode_implementation == 'hopper_fp8':
+            # Full replicated input; the Hopper finalizer already masks origins.
+            # SGLang still owns shared experts, scaling and the outer TP SUM.
+            partial = self.runtime.hopper_decode.run(hidden_states, ids, weights,
+                                                     self.hopper_bound_weights, self.clamp)
+            implementation = 'hopper_decode'
+        elif phase == 'decode' and self.runtime.decode_implementation == 'staged_direct':
             # The staged workspace consumes full replicated routing and returns
             # an already origin-masked BF16 result after its slot SUM. The native
             # outer shared/scaling/TP reduction is still applied by SGLang.
@@ -150,6 +161,8 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     runtime.decode_implementation=decode_implementation
     runtime.staged_decode=(StagedDecodeRuntime(runtime,get_tp_group().device_group)
                            if decode_implementation=='staged_direct' else None)
+    runtime.hopper_decode=(HopperDecodeRuntime(runtime,get_tp_group().device_group)
+                           if decode_implementation=='hopper_fp8' else None)
     runtime.model_batch_counters=ModelBatchCounters()
     profile = runtime.profile_from_file(profile_path) if profile_path else None
     if execution_profile is not None: runtime.enable_execution_profile(execution_profile)
@@ -189,8 +202,20 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
             'staged_max_batch':32 if runtime.staged_decode is not None else None,
             'staged_additional_slot_collective':runtime.staged_decode is not None,
             'staged_resources':dict(runtime.staged_decode.resources) if runtime.staged_decode is not None else None,
+            **_hopper_metadata(runtime.hopper_decode),
             'tile_rows': 16 if kernel=='tiled' else 1,
             'tile_columns': 64 if kernel=='tiled' else None}
+
+
+def _hopper_metadata(hopper):
+    if hopper is None:
+        return {}
+    return {'candidate_source_sha256': hopper.candidate_source_sha256,
+            'assembly_source_sha256': hopper.assembly_source_sha256,
+            'numerical_policy': 'record_only',
+            'hopper_max_batch': 32,
+            'hopper_slot_collective': 'torch.distributed.all_reduce/SUM/tp_device_group',
+            'hopper_resources': dict(hopper.resources)}
 
 
 def execution_profile(model):
@@ -211,6 +236,8 @@ def coverage(model):
     runtime=model.weave_runtime
     batch_counts=runtime.model_batch_counters.snapshot()
     staged=runtime.staged_decode
+    hopper=getattr(runtime,'hopper_decode',None)
+    slot_runtime=hopper if hopper is not None else staged
     result={'rank': model.weave_runtime.rank, 'kernel': model.weave_runtime.kernel,
             'source_sha256': model.weave_runtime.source_sha256,
             'graph_enabled': model.weave_runtime.allow_decode_graph,
@@ -223,8 +250,9 @@ def coverage(model):
             'decode_implementation':runtime.decode_implementation,
             'staged_max_batch':32 if staged is not None else None,
             'staged_slot_collective':'torch.distributed.all_reduce/SUM/tp_device_group' if staged is not None else None,
-            'additional_slot_collectives':staged.additional_slot_collectives if staged is not None else 0,
+            'additional_slot_collectives':slot_runtime.additional_slot_collectives if slot_runtime is not None else 0,
             'staged_resources':dict(staged.resources) if staged is not None else None,
+            **_hopper_metadata(hopper),
             'model_batch_counts':batch_counts,
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
