@@ -2,10 +2,15 @@
 
 本项目使用原版 DeepSeek-V4-Flash 混合精度权重，routed专家保留MXFP4/E8M0。历史服务器提交2910864已回传完整374点校准、native/Weave eager/graph验收和两组各1200秒的GPQA预算对照。共同完成4题上，SGLang为107.64 tokens/s，当时Weave为11.31 tokens/s，约0.1051倍；全448题未完成，当轮Weave另有6次cache_flush_error。原始42文件摘要已核对。
 
-P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。本轮已把staged-direct接入实际eager decode，加入在线GPU分组、原slot顺序跨rank汇总及统一C32流式测量。49项相关CPU测试和独立审查通过，新源码的GPU检查、服务验收和吞吐测量待服务器执行。
+P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。随后714af26回传的两次C32作业均通过core/online GPU门，但在cached persistent生成token验收处停止，staged服务吞吐尚未测得。
+
+本轮新增独立Hopper FP8激活/MXFP4专家候选：TMA/WGMMA计算、活跃专家压缩、FP8 oracle和真实B32 trace的eager/graph配对。BF16参考与生产默认保持不变。36项相关测试中34项通过、2项Torch检查待现有服务器镜像执行；新候选的NVCC/GPU数值、精度漂移和性能仍待回传。
 
 ## 入口
 
+- [Hopper专家计算候选与真实B32对照](docs/HOPPER_EXPERT_CANDIDATE.md)
+- [Hopper候选服务器执行Prompt](docs/SERVER_PROMPT_HOPPER_CANDIDATE.md)
+- [本轮候选本地验证与服务器待办](reports/hopper_expert_candidate_validation.json)
 - [Staged-direct实际decode与C32服务对照](docs/STAGED_C32_SERVICE.md)
 - [本轮服务器Claude Code + DeepSeek V4 Flash执行Prompt](docs/SERVER_PROMPT_STAGED_C32.md)
 - [本轮本地验证记录](reports/staged_c32_service_validation.json)

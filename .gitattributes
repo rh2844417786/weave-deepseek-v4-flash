@@ -1,0 +1,3 @@
+# Preserve byte-exact upstream headers for the pinned vendor SHA256 manifest.
+# Project-authored files retain normal whitespace checks.
+third_party/cutlass_hopper/include/** -whitespace

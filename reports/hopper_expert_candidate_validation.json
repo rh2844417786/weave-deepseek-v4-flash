@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "status": "candidate_implementation_local_review_complete_gpu_pending",
+  "scope": "first stage of approved expert compute optimization; independent FP8 TMA/WGMMA real-trace candidate",
+  "base_commit": "714af26",
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "replay_source_sha256": "52bef8f877afe11c9780c260aa92b1ed482693e39f9cacdaafeb18ed81b7852a",
+  "controller_source_sha256": "93d09dfdc9570c215200fc5ca641e7556e972a025041434ee89ebb07846a58c8",
+  "local_environment": "macOS; Torch/NVCC/H100 unavailable",
+  "local_validation": {
+    "focused": {
+      "command": ".venv-data/bin/python -m unittest tests.cpu.test_hopper_launch tests.cpu.test_hopper_candidate tests.cpu.test_hopper_evidence tests.cpu.test_hopper_contract -q",
+      "tests": 36,
+      "passed": 34,
+      "skipped": 2,
+      "skip_reason": "Torch oracle tensor tests; server child requires both pass with zero skips"
+    },
+    "full_cpu_suite": {
+      "tests": 303,
+      "failure_subcases": 7,
+      "error_subcases": 3,
+      "skipped": 2,
+      "status": "only inherited GPQA provenance/order failures remain",
+      "run_note": "Full suite preceded one additional archive-SHA regression; final focused36 includes it."
+    },
+    "python_compilation": "passed",
+    "dry_run_dynamic_gpu_allocation": "passed",
+    "candidate_and_vendor_source_closure": "passed",
+    "bf16_native_sources_and_default_serving_implementation": "unchanged",
+    "independent_native_review": "passed_source_only_no_confirmed_P1_P2",
+    "python_replay_review": "missing_oracle_loader_source_closure_fixed_and_mutation_tested",
+    "final_integration_review": "passed_no_new_P1_P2",
+    "git_diff_check": "passed"
+  },
+  "offline_dependencies": {
+    "cutlass_commit": "f3fde58372d33e9a5650ba7b80fc48b3b49d40c8",
+    "archive_sha256": "2e5890306557bd87136e1d6914e4ee42536050b9116433848175520fd15991f2",
+    "vendored_headers": 62,
+    "vendored_header_bytes": 4665819,
+    "server_downloads_or_installs": false
+  },
+  "server_gates": {
+    "oracle_unit_tests": "not_run_locally_2_required_in_server_image",
+    "candidate_cuda_compile": "not_run",
+    "synthetic_and_B32_core_graph": "not_run",
+    "all43_real_trace_points": "not_run_344_per_rank_1376_total",
+    "fp8_implementation_numeric_gate": "not_run",
+    "fp8_vs_bf16_precision_gate": "not_run_relative_L2_limit_0.025",
+    "timing_scope": "rank_local_online_group_to_routed_FP32_slots_excluding_communication",
+    "service_promotion_allowed": false
+  },
+  "latest_existing_service_evidence": {
+    "report_commits": ["6d6144a", "714af26"],
+    "verified_manifest_files_per_run": 43,
+    "core_and_online_gate": "passed",
+    "failure_stage": "persistent_cached_generation_acceptance",
+    "staged_serving_throughput": "not_reached",
+    "acceptance_gate_modified": false
+  },
+  "followup_after_gpu_evidence": [
+    "decide whether measured FP8 precision/performance justify service integration",
+    "reduce redundant service communication with separate numerical acceptance",
+    "add B32 service graph after candidate is accepted",
+    "measure Weave scheduling contributions with an efficient compute path"
+  ]
+}

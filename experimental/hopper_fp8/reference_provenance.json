@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/rh2844417786/weave-deepgemm-repro",
+  "commit": "4fb1e6ff12e184c50b90c0c35156783ee52f0196",
+  "verification": "all470 supplied source blobs matched Git bundle tree",
+  "files": {
+    "deep_gemm/include/deep_gemm/impls/sm90_fp8_mxfp4_gemm_1d2d.cuh": "94bf83652f52686e02b7a542532a17fdda9ace7a100afceec1f2a84c8ffd8d3e",
+    "deep_gemm/include/deep_gemm/common/mxfp4.cuh": "5f129b2cb24b437301374ba2fd5e2a0ed40f6f5b80c1de183d985182f460ab1a",
+    "deep_gemm/include/deep_gemm/impls/sm90_mxfp4_b_loader_contract.cuh": "5953bbf3c0e869dab1335074bd6d84090012bac247f1737f91b06287a7de2087",
+    "deep_gemm/include/deep_gemm/mma/sm90.cuh": "b7868505844a36bb72386d736ee2dbff1380368f0ed78273736932de7b7cc503",
+    "deep_gemm/include/deep_gemm/ptx/wgmma.cuh": "dad341b3c4d2a1ea3a68c6028b454c72c6ce6105e86dfcdea6aaef243164ec1b"
+  }
+}
