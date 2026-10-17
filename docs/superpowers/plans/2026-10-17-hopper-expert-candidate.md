@@ -1,5 +1,7 @@
 # Hopper expert candidate implementation plan
 
+**Superseded numerical policy:** After the first server run, the user removed all Hopper finite numerical-error thresholds. Treat threshold/promotion checks described in this original plan as historical; follow AGENTS.md and current schema2 record-only behavior instead.
+
 > Use superpowers:subagent-driven-development with task and final reviews. User has approved implementation and existing GitHub handoff; work in primary project directory on codex/hopper-expert-candidate to avoid prior worktree permission popups.
 
 **Goal:** A runnable, source-bound FP8 TMA/WGMMA expert candidate tested against BF16 on real B32 traces.

@@ -4,13 +4,14 @@
 
 P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。随后714af26回传的两次C32作业均通过core/online GPU门，但在cached persistent生成token验收处停止，staged服务吞吐尚未测得。
 
-本轮新增独立Hopper FP8激活/MXFP4专家候选：TMA/WGMMA计算、活跃专家压缩、FP8 oracle和真实B32 trace的eager/graph配对。BF16参考与生产默认保持不变。36项相关测试中34项通过、2项Torch检查待现有服务器镜像执行；新候选的NVCC/GPU数值、精度漂移和性能仍待回传。
+独立Hopper FP8激活/MXFP4候选已在a60a250回传：编译、合成和核心graph检查完成，真实回放在layer20/sample128按旧数值策略停止，保留656个有效计时点。用户随后明确删除有限数值误差门限，当前schema2将relative L2/最大绝对误差全部改为record-only，不再因误差大小停止或拒绝计时。新策略下的全部1376点仍待完整复跑，历史失败报告不改写。
 
 ## 入口
 
 - [Hopper专家计算候选与真实B32对照](docs/HOPPER_EXPERT_CANDIDATE.md)
 - [Hopper候选服务器执行Prompt](docs/SERVER_PROMPT_HOPPER_CANDIDATE.md)
 - [本轮候选本地验证与服务器待办](reports/hopper_expert_candidate_validation.json)
+- [Hopper误差只记录策略与验证](reports/hopper_record_only_validation.json)
 - [Staged-direct实际decode与C32服务对照](docs/STAGED_C32_SERVICE.md)
 - [本轮服务器Claude Code + DeepSeek V4 Flash执行Prompt](docs/SERVER_PROMPT_STAGED_C32.md)
 - [本轮本地验证记录](reports/staged_c32_service_validation.json)

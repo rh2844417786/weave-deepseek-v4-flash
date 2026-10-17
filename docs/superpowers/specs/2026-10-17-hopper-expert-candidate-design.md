@@ -1,5 +1,7 @@
 # Hopper expert compute candidate
 
+**Policy update after the first server run:** The user's subsequent2026-10-17 instruction supersedes all numerical-threshold requirements below. Hopper error metrics are record-only under AGENTS.md; finite differences cannot gate timing/completion/promotion. The original design text is retained as historical context. Current policy andschema2 are documented in docs/HOPPER_EXPERT_CANDIDATE.md.
+
 User approved the staged optimization sequence on2026-10-17. This delivery implements the first executable stage: a separate FP8-activation/MXFP4 Hopper candidate and real B32 trace differential benchmark, preserving the BF16 reference and production defaults. Service replacement, fewer collectives and B32 service graphs depend on this candidate's returned numerical/performance evidence; they are not promoted from CPU checks.
 
 ## Evidence and constraints

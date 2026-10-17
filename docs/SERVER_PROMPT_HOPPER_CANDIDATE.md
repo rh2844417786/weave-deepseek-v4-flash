@@ -28,7 +28,9 @@ python3 scripts/run_hopper_candidate.py \
 
 入口要求两个Torch oracle单元检查实际通过，随后四卡编译和合成/graph门，再对真实43层×2样本×4变体回放：bf16_eager、fp8_eager、bf16_graph、fp8_graph。完整应为每rank344点、总1376点。不要关闭graph或跳过失败样本来填满结果。
 
-实现正确性与FP8漂移分开：candidate对FP8 oracle、baseline对BF16 oracle先通过原门限；FP8-vs-BF16的relative-L2超过0.025时，保留诊断计时并报告precision_gate_failed，不得改门限或自动切服务默认。编译/实现错误停止并报告具体stage，读取工作盘私有日志定位，不安装缺失依赖。
+用户已删除数值误差门限并要求以后不再设置。candidate对FP8 oracle、baseline对BF16 oracle、FP8对BF16的差异都只记录relative L2和最大绝对误差；不因有限误差大小停止、拒绝计时或标为失败，也不使用allclose或其他阈值替代。当前schema2身份必须含numerical_policy=record_only。NaN/Inf、编译/runtime异常、非法访问、分组/身份/覆盖错误仍停止并记录具体stage。不要把运行完成称为数值一致性验收通过。
+
+上一轮hopper-candidate-71cdadf82894的schema1失败记录保留原样；本轮必须使用新目录完整重跑，不接用旧失败点或宣称旧运行已完成。CUDA内核与BF16 core源码未改，已匹配的编译缓存、core和私有trace可复用。
 
 完成后核对四rank身份、全部点数、资源和所有manifestSHA256；仅将打印的export_directory复制到可写clone的reports/server/下，明确暂存该目录，commit并push main。不要git add .；不要上传.pt、原始激活、路由/生成token IDs、prompt或完整私有日志。
 

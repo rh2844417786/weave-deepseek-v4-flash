@@ -21,7 +21,7 @@ from src.weave.checkpoint_identity import checkpoint_stats
 from src.weave.experiment_export import ensure_public
 from src.weave.gpu_allocation import allocated_gpus,GPUAllocation
 from src.weave.hopper_candidate import source_manifest,source_sha256
-from src.weave.hopper_evidence import VARIANTS,validate_identity,validate_rank_report,aggregate_rank_reports,replay_source_sha256
+from src.weave.hopper_evidence import VARIANTS,NUMERICAL_POLICY,validate_identity,validate_rank_report,aggregate_rank_reports,replay_source_sha256
 from src.weave.ops import kernel_source_sha256,kernel_source_manifest
 from src.weave.replay_trace import validate_capture_directory,aggregate_manifests,tokenizer_manifest_sha256
 from src.weave.runtime_contract import load_contract
@@ -98,7 +98,7 @@ def export_public(run,destination):
                if line.lstrip().startswith(('ptxas info','ptxas warning'))]
         files['compilation-resources.txt']=('\n'.join(lines)+'\n').encode()
     destination.mkdir(parents=True)
-    manifest={'schema_version':1,'status':report['status'],'raw_content_exported':False,
+    manifest={'schema_version':2,'status':report['status'],'numerical_policy':NUMERICAL_POLICY,'raw_content_exported':False,
               'used_for_formal_performance':False,'service_promotion_allowed':False,'files':{}}
     for name,raw in files.items():
         path=destination/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
@@ -135,9 +135,10 @@ def main(argv=None):
     if not args.execute:
         print(json.dumps({'status':'preview_not_executed','docker_argv':command,
             'candidate_source_sha256':source_sha256(),'bf16_source_sha256':kernel_source_sha256(),
+            'numerical_policy':NUMERICAL_POLICY,
             'service_promotion_allowed':False},indent=2));return 0
     out.mkdir(parents=True,exist_ok=False);owner=OwnedChild();code=1
-    report={'schema_version':1,'status':'running','stage':'validating','scope':'Hopper_FP8_local_expert_candidate',
+    report={'schema_version':2,'numerical_policy':NUMERICAL_POLICY,'status':'running','stage':'validating','scope':'Hopper_FP8_local_expert_candidate',
         'started_utc':datetime.now(timezone.utc).isoformat(),'core_run_dir':str(args.core_run_dir),
         'host_gpu_allocation':allocation.csv,'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),
         'invocation_id':invocation,'used_for_formal_performance':False,'service_promotion_allowed':False}
@@ -160,7 +161,7 @@ def main(argv=None):
             'replay_source_sha256':replay_hash,'checkpoint_content_sha256':gate['checkpoint_content_sha256'],
             'image_id':image,'capture_manifest_sha256':capture_file_sha,'capture_identity':capture['identity'],
             'warmups':args.warmups,'repetitions':args.repetitions,'variants':list(VARIANTS),
-            'layers':list(range(43)),'samples':[64,128],'invocation_id':invocation}
+            'layers':list(range(43)),'samples':[64,128],'invocation_id':invocation,'numerical_policy':NUMERICAL_POLICY}
         validate_identity(identity);atomic_json(out/'identity.json',identity)
         atomic_json(out/'capture-manifest.json',capture)
         atomic_json(out/'candidate-source-manifest.json',source_manifest())
@@ -192,11 +193,11 @@ def main(argv=None):
         progress=[json.loads((out/f'hopper-progress-rank{r}.json').read_text()) for r in range(4)]
         if any(p.get('invocation_id')!=invocation for p in progress):raise ValueError('progress invocation differs')
         if summary['status']=='complete' and returncode==0 and all(p['stage']=='complete' for p in progress):
-            report['status']='compute_candidate_complete' if summary['numerical_promotion_eligible'] else 'precision_gate_failed'
-            code=0 if summary['numerical_promotion_eligible'] else 3
+            report['status']='compute_candidate_complete'
+            code=0
         elif summary['status']=='partial' and all(p['stage']=='partial' for p in progress):
             report['status']='partial';code=124
-        else:raise RuntimeError('candidate implementation/runtime gate failed; see rank/progress evidence')
+        else:raise RuntimeError('candidate runtime/structural checks failed; see rank/progress evidence')
         if checkpoint_stats(args.model_path)!=checkpoint['verified_stats']:raise ValueError('checkpoint changed during run')
         if validate_capture_directory(args.capture_dir)!=capture:raise ValueError('private capture changed during run')
         if hashlib.sha256((args.capture_dir/'capture_manifest.json').read_bytes()).hexdigest()!=capture_file_sha:
@@ -206,7 +207,7 @@ def main(argv=None):
         if (source_sha256()!=candidate_hash or kernel_source_sha256()!=bf16_hash
                 or replay_source_sha256()!=replay_hash or controller_source_sha256()!=controller_hash):
             raise ValueError('source changed during run')
-        report['stage']='complete' if code in (0,3) else 'partial'
+        report['stage']='complete' if code==0 else 'partial'
     except BaseException as exc:
         report.update(status='failed',error_type=type(exc).__name__);code=1
         (out/'controller-error-private.log').write_text(str(exc)+'\n')

@@ -16,9 +16,10 @@ from .replay_trace import validate_capture_id, validate_identity as validate_cap
 
 VARIANTS = ('bf16_eager', 'fp8_eager', 'bf16_graph', 'fp8_graph')
 SCOPE = 'online_group_to_routed_local_fp32_slots'
+NUMERICAL_POLICY = 'record_only'
 IDENTITY_FIELDS = {'candidate_source_sha256', 'bf16_source_sha256', 'replay_source_sha256',
     'checkpoint_content_sha256', 'image_id', 'capture_manifest_sha256', 'capture_identity',
-    'warmups', 'repetitions', 'variants', 'layers', 'samples', 'invocation_id'}
+    'warmups', 'repetitions', 'variants', 'layers', 'samples', 'invocation_id','numerical_policy'}
 SYNTHETIC_CASES = (
     ('eager_b1', 1, 'eager'), ('eager_b7', 7, 'eager'), ('eager_b17', 17, 'eager'),
     ('eager_b32', 32, 'eager'), ('eager_shrink_b7', 7, 'eager'),
@@ -74,6 +75,8 @@ def replay_source_sha256():
 
 def validate_identity(value):
     _fields(value, IDENTITY_FIELDS, 'Hopper identity')
+    if value['numerical_policy'] != NUMERICAL_POLICY:
+        raise ValueError('Hopper numerical errors are record-only; threshold policies are unsupported')
     for key in IDENTITY_FIELDS:
         if key.endswith('_sha256') and not _sha(value[key]):
             raise ValueError('Hopper identity requires complete SHA256 digests')
@@ -146,25 +149,22 @@ def _validate_resources(value):
                 _validate_resources(attrs)
 
 
-def _metric(value, precision=False):
-    _fields(value, ('finite', 'relative_l2', 'max_abs', 'allclose', 'passed'), 'numeric metric')
-    if any(type(value[key]) is not bool for key in ('finite', 'allclose', 'passed')):
-        raise ValueError('numeric status requires booleans')
+def _metric(value):
+    _fields(value, ('finite', 'relative_l2', 'max_abs'), 'numeric metric')
+    if type(value['finite']) is not bool:
+        raise ValueError('finite status requires a boolean')
     if value['finite']:
         if not _number(value['relative_l2']) or not _number(value['max_abs']):
             raise ValueError('finite scalar numerical errors required')
-    elif value['relative_l2'] is not None or value['max_abs'] is not None or value['allclose']:
-        raise ValueError('nonfinite errors must be explicitly null and fail allclose')
-    passed = (value['finite'] and value['relative_l2'] <= .025
-              and (precision or value['allclose']))
-    if value['passed'] != passed:
-        raise ValueError('numeric passed status contradicts measured error')
-    return passed
+    elif value['relative_l2'] is not None or value['max_abs'] is not None:
+        raise ValueError('nonfinite errors must be explicitly null')
+    # No tolerance or finite-error magnitude controls acceptance or timing.
+    return value['finite']
 
 
 def _checks(value):
     _fields(value, ('baseline', 'implementation', 'precision'), 'numeric comparisons')
-    return {key: _metric(metric, precision=key == 'precision') for key, metric in value.items()}
+    return {key: _metric(metric) for key, metric in value.items()}
 
 
 def point_key(point):
@@ -179,7 +179,7 @@ def _point(value, repetitions):
     _fields(value, ('layer', 'sample', 'variant', 'gpu_ms', 'timing_valid', 'checks',
                    'workload', 'stable_addresses', 'graph_input_update_verified'), 'point')
     point_key(value)
-    passed = _checks(value['checks'])
+    finite = _checks(value['checks'])
     _fields(value['workload'], ('batch', 'local_slots', 'active_experts', 'max_rows_per_expert', 'bf16_groups'), 'workload')
     work = value['workload']
     if (work['batch'] != 32 or any(type(v) is not int for v in work.values())
@@ -192,9 +192,9 @@ def _point(value, repetitions):
         raise ValueError('point gate statuses require booleans')
     samples = value['gpu_ms']
     if value['timing_valid']:
-        if (not passed['baseline'] or not passed['implementation'] or not value['stable_addresses']
+        if (not all(finite.values()) or not value['stable_addresses']
                 or not value['graph_input_update_verified']):
-            raise ValueError('correctness, addresses and graph update gates must pass before valid timing')
+            raise ValueError('finite execution, addresses and graph update checks required before valid timing')
         if (not isinstance(samples, list) or len(samples) != repetitions
                 or any(not _number(v) or v <= 0 for v in samples)):
             raise ValueError('every fresh event repetition needs a finite positive duration')
@@ -219,9 +219,9 @@ def _synthetic(value, complete):
         gates = _checks(case['checks'])
         if type(case['metadata_exact']) is not bool or type(case['nonlocal_slots_zero']) is not bool:
             raise ValueError('synthetic metadata gate requires booleans')
-        if value['status'] == 'passed' and (not gates['baseline'] or not gates['implementation']
+        if value['status'] == 'passed' and (not all(gates.values())
                 or not case['metadata_exact'] or not case['nonlocal_slots_zero']):
-            raise ValueError('synthetic status contradicts correctness')
+            raise ValueError('synthetic status contradicts finite execution or metadata checks')
     if complete or value['status'] == 'passed':
         if (value['status'] != 'passed' or set(observed) != set(SYNTHETIC_CASES)
                 or value['graph_input_updates'] != 2 or not value['stable_addresses']
@@ -233,7 +233,7 @@ def validate_rank_report(value, expected_identity=None, require_complete=False):
     _fields(value, ('schema_version', 'kind', 'rank', 'status', 'identity', 'measurement_scope',
         'used_for_formal_performance', 'service_promotion_allowed', 'replica_sha256', 'synthetic',
         'points', 'resources', 'runtime', 'stop_reason'), 'rank report')
-    if (value['schema_version'] != 1 or value['kind'] != 'hopper_fp8_local_expert_replay'
+    if (value['schema_version'] != 2 or value['kind'] != 'hopper_fp8_local_expert_replay'
             or type(value['rank']) is not int or not 0 <= value['rank'] < 4
             or value['status'] not in ('complete', 'partial', 'failed')
             or value['measurement_scope'] != SCOPE or value['used_for_formal_performance'] is not False
@@ -244,7 +244,7 @@ def validate_rank_report(value, expected_identity=None, require_complete=False):
         raise ValueError('Hopper invocation/source/checkpoint/capture identity mismatch')
     if not _sha(value['replica_sha256']):
         raise ValueError('replicated private input digest required')
-    if value['stop_reason'] not in ('none', 'budget', 'implementation_mismatch', 'baseline_mismatch',
+    if value['stop_reason'] not in ('none', 'budget', 'nonfinite_output',
                                     'runtime_failure', 'interrupted', 'identity_mismatch'):
         raise ValueError('unknown stop reason')
     complete = value['status'] == 'complete'
@@ -294,8 +294,13 @@ def aggregate_rank_reports(values, expected_identity=None):
     status = 'complete' if complete else ('failed' if any(value['status'] == 'failed' for value in values) else 'partial')
     points = [point for value in values for point in value['points']]
     all_checks = [point['checks'] for point in points] + [case['checks'] for value in values for case in value['synthetic']['cases']]
-    implementation = bool(all_checks) and all(row['implementation']['passed'] and row['baseline']['passed'] for row in all_checks)
-    precision = bool(all_checks) and all(row['precision']['passed'] for row in all_checks)
+    errors = {}
+    for kind in ('baseline','implementation','precision'):
+        metrics=[row[kind] for row in all_checks]
+        finite=[metric for metric in metrics if metric['finite']]
+        errors[kind]={'finite_records':len(finite),'nonfinite_records':len(metrics)-len(finite),
+            'relative_l2_max':max((m['relative_l2'] for m in finite),default=None),
+            'max_abs':max((m['max_abs'] for m in finite),default=None)}
     pairs = {'eager': [], 'graph': []}
     for value in values:
         index = {point_key(point): point for point in value['points']}
@@ -313,12 +318,11 @@ def aggregate_rank_reports(values, expected_identity=None):
         'median': statistics.median(ratios) if ratios else None,
         'min': min(ratios) if ratios else None, 'max': max(ratios) if ratios else None}
         for mode, ratios in pairs.items()}
-    return {'schema_version': 1, 'status': status, 'identity': expected_identity,
+    return {'schema_version': 2, 'status': status, 'identity': expected_identity,
         'measurement_scope': SCOPE, 'used_for_formal_performance': False, 'service_promotion_allowed': False,
         'point_count': len(points), 'expected_point_count': 1376, 'case_count_per_rank': 86 if complete else None,
-        'implementation_passed': implementation, 'precision_passed': precision,
-        'numerical_promotion_eligible': complete and implementation and precision,
-        'timings_diagnostic_only': not (complete and implementation and precision),
-        'precision_failed_points': sum(not point['checks']['precision']['passed'] for point in points),
+        'numerical_policy':NUMERICAL_POLICY,'numerical_acceptance_evaluated':False,'error_summary':errors,
+        'error_summary_scope':'recorded synthetic cases and per-variant real checks; repeated comparisons retained',
+        'timings_diagnostic_only': not complete,
         'paired_speedups': summaries,
         'timing_interpretation': 'paired per-rank local compute event medians; excludes communication; not serving throughput'}

@@ -8,3 +8,12 @@ The user confirmed that the experiment server can retrieve material from GitHub 
 - Keep CPU data preparation offline after the GitHub download. Prefer the existing SGLang image when the server host lacks Python packages. Do not prescribe server-side online pip installation.
 - Model loading must use the read-only local checkpoint and offline Hugging Face settings. Missing files or packages must produce an actionable error rather than trigger an automatic download.
 - Preserve localhost HTTP and inter-rank communication required by the serving experiment. Offline CPU preparation can use Docker's `--network=none`; serving still needs its documented local network endpoints.
+
+# Numerical error metrics are record-only
+
+The user explicitly removed the Hopper numerical-error gates on 2026-10-17 and instructed that they must not be reintroduced.
+
+- For Hopper and future experimental expert-compute comparisons, record finite numerical differences against the FP8 oracle, BF16 oracle, and BF16 reference. Do not stop runs, reject timings, label results failed, or impose promotion restrictions based on relative L2, absolute error, `allclose`, or a replacement numerical-error cutoff.
+- Do not add new default or configurable error thresholds unless the user explicitly changes this decision. Current reports must declare `numerical_policy: record_only`.
+- Retain checks for nonfinite output, invalid memory access, compilation/runtime failure, malformed tensors/routing, source identity, complete case coverage and cleanup. Deterministic algorithm unit tests remain applicable.
+- Preserve historical reports and their original status/source identity. Do not rewrite an old threshold-failed run as a completed run; rerun under the new policy and evidence schema.

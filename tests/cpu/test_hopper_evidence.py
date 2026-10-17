@@ -25,16 +25,16 @@ def identity():
             'capture_identity': capture, 'warmups': 3, 'repetitions': 20,
             'variants': ['bf16_eager', 'fp8_eager', 'bf16_graph', 'fp8_graph'],
             'layers': list(range(43)), 'samples': [64, 128],
+            'numerical_policy': 'record_only',
             'invocation_id': '7c9ad43c-ac4f-46eb-ac26-62f26cb60b35'}
 
 
-def metrics(relative=.001, allclose=True, *, precision=False):
-    return {'finite': True, 'relative_l2': relative, 'max_abs': .001,
-            'allclose': allclose, 'passed': relative <= .025 and (precision or allclose)}
+def metrics(relative=.001, max_abs=.001):
+    return {'finite': True, 'relative_l2': relative, 'max_abs': max_abs}
 
 
 def checks():
-    return {'baseline': metrics(), 'implementation': metrics(), 'precision': metrics(precision=True)}
+    return {'baseline': metrics(), 'implementation': metrics(), 'precision': metrics()}
 
 
 def rank_report(rank=0):
@@ -56,7 +56,7 @@ def rank_report(rank=0):
                     'workload': {'batch': 32, 'local_slots': 48, 'active_experts': 12,
                                  'max_rows_per_expert': 4, 'bf16_groups': 12},
                     'stable_addresses': True, 'graph_input_update_verified': True})
-    return {'schema_version': 1, 'kind': 'hopper_fp8_local_expert_replay', 'rank': rank,
+    return {'schema_version': 2, 'kind': 'hopper_fp8_local_expert_replay', 'rank': rank,
         'status': 'complete', 'identity': identity(), 'measurement_scope': 'online_group_to_routed_local_fp32_slots',
         'used_for_formal_performance': False, 'service_promotion_allowed': False,
         'replica_sha256': '6' * 64, 'synthetic': {'status': 'passed', 'cases': cases,
@@ -108,7 +108,8 @@ class HopperEvidenceTest(unittest.TestCase):
         self.assertEqual(summary['status'], 'complete')
         self.assertEqual(summary['point_count'], 1376)
         self.assertEqual(summary['case_count_per_rank'], 86)
-        self.assertTrue(summary['numerical_promotion_eligible'])
+        self.assertEqual(summary['numerical_policy'], 'record_only')
+        self.assertNotIn('numerical_promotion_eligible',summary)
         self.assertFalse(summary['service_promotion_allowed'])
         self.assertFalse(summary['used_for_formal_performance'])
         self.assertAlmostEqual(summary['paired_speedups']['eager']['geomean'], 2.)
@@ -144,32 +145,52 @@ class HopperEvidenceTest(unittest.TestCase):
             'activation_quantization': 'metadata', 'ids': [1, 2], 'opaque': [[.2]]}),
             {'threads': 128, 'a_map_shape': [64, 64, 4096]})
 
-    def test_precision_failure_retains_all_timings_as_diagnostics(self):
+    def test_large_finite_precision_error_does_not_gate_complete_timings(self):
         reports = [rank_report(rank) for rank in range(4)]
-        reports[2]['points'][17]['checks']['precision'] = metrics(.04, precision=True)
+        reports[2]['points'][17]['checks']['precision'] = metrics(40.)
         summary = evidence.aggregate_rank_reports(reports)
         self.assertEqual(summary['status'], 'complete')
         self.assertEqual(summary['point_count'], 1376)
-        self.assertTrue(summary['implementation_passed'])
-        self.assertFalse(summary['precision_passed'])
-        self.assertFalse(summary['numerical_promotion_eligible'])
-        self.assertTrue(summary['timings_diagnostic_only'])
-        self.assertEqual(summary['precision_failed_points'], 1)
+        self.assertFalse(summary['timings_diagnostic_only'])
+        self.assertEqual(summary['error_summary']['precision']['relative_l2_max'],40.)
+        self.assertNotIn('precision_passed',summary)
+        self.assertNotIn('precision_failed_points',summary)
 
-    def test_implementation_failure_cannot_leave_valid_timing(self):
+    def test_large_finite_oracle_difference_does_not_gate_gpu_failure_decision(self):
+        from tests.gpu.check_hopper_candidate import numerical_failure
         report = rank_report()
-        report['points'][0]['checks']['implementation'] = metrics(.04)
-        with self.assertRaises(ValueError): evidence.validate_rank_report(report)
-        report['status'], report['stop_reason'] = 'failed', 'implementation_mismatch'
-        report['points'][0].update(timing_valid=False, gpu_ms=[])
+        report['points'][0]['checks']['implementation'] = metrics(100.)
         evidence.validate_rank_report(report)
+        self.assertIsNone(numerical_failure([report['points'][0]['checks']]))
         summary = evidence.aggregate_rank_reports([report] + [rank_report(r) for r in (1, 2, 3)])
-        self.assertEqual(summary['status'], 'failed')
-        self.assertFalse(summary['implementation_passed'])
-        self.assertFalse(summary['numerical_promotion_eligible'])
+        self.assertEqual(summary['status'], 'complete')
+        self.assertEqual(summary['error_summary']['implementation']['relative_l2_max'],100.)
 
-    def test_claimed_pass_must_match_scalar_errors_and_allclose(self):
-        for field, value in (('relative_l2', .5), ('allclose', False), ('finite', False), ('max_abs', float('nan'))):
+    def test_reported_failure_scalar_values_and_large_absolute_error_are_record_only(self):
+        from tests.gpu.check_hopper_candidate import numerical_failure
+        report=rank_report()
+        report['points'][0]['checks']['implementation']=metrics(.014312495477497578,.0263671875)
+        report['points'][0]['checks']['baseline']=metrics(.5,1000.)
+        evidence.validate_rank_report(report)
+        self.assertIsNone(numerical_failure([report['points'][0]['checks']]))
+
+    def test_old_schema_cannot_be_reinterpreted_under_new_policy(self):
+        report=rank_report();report['schema_version']=1
+        report['identity'].pop('numerical_policy')
+        with self.assertRaises(ValueError):evidence.validate_rank_report(report)
+
+    def test_nonfinite_output_still_invalidates_timing(self):
+        from tests.gpu.check_hopper_candidate import numerical_failure
+        report=rank_report()
+        report['points'][0]['checks']['implementation']={'finite':False,'relative_l2':None,'max_abs':None}
+        self.assertEqual(numerical_failure([report['points'][0]['checks']]),'nonfinite_output')
+        with self.assertRaises(ValueError):evidence.validate_rank_report(report)
+        report.update(status='failed',stop_reason='nonfinite_output')
+        report['points'][0].update(timing_valid=False,gpu_ms=[])
+        evidence.validate_rank_report(report)
+
+    def test_nonfinite_or_negative_metric_and_old_threshold_flags_rejected(self):
+        for field, value in (('relative_l2', -1.), ('allclose', False), ('passed', True), ('finite', False), ('max_abs', float('nan'))):
             report = rank_report(); report['points'][0]['checks']['implementation'][field] = value
             with self.assertRaises(ValueError): evidence.validate_rank_report(report)
 
@@ -180,7 +201,7 @@ class HopperEvidenceTest(unittest.TestCase):
             report['points'] = report['points'][:7]
         summary = evidence.aggregate_rank_reports(reports)
         self.assertEqual(summary['status'], 'partial')
-        self.assertFalse(summary['numerical_promotion_eligible'])
+        self.assertNotIn('numerical_promotion_eligible',summary)
         self.assertTrue(summary['timings_diagnostic_only'])
         with self.assertRaises(ValueError): evidence.validate_rank_report(reports[0], require_complete=True)
 

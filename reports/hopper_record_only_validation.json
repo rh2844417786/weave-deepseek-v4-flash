@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-17",
+  "base_commit": "a60a250",
+  "user_policy": "finite numerical error metrics are record-only; do not reintroduce thresholds",
+  "hopper_evidence_schema_version": 2,
+  "numerical_policy": "record_only",
+  "changes": [
+    "removed relative-L2 cutoff and allclose tolerance from experimental comparisons",
+    "removed finite-error failure decisions in synthetic and real replay",
+    "removed precision/implementation pass and numerical-promotion fields",
+    "complete execution returns compute_candidate_complete without an error-size gate",
+    "kept nonfinite execution, structural, provenance and coverage validation",
+    "historical schema1 failed reports remain unchanged and cannot be reclassified as schema2",
+    "persisted the user's future no-threshold instruction in AGENTS.md"
+  ],
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "replay_source_sha256": "a9463063147a476140ecdc72f120fdfb39dcfc011508e73981bfc0476a334c81",
+  "controller_source_sha256": "5c8ec6d32681a3b96e8acc70154afae8f600c7b87f8ced75489bee5b676a1442",
+  "validation": {
+    "focused_tests": 39,
+    "focused_passed": 37,
+    "focused_skipped": 2,
+    "skips": "Torch oracle tensor tests require the existing server image",
+    "full_cpu_tests": 307,
+    "full_cpu_failure_subcases": 7,
+    "full_cpu_error_subcases": 3,
+    "full_cpu_skipped": 2,
+    "full_cpu_note": "inherited GPQA provenance/order failures remain",
+    "python_compilation": "passed",
+    "git_diff_check": "passed",
+    "independent_review": "no actionable P1/P2 findings"
+  },
+  "gpu_rerun": "not_run_under_new_policy; fresh directory required",
+  "native_cuda_changed": false,
+  "historical_results_rewritten": false,
+  "numerical_accuracy_claim": "none; recorded metrics are not an accuracy acceptance decision"
+}

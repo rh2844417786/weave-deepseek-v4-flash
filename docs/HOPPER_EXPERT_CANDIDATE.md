@@ -26,10 +26,14 @@
 
 FP8激活改变了数值路径，不能只凭生成固定文本相同接受它。独立Torch oracle不调用候选扩展，以有限FP8码本、原始nibble解码和K32 partial计算期望值。
 
-验收分开记录：
+数值对照分开记录，遵循用户2026-10-17明确指定的`record_only`政策：
 
-1. **实现正确性**：BF16基线对BF16 oracle、候选对FP8 oracle，要求rtol0.03/atol0.02及relative-L2≤0.025。失败则当前点不产生有效计时。
-2. **FP8漂移**：候选对BF16输出，relative-L2≤0.025才具备数值晋升资格。漂移失败时保留诊断计时，但返回`precision_gate_failed`；不会自动接受为服务默认。
+1. **参考实现差异**：BF16基线对BF16 oracle、候选对FP8 oracle，保存relative L2和最大绝对误差。
+2. **FP8漂移**：候选对BF16输出，同样保存误差值。
+
+以上三类有限数值差异均不设置通过/失败门限，不调用`allclose`判定，不阻断任何层/样本计时。不得以后增加替代误差上限。误差统计使用FP64累积，减少统计过程自身溢出的风险。NaN/Inf、非法访问、编译/runtime异常以及分组/地址/身份错误仍失败。
+
+当前证据schema为2，身份中明确包含`numerical_policy: record_only`。`complete`仅表示运行与覆盖完成，不表示数值一致性已验收。schema1旧报告保持原样，不被新代码追认成功；新复跑使用全新目录。
 
 ## 离线依赖与源码身份
 
@@ -74,11 +78,10 @@ setup与测量预算分开，可以延长。结果目录必须全新；本版不
 
 | 状态 | 含义 |
 |---|---|
-| `compute_candidate_complete` / exit0 | 完整1376点且实现/精度门通过；仍不是服务晋升或速度提升声明 |
-| `precision_gate_failed` / exit3 | 实现正确、完整测量，但至少一个FP8-vs-BF16漂移门未通过 |
+| `compute_candidate_complete` / exit0 | 完整1376点且运行/布局检查完成；有限误差大小不影响状态，不表示数值一致性或服务结果 |
 | `partial` / exit124 | 预算不足；不形成完整结论 |
-| `failed` / exit1 | 编译、实现数值、身份或运行失败；查看私有日志和公开stage |
+| `failed` / exit1 | 编译、非有限输出、布局、身份或运行失败；查看私有日志和公开stage |
 
-`summary.json`给出eager/graph成对GPU event中位数比、数值和精度状态。`service_promotion_allowed`始终为false，需后续完整服务验收。当前persistent generation mismatch仍单独待定位。
+`summary.json`给出eager/graph成对GPU event中位数比及三类误差范围，不再输出precision_passed、implementation_passed、numerical_promotion_eligible等误差判定。`service_promotion_allowed`为false仅表明本入口是局部计算实验、没有执行服务接入，不属于精度限制。当前persistent generation mismatch仍单独待定位。
 
 仅回传程序打印的export_directory：含源码身份、四rank标量结果、compile资源、capture元数据、core证据和manifest哈希。实际激活、routes、token IDs、`.pt`、完整private日志不能上传公开GitHub。ptxas只导出资源行；缓存命中导致资源日志为空时，应据实标记，不把local_bytes等同spill。
