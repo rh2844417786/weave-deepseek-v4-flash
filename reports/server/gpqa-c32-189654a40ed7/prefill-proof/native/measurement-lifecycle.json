@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-prefill-63dac24bf44a-native-load",
+  "started_utc": "2026-10-18T08:01:20.735380+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-18T08:11:23.221102+00:00"
+}

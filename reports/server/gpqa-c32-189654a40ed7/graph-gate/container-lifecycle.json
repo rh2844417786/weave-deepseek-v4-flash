@@ -1,0 +1,34 @@
+{
+  "container_name": "weave-online-gate-gpqa-c32-189654a40ed7",
+  "started_utc": "2026-10-18T11:02:40.557559+00:00",
+  "termination_signal": 15,
+  "exit_code": 143,
+  "cleanup_status": "stopped",
+  "cleanup_attempts": [
+    {
+      "command": [
+        "docker",
+        "stop",
+        "--timeout",
+        "2",
+        "weave-online-gate-gpqa-c32-189654a40ed7"
+      ],
+      "returncode": 0,
+      "stdout": "weave-online-gate-gpqa-c32-189654a40ed7\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{{.State.Running}}",
+        "weave-online-gate-gpqa-c32-189654a40ed7"
+      ],
+      "returncode": 0,
+      "stdout": "false\n",
+      "stderr": ""
+    }
+  ],
+  "finished_utc": "2026-10-18T11:49:20.781039+00:00"
+}
