@@ -63,6 +63,10 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     ]
     if getattr(args, 'graph_c32', False):
         docker += ['-e', 'WEAVE_GRAPH_C32=1', '-e', f'WEAVE_GRAPH_EVIDENCE_PORT_BASE={args.graph_evidence_port_base}']
+    if getattr(args, 'graph_stage_profile', False):
+        docker += ['-e', 'WEAVE_GRAPH_STAGE_PROFILE=1',
+                   '-e', f'WEAVE_GRAPH_STAGE_STRIDE={args.graph_stage_stride}',
+                   '-e', f'WEAVE_GRAPH_STAGE_CAPACITY={args.graph_stage_capacity}']
     functional = args.backend == 'weave_functional'
     if args.checkpoint_content_sha256:
         docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
@@ -140,6 +144,10 @@ def main() -> int:
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
     parser.add_argument('--graph-c32', action='store_true')
+    parser.add_argument('--graph-stage-profile', action='store_true',
+                        help='instrument full C32 graph replay; diagnostic timing only')
+    parser.add_argument('--graph-stage-stride', type=int, default=128)
+    parser.add_argument('--graph-stage-capacity', type=int, default=64)
     parser.add_argument('--graph-evidence-port-base', type=int, default=30310)
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
     parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8'],
@@ -166,6 +174,12 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if not 1 <= args.graph_stage_stride <= 65536 or not 1 <= args.graph_stage_capacity <= 256:
+        parser.error('graph stage stride must be in 1..65536 and capacity in 1..256')
+    if args.graph_stage_profile and not args.graph_c32:
+        parser.error('graph stage profiling requires --graph-c32')
+    if not args.graph_stage_profile and (args.graph_stage_stride != 128 or args.graph_stage_capacity != 64):
+        parser.error('graph stage stride/capacity require --graph-stage-profile')
     if args.graph_c32:
         if (args.decode_graph != 'full' or not args.request_timing
                 or _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS') != '32'
@@ -285,6 +299,9 @@ def main() -> int:
         'backend': args.backend,
         'graph_mode': 'full' if args.graph_c32 else args.decode_graph,
         'graph_c32': args.graph_c32,
+        'graph_stage_profile': args.graph_stage_profile,
+        'graph_stage_configuration': ({'stride': args.graph_stage_stride, 'capacity': args.graph_stage_capacity}
+                                      if args.graph_stage_profile else None),
         'hot_cache':args.hot_cache,
         'decode_implementation':args.decode_implementation if args.backend=='weave_functional' else 'native',
         'prefill_implementation':args.prefill_implementation if args.backend=='weave_functional' else 'native',
@@ -294,8 +311,11 @@ def main() -> int:
         'ep_correctness_status': 'not_verified', 'performance_status': 'not_run',
         'exit_code': None,
     }
-    if args.stall_diagnostic:
+    if args.stall_diagnostic or args.graph_stage_profile:
         report.update(instrumented_diagnostic=True,used_for_formal_performance=False)
+    if args.graph_stage_profile:
+        report.update(measurement_mode='instrumented_diagnostic', formal_gpqa=False,
+                      numerical_policy='record_only')
     report_path = run_dir / 'launch.json'
     report_path.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{args.backend} EP4 candidate; log: {run_dir / "server.log"}', flush=True)

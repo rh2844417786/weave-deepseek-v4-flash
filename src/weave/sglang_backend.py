@@ -33,6 +33,8 @@ class RoutedExperts(torch.nn.Module):
                                      if runtime.staged_decode is not None else None)
         hopper = getattr(runtime, 'hopper_decode', None)
         self.hopper_bound_weights = hopper.bind_weights(self.raw_weights) if hopper is not None else None
+        if hopper is not None and getattr(runtime, 'graph_stage_profile', False):
+            hopper.register_layer(layer_id, self.hopper_bound_weights)
         prefill = getattr(runtime, 'hopper_prefill', None)
         self.hopper_prefill_bound_weights = prefill.bind_weights(self.raw_weights) if prefill is not None else None
         self.profile, self.fixed_plan, self.clamp = profile, fixed_plan, clamp
@@ -138,6 +140,15 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     if getattr(args, 'moe_a2a_backend', 'none') != 'none':
         raise ValueError('adapter owns dispatch/combine and requires the standard outer runtime path')
     graph_c32 = os.environ.get('WEAVE_GRAPH_C32') == '1'
+    from .graph_observer import graph_stage_options
+    stage_options = graph_stage_options()
+    stage_profiler = getattr(model, 'weave_graph_stage_profiler', None)
+    if stage_options is not None:
+        if (not graph_c32 or not allow_decode_graph or decode_implementation != 'hopper_fp8'
+                or prefill_implementation != 'hopper_fp8'):
+            raise ValueError('graph stage profiling requires full C32 Hopper decode and prefill')
+        if stage_profiler is None or stage_profiler.kind != 'weave':
+            raise ValueError('graph stage profiler must be installed by the full graph runner before adapter warmup')
     if graph_c32:
         from .graph_observer import validate_graph_configuration
         validate_graph_configuration(args, parallel)
@@ -175,6 +186,7 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
                           kernel=kernel, cache_views=hot_cache)
     runtime.graph_c32 = graph_c32
+    runtime.graph_stage_profile = stage_options is not None
     runtime.hot_cache=hot_cache
     runtime.allow_decode_graph = allow_decode_graph
     runtime.fixed_plan=tuple(fixed_plan)
@@ -184,8 +196,12 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
     if graph_c32:
         from .hopper_graph import HopperGraphDecodeRuntime
     hopper_runtime_class = HopperGraphDecodeRuntime if graph_c32 else HopperDecodeRuntime
-    runtime.hopper_decode=(hopper_runtime_class(runtime,get_tp_group().device_group)
-                           if decode_implementation=='hopper_fp8' else None)
+    if stage_options is not None:
+        from .graph_stage_profile import HopperStageDecodeRuntime
+        runtime.hopper_decode = HopperStageDecodeRuntime(runtime, get_tp_group().device_group, stage_profiler)
+    else:
+        runtime.hopper_decode=(hopper_runtime_class(runtime,get_tp_group().device_group)
+                               if decode_implementation=='hopper_fp8' else None)
     runtime.prefill_implementation=prefill_implementation
     runtime.hopper_prefill=(HopperPrefillRuntime(runtime,get_tp_group().device_group)
                             if prefill_implementation=='hopper_fp8' else None)

@@ -9,3 +9,12 @@ def graph_gate_command(image,work,model,name,allocation):
     command[offset:]=['/workspace/tests/gpu/check_hopper_graph.py','--output-dir',f'/work/{name}/graph-gate']
     command[command.index('--output-dir')+1]=f'/work/{name}/graph-gate'
     return command
+
+
+def stage_event_gate_command(image,work,model,name,allocation):
+    command=graph_gate_command(image,work,model,name,allocation)
+    command[command.index('--name')+1]='weave-stage-event-gate-'+name
+    command[command.index('/workspace/tests/gpu/check_hopper_graph.py')]='/workspace/tests/gpu/check_graph_stage_events.py'
+    for index,value in enumerate(command):
+        if value=='--output-dir':command[index+1]=f'/work/{name}/stage-event-gate'
+    return command

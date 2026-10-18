@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from .graph_observer import BATCHES, GraphObserver, validate_graph_configuration
+from .graph_observer import BATCHES, GraphObserver, validate_graph_configuration, graph_stage_options
 
 TARGET = 'sglang.srt.model_executor.runner_backend.full_cuda_graph_backend'
 ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def graph_observer_source_sha256():
     digest = hashlib.sha256()
     for name in ('src/weave/graph_observer.py', 'src/weave/graph_hooks.py',
+                 'src/weave/graph_stage_profile.py',
                  'timing_hooks/sitecustomize.py', 'configs/sglang_graph_sources.json'):
         digest.update((ROOT / name).read_bytes())
     return digest.hexdigest()
@@ -106,19 +107,33 @@ def patch_backend(cls, setup):
         counters = getattr(getattr(runner.model_runner.model, 'weave_runtime', None), 'model_batch_counters', None)
         with observer.operation():
             success = False
+            sampled = False
+            profiler = observer.stage_profiler
+            sequence = observer.counts['successful_replays'] + 1
             if counters is not None:
                 counters.begin('decode', raw, raw)
             try:
+                if profiler is not None:
+                    sampled = profiler.begin_replay(sequence, raw)
+                # The source-pinned backend only calls CUDAGraph.replay and
+                # returns its captured output. Read timing before host counters.
                 result = replay(self, shape_key, static_forward_batch, **kwargs)
-                observer.counts['successful_replays'] += 1
-                observer.raw[str(raw)] += 1
-                observer.buckets[str(captured)] += 1
                 success = True
+                if sampled:
+                    profiler.finish_replay(sequence, raw)
                 return result
             except BaseException:
-                observer.counts['failed_replays'] += 1
+                if not success:
+                    observer.counts['failed_replays'] += 1
+                if profiler is not None:
+                    profiler.abort_replay(sequence, raw)
                 raise
             finally:
+                # A timing read failure must not erase an actual graph replay.
+                if success:
+                    observer.counts['successful_replays'] += 1
+                    observer.raw[str(raw)] += 1
+                    observer.buckets[str(captured)] += 1
                 if counters is not None:
                     counters.end(success=success)
     cls.__init__, cls.capture_one, cls.replay = initialize, capture_one, replay_one
@@ -137,7 +152,16 @@ def setup_runner(runner):
     model = runner.model_runner.model
     if hasattr(model, 'weave_graph_observer'):
         raise ValueError('multiple full graph backends for one model are unsupported')
-    observer = GraphObserver(runner.model_runner.tp_group.rank, pins, graph_observer_source_sha256())
+    rank = runner.model_runner.tp_group.rank
+    options = graph_stage_options()
+    profiler = None
+    if options is not None:
+        from .graph_stage_profile import GraphStageProfiler
+        kind = ('weave' if os.environ.get('SGLANG_EXTERNAL_MODEL_PACKAGE') == 'weave.sglang_ext.models'
+                else 'native')
+        profiler = GraphStageProfiler(torch, rank, kind, **options)
+        model.weave_graph_stage_profiler = profiler
+    observer = GraphObserver(rank, pins, graph_observer_source_sha256(), stage_profiler=profiler)
     wrap_model(model, observer, torch.cuda.is_current_stream_capturing)
     def verify():
         verify_graph_sources(package_root)

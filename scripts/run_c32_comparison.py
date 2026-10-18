@@ -45,7 +45,7 @@ def serving_source_manifest():
         'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(paths)]}
 
 
-def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210,decode_graph="disabled",graph_evidence_port_base=30310):
+def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210,decode_graph="disabled",graph_evidence_port_base=30310,graph_stage_profile=False,graph_stage_stride=128,graph_stage_capacity=64):
     if decode_graph not in ("disabled","full"):raise ValueError("unsupported decode graph")
     if variant not in set(VARIANTS)|set(HOPPER_VARIANTS)|set(PREFILL_VARIANTS):raise ValueError('unknown C32 group')
     result = [sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--execute',
@@ -57,6 +57,9 @@ def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_dia
         '--run-name',run_name,'--port',str(port),'--evidence-port-base',str(base),
         '--checkpoint-content-sha256',checkpoint]
     if decode_graph=='full':result += ['--graph-c32','--graph-evidence-port-base',str(graph_evidence_port_base)]
+    if graph_stage_profile:
+        if decode_graph!='full':raise ValueError('stage timing requires full graph')
+        result += ['--graph-stage-profile','--graph-stage-stride',str(graph_stage_stride),'--graph-stage-capacity',str(graph_stage_capacity)]
     if stall_diagnostic:result += ['--stall-diagnostic','--stall-port-base',str(stall_port_base)]
     return result
 

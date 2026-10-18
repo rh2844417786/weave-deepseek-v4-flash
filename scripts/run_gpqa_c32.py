@@ -27,7 +27,8 @@ from src.weave.ops import kernel_source_manifest
 from src.weave.performance import flush_cache_when_idle
 from src.weave.runtime_contract import load_contract
 from src.weave.graph_evidence import validate_graph_delta, validate_graph_weave_delta, validate_graph_smoke
-from scripts.run_graph_gate import graph_gate_command
+from scripts.run_graph_gate import graph_gate_command, stage_event_gate_command
+from src.weave.graph_stage_evidence import summarize_graph_stages, validate_stage_event_smoke
 
 GROUPS=('native','hopper_prefill')
 SECONDS=1200
@@ -120,10 +121,12 @@ def export_public(run,destination,*,proof_source=None,proof=None):
            'graph-gate/container-lifecycle.json']
     names += [f'graph-gate/hopper-graph-rank{rank}.json' for rank in range(4)]
     names += [f'graph-gate/graph-cleanup-rank{rank}.json' for rank in range(4)]
+    names += ['stage-event-proof-check.json','stage-event-gate/runtime.json','stage-event-gate/container-lifecycle.json','stage-diagnostic-summary.json']
+    names += [f'stage-event-gate/{prefix}-rank{rank}.json' for prefix in ('stage-event','graph-cleanup') for rank in range(4)]
     group_names=('group.json','launch.json','runtime.json','server-lifecycle.json','measurement-lifecycle.json',
                  'client-summary.json','measurement-summary.json','gpqa-rows.json','load-window.json',
                  'load-progress.json','warmup-ready.json','coverage-before.json','coverage-after.json',
-                 'coverage-check.json','scheduler-summary.json','graph-before.json','graph-after.json','graph-check.json')
+                 'coverage-check.json','scheduler-summary.json','graph-before.json','graph-after.json','graph-check.json','stage-profile-check.json')
     names += [f'{group}/{name}' for group in GROUPS for name in group_names]
     files={}
     for name in names:
@@ -160,8 +163,14 @@ def main(argv=None):
     parser.add_argument('--graph-evidence-port-base',type=int,default=30310)
     parser.add_argument('--graph-gate-timeout',type=float,default=7200.)
     parser.add_argument('--graph-cleanup-timeout',type=float,default=120.)
+    parser.add_argument('--graph-stage-profile',action='store_true')
+    parser.add_argument('--graph-stage-stride',type=int,default=128)
+    parser.add_argument('--graph-stage-capacity',type=int,default=64)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
+    if args.graph_stage_profile and args.decode_graph!='full':parser.error('stage diagnostic requires full graph')
+    if not 1<=args.graph_stage_stride<=65536 or not 1<=args.graph_stage_capacity<=256:parser.error('invalid stage sampling bounds')
+    measurement_mode='instrumented_diagnostic' if args.graph_stage_profile else 'uninstrumented_performance'
     for key in ('work_root','records','prefill_evidence_dir','model_path','export_root'):
         path=getattr(args,key)
         if path is not None:
@@ -172,6 +181,7 @@ def main(argv=None):
     if not 1<=args.port<=65535 or not 1<=args.evidence_port_base<=65532 or args.port in range(args.evidence_port_base,args.evidence_port_base+4):
         parser.error('valid distinct serving/evidence ports required')
     graph_options={'decode_graph':args.decode_graph,'graph_evidence_port_base':args.graph_evidence_port_base}
+    if args.graph_stage_profile:graph_options.update(graph_stage_profile=True,graph_stage_stride=args.graph_stage_stride,graph_stage_capacity=args.graph_stage_capacity)
     ports=[args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))
     if args.decode_graph=='full':
         ports+=list(range(args.graph_evidence_port_base,args.graph_evidence_port_base+4))
@@ -186,13 +196,16 @@ def main(argv=None):
             'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full',
             'graph_gate_required':args.decode_graph=='full',
             'graph_cleanup_timeout':args.graph_cleanup_timeout,
+            'measurement_mode':measurement_mode,'formal_gpqa':not args.graph_stage_profile,
+            'stage_event_gate_required':args.graph_stage_profile,
             'numerical_policy':'record_only','rerun_gpu_matrix':False,'prefill_evidence_dir':str(args.prefill_evidence_dir),
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
             'clients':{v:client_command(contract['image'],args.work_root,args.records,f'{name}/{v}',name+'-'+v,args.port) for v in GROUPS}},indent=2));return 0
     from src.weave.gpqa_c32 import load_gpqa_workload, validate_client_summary, compare_groups, validate_prefill_bundle
     allocation=allocated_gpus();out.mkdir(parents=True,exist_ok=False)
     owner,client_owner=OwnedChild(),OwnedChild()
-    report={'schema_version':1,'status':'running','scope':'GPQA_Main_C32_'+args.decode_graph,'formal_gpqa':True,
+    report={'schema_version':1,'status':'running','scope':'GPQA_Main_C32_'+args.decode_graph,'formal_gpqa':not args.graph_stage_profile,
+        'measurement_mode':measurement_mode,
         'accuracy_evaluated':False,'numerical_policy':'record_only','generation_comparison_policy':'record_only',
         'started_utc':datetime.now(timezone.utc).isoformat(),'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),
         'host_gpu_allocation':allocation.csv,'groups':{},'stage':'validating','rerun_gpu_matrix':False}
@@ -213,6 +226,10 @@ def main(argv=None):
             from src.weave.hopper_graph import graph_runtime_source_sha256
             from src.weave.graph_hooks import graph_observer_source_sha256
             identity.update(graph_runtime_source_sha256=graph_runtime_source_sha256(),observer_source_sha256=graph_observer_source_sha256(),graph_sources=json.loads((ROOT/'configs/sglang_graph_sources.json').read_text())['sha256'])
+        identity['measurement_mode']=measurement_mode
+        if args.graph_stage_profile:
+            from src.weave.graph_stage_profile import graph_stage_source_sha256
+            identity.update(graph_stage_source_sha256=graph_stage_source_sha256(),graph_stage_stride=args.graph_stage_stride,graph_stage_capacity=args.graph_stage_capacity)
         report.update(identity=identity,core_gate=proof['core_gate']);save()
         atomic_json(out/'data-manifest.json',workload.identity)
         atomic_json(out/'source-manifest.json',kernel_source_manifest());atomic_json(out/'serving-source-manifest.json',source)
@@ -233,6 +250,20 @@ def main(argv=None):
             gate_runtime=json.loads((gate_dir/'runtime.json').read_text());validate_runtime(gate_runtime,identity,allocation.csv)
             graph_proof=validate_graph_smoke(gate_dir,identity)
             atomic_json(out/'graph-proof-check.json',graph_proof)
+        if args.graph_stage_profile:
+            stage_dir=out/'stage-event-gate';stage_dir.mkdir()
+            command=stage_event_gate_command(image,args.work_root,args.model_path,name,allocation.csv)
+            lifecycle=stage_dir/'container-lifecycle.json'
+            manager=[sys.executable,str(ROOT/'scripts/manage_container.py'),'--name',command[command.index('--name')+1],
+                     '--evidence',str(lifecycle),'--log',str(stage_dir/'gate-private.log'),'--']+command
+            report.update(stage='stage_event_gate');save()
+            child=owner.spawn(manager,lifecycle,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            wait_graph_gate(child,stage_dir,gate_timeout=args.graph_gate_timeout,
+                            cleanup_timeout=args.graph_cleanup_timeout,cancel_check=check_cancelled)
+            owner.stop();check_cancelled()
+            validate_runtime(json.loads((stage_dir/'runtime.json').read_text()),identity,allocation.csv)
+            stage_proof=validate_stage_event_smoke(stage_dir,identity)
+            atomic_json(out/'stage-event-proof-check.json',stage_proof)
         for variant in GROUPS:
             check_cancelled();report.update(stage='serving_'+variant);save()
             folder=out/variant;folder.mkdir();run_name='native-ep-'+name+'-'+variant
@@ -292,6 +323,13 @@ def main(argv=None):
                         atomic_json(folder/'graph-after.json',graph_after)
                         graph_check=validate_graph_delta(graph_before,graph_after,expected_observer_source=identity['observer_source_sha256'],expected_sources=identity['graph_sources'])
                         atomic_json(folder/'graph-check.json',graph_check)
+                        if args.graph_stage_profile:
+                            stages=summarize_graph_stages(graph_before,graph_after,
+                                kind='native' if variant=='native' else 'weave',
+                                profile_source=identity['graph_stage_source_sha256'],
+                                stride=args.graph_stage_stride,capacity=args.graph_stage_capacity)
+                            atomic_json(folder/'stage-profile-check.json',stages)
+                            group['stage_profile']=stages
                         if variant=='native':batch=graph_check
                         else:
                             after=coverage(args.evidence_port_base);atomic_json(folder/'coverage-after.json',after)
@@ -319,8 +357,18 @@ def main(argv=None):
         if digest(serving_source_manifest())!=source_digest:raise ValueError('source_changed_during_run')
         if validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)!=proof:raise ValueError('proof_or_checkpoint_changed_during_run')
         if args.decode_graph=='full' and validate_graph_smoke(out/'graph-gate',identity)!=graph_proof:raise ValueError('graph_proof_changed_during_run')
-        atomic_json(out/'comparison.json',dict(compare_groups(report['groups']),decode_graph=args.decode_graph))
-        report.update(status='comparison_complete',stage='complete');code=0
+        comparison=dict(compare_groups(report['groups']),decode_graph=args.decode_graph,measurement_mode=measurement_mode)
+        if args.graph_stage_profile:
+            if validate_stage_event_smoke(out/'stage-event-gate',identity)!=stage_proof:raise ValueError('stage_event_proof_changed')
+            comparison.update(formal_gpqa=False,sustained_c32_ratio_available=False,prefill_vs_native_ratio=None,
+                              ratio_suppression_reason='instrumented_stage_diagnostic')
+            atomic_json(out/'stage-diagnostic-summary.json',{
+                'status':'diagnostic_complete','measurement_mode':measurement_mode,'formal_performance':False,
+                'numerical_policy':'record_only','identity':identity,
+                'groups':{v:report['groups'][v]['stage_profile'] for v in GROUPS},
+                'interpretation':'Use aligned stage times to locate the bottleneck; instrumented throughput is not a formal speedup comparison.'})
+        atomic_json(out/'comparison.json',comparison)
+        report.update(status='diagnostic_complete' if args.graph_stage_profile else 'comparison_complete',stage='complete');code=0
     except BaseException as exc:
         report.update(status='failed',error_type=type(exc).__name__)
         (out/'controller-error-private.log').write_text(str(exc)+'\n')
