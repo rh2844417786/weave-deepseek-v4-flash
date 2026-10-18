@@ -9,7 +9,7 @@
 | 推理模式 | DeepSeek-V4-Flash Think High |
 | 生成 | temperature0，max_new_tokens32768，ignore_eos=False，允许正常EOS |
 | 组别 | Native SGLang；Weave Hopper FP8 prefill+decode |
-| 并行 | 同一组GPUQ分配的4张H100，TP4/EP4，eager |
+| 并行 | 同一组GPUQ分配的4张H100，TP4/EP4；默认 eager，可显式选择两组 full decode graph |
 | Batch | 服务max-running-requests32，客户端32个并发worker持续补充 |
 | 时长 | 每组正式窗口1200秒；模型加载、证据核验、预热和清理单独计时 |
 
@@ -46,3 +46,7 @@
 每组产物包括 `client-summary.json`、`measurement-summary.json`、`gpqa-rows.json`、`load-window.json`、runtime/launch/lifecycle与覆盖记录。总汇总为 `comparison.json`；原GPU证明按原字节保留在 `prefill-proof/`。公开导出按白名单核验，原始日志留在工作盘。
 
 CPU测试和HTTP模拟只验证脚本行为；GPQA结果需等待服务器实际执行。
+
+## CUDA Graph 对照
+
+增加 `--decode-graph full` 可运行两组相同的 full decode graph。该模式先执行四卡 graph smoke，再验证两组实际重放和 Weave 各层设备计数；prefill 保持 eager。完整说明见 [C32 Graph 适配](HOPPER_GRAPH_C32.md)，执行见 [Graph 服务器 Prompt](SERVER_PROMPT_HOPPER_GRAPH_C32.md)。默认 eager 入口与历史结果语义保留。

@@ -56,7 +56,7 @@ class RoutedExperts(torch.nn.Module):
     def forward(self, hidden_states, topk_output):
         capturing = torch.cuda.is_current_stream_capturing()
         if capturing and (not self.runtime.allow_decode_graph or self.runtime.phase != 'decode'
-                          or hidden_states.shape[0] != 1):
+                          or (not getattr(self.runtime, 'graph_c32', False) and hidden_states.shape[0] != 1)):
             raise RuntimeError('graph candidate supports exactly one decode row and requires explicit opt-in')
         if hasattr(topk_output, 'topk_ids') and hasattr(topk_output, 'topk_weights'):
             ids, weights = topk_output.topk_ids, topk_output.topk_weights
@@ -137,7 +137,11 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         raise ValueError('functional adapter requires TP4/EP4, expert TP1, attention DP1, no PP/EPLB/MTP')
     if getattr(args, 'moe_a2a_backend', 'none') != 'none':
         raise ValueError('adapter owns dispatch/combine and requires the standard outer runtime path')
-    if allow_decode_graph and (getattr(args, 'max_running_requests', None) != 1
+    graph_c32 = os.environ.get('WEAVE_GRAPH_C32') == '1'
+    if graph_c32:
+        from .graph_observer import validate_graph_configuration
+        validate_graph_configuration(args, parallel)
+    if allow_decode_graph and not graph_c32 and (getattr(args, 'max_running_requests', None) != 1
                                or list(args.cuda_graph_config.decode.bs) != [1]):
         raise ValueError('graph candidate requires max-running-requests=1 and decode graph buckets=[1]')
     if (config.hidden_size, config.moe_intermediate_size, config.n_routed_experts,
@@ -161,22 +165,26 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         hot_cache=hot_cache,allow_decode_graph=allow_decode_graph,fixed_plan=fixed_plan,
         profile_path=profile_path,execution_profile=execution_profile,
         replay_capture=bool(os.environ.get('WEAVE_REPLAY_CAPTURE_DIR')),
-        forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1')
+        forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1', graph_c32=graph_c32)
     validate_prefill_configuration(prefill_implementation=prefill_implementation,
         decode_implementation=decode_implementation,kernel=kernel,hot_cache=hot_cache,
         allow_decode_graph=allow_decode_graph,fixed_plan=fixed_plan,
         profile_path=profile_path,execution_profile=execution_profile,
         replay_capture=bool(os.environ.get('WEAVE_REPLAY_CAPTURE_DIR')),
-        forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1')
+        forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1', graph_c32=graph_c32)
     runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
                           kernel=kernel, cache_views=hot_cache)
+    runtime.graph_c32 = graph_c32
     runtime.hot_cache=hot_cache
     runtime.allow_decode_graph = allow_decode_graph
     runtime.fixed_plan=tuple(fixed_plan)
     runtime.decode_implementation=decode_implementation
     runtime.staged_decode=(StagedDecodeRuntime(runtime,get_tp_group().device_group)
                            if decode_implementation=='staged_direct' else None)
-    runtime.hopper_decode=(HopperDecodeRuntime(runtime,get_tp_group().device_group)
+    if graph_c32:
+        from .hopper_graph import HopperGraphDecodeRuntime
+    hopper_runtime_class = HopperGraphDecodeRuntime if graph_c32 else HopperDecodeRuntime
+    runtime.hopper_decode=(hopper_runtime_class(runtime,get_tp_group().device_group)
                            if decode_implementation=='hopper_fp8' else None)
     runtime.prefill_implementation=prefill_implementation
     runtime.hopper_prefill=(HopperPrefillRuntime(runtime,get_tp_group().device_group)
@@ -213,7 +221,7 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         layer.mlp.experts = RoutedExperts(layer.mlp.experts, runtime, raw, profile, fixed_plan, config.swiglu_limit,layer.mlp.layer_id)
     model.weave_runtime = runtime
     return {'backend': 'weave_functional', 'kernel': kernel, 'layers': len(layers),
-            'graph_status': 'batch1_requires_source_specific_validation' if allow_decode_graph else 'disabled',
+            'graph_status': 'full_c32' if graph_c32 else 'batch1_requires_source_specific_validation' if allow_decode_graph else 'disabled',
             'schedule_mode': 'measured_dynamic' if profile is not None else 'explicit_fixed',
             'hot_cache':hot_cache,
             'decode_implementation':decode_implementation,
@@ -289,6 +297,10 @@ def coverage(model):
                 'python_decode_calls': layer.mlp.experts.coverage['decode'],
                 'python_calls': dict(layer.mlp.experts.coverage),
                 'implementation_calls':dict(layer.mlp.experts.implementation_calls)} for layer in model.model.layers}}
+    if getattr(runtime, 'graph_c32', False):
+        result.update(graph_mode='full', numerical_policy='record_only',
+            graph_runtime_source_sha256=hopper.graph_runtime_source_sha256,
+            device_slot_collectives=hopper.device_slot_collectives_snapshot())
     if runtime.model_batch_counters.snapshot()['sequence'] != batch_counts['sequence']:
         raise ValueError('service became active during model coverage snapshot')
     return result

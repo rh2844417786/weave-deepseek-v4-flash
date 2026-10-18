@@ -11,11 +11,13 @@ from threading import Lock
 def validate_decode_configuration(*, decode_implementation, kernel, hot_cache,
                                   allow_decode_graph, fixed_plan, profile_path=None,
                                   execution_profile=None, replay_capture=False,
-                                  forward_profile=False):
+                                  forward_profile=False, graph_c32=False):
+    if graph_c32 and (decode_implementation != 'hopper_fp8' or not allow_decode_graph):
+        raise ValueError('graph C32 requires hopper_fp8 full decode')
     if decode_implementation not in ('persistent', 'staged_direct', 'hopper_fp8'):
         raise ValueError('decode implementation must be persistent, staged_direct or hopper_fp8')
     if decode_implementation in ('staged_direct', 'hopper_fp8') and (
-            kernel != 'tiled' or not hot_cache or allow_decode_graph
+            kernel != 'tiled' or not hot_cache or (allow_decode_graph and not graph_c32)
             or tuple(fixed_plan) != (1, 1, 0) or profile_path is not None
             or execution_profile is not None or replay_capture or forward_profile):
         raise ValueError(f'{decode_implementation} requires tiled, hot-cache, eager, fixed(1,1,0), '
@@ -26,7 +28,7 @@ def validate_prefill_configuration(*, prefill_implementation='persistent',
                                    decode_implementation, kernel, hot_cache,
                                    allow_decode_graph, fixed_plan, profile_path=None,
                                    execution_profile=None, replay_capture=False,
-                                   forward_profile=False):
+                                   forward_profile=False, graph_c32=False):
     if prefill_implementation not in ('persistent', 'hopper_fp8'):
         raise ValueError('prefill implementation must be persistent or hopper_fp8')
     if prefill_implementation == 'hopper_fp8':
@@ -36,7 +38,7 @@ def validate_prefill_configuration(*, prefill_implementation='persistent',
             kernel=kernel, hot_cache=hot_cache, allow_decode_graph=allow_decode_graph,
             fixed_plan=fixed_plan, profile_path=profile_path,
             execution_profile=execution_profile, replay_capture=replay_capture,
-            forward_profile=forward_profile)
+            forward_profile=forward_profile, graph_c32=graph_c32)
 
 
 class StagedDecodeRuntime:

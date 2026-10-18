@@ -26,6 +26,8 @@ from src.weave.gpu_allocation import allocated_gpus
 from src.weave.ops import kernel_source_manifest
 from src.weave.performance import flush_cache_when_idle
 from src.weave.runtime_contract import load_contract
+from src.weave.graph_evidence import validate_graph_delta, validate_graph_weave_delta, validate_graph_smoke
+from scripts.run_graph_gate import graph_gate_command
 
 GROUPS=('native','hopper_prefill')
 SECONDS=1200
@@ -44,13 +46,13 @@ def client_command(image,work,records,output_relative,name,port):
 
 
 
-def baseline_coverage(base, *, deadline):
+def baseline_coverage(base, *, deadline, endpoint="coverage"):
     """Collect the idle baseline within the controller's shared handshake budget."""
     reports=[]
     for rank in range(4):
         remaining=deadline-time.monotonic()
         if remaining<=0:raise TimeoutError('idle_baseline_deadline')
-        reports.append(http_json(f'http://127.0.0.1:{base+rank}/coverage',timeout=remaining))
+        reports.append(http_json(f'http://127.0.0.1:{base+rank}/{endpoint}',timeout=remaining))
         if time.monotonic()>=deadline:raise TimeoutError('idle_baseline_deadline')
     return reports
 
@@ -86,11 +88,13 @@ def export_public(run,destination,*,proof_source=None,proof=None):
     run,destination=Path(run),Path(destination)
     if destination.exists():raise FileExistsError('fresh_public_destination_required')
     names=['experiment.json','comparison.json','source-manifest.json','serving-source-manifest.json',
-           'data-manifest.json','prefill-proof-check.json']
+           'data-manifest.json','prefill-proof-check.json','graph-proof-check.json','graph-gate/runtime.json',
+           'graph-gate/container-lifecycle.json']
+    names += [f'graph-gate/hopper-graph-rank{rank}.json' for rank in range(4)]
     group_names=('group.json','launch.json','runtime.json','server-lifecycle.json','measurement-lifecycle.json',
                  'client-summary.json','measurement-summary.json','gpqa-rows.json','load-window.json',
                  'load-progress.json','warmup-ready.json','coverage-before.json','coverage-after.json',
-                 'coverage-check.json','scheduler-summary.json')
+                 'coverage-check.json','scheduler-summary.json','graph-before.json','graph-after.json','graph-check.json')
     names += [f'{group}/{name}' for group in GROUPS for name in group_names]
     files={}
     for name in names:
@@ -123,6 +127,9 @@ def main(argv=None):
     parser.add_argument('--drain-timeout',type=float,default=60.)
     parser.add_argument('--port',type=int,default=30001)
     parser.add_argument('--evidence-port-base',type=int,default=30110)
+    parser.add_argument('--decode-graph',choices=('disabled','full'),default='disabled')
+    parser.add_argument('--graph-evidence-port-base',type=int,default=30310)
+    parser.add_argument('--graph-gate-timeout',type=float,default=7200.)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
     for key in ('work_root','records','prefill_evidence_dir','model_path','export_root'):
@@ -130,24 +137,31 @@ def main(argv=None):
         if path is not None:
             if not path.is_absolute():parser.error(key+' must be absolute')
             setattr(args,key,path.resolve())
-    if any(not math.isfinite(x) or x<=0 for x in (args.setup_timeout,args.warmup_timeout,args.drain_timeout)):
+    if any(not math.isfinite(x) or x<=0 for x in (args.setup_timeout,args.warmup_timeout,args.drain_timeout,args.graph_gate_timeout)):
         parser.error('finite positive timeouts required')
     if not 1<=args.port<=65535 or not 1<=args.evidence_port_base<=65532 or args.port in range(args.evidence_port_base,args.evidence_port_base+4):
         parser.error('valid distinct serving/evidence ports required')
+    graph_options={'decode_graph':args.decode_graph,'graph_evidence_port_base':args.graph_evidence_port_base}
+    ports=[args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))
+    if args.decode_graph=='full':
+        ports+=list(range(args.graph_evidence_port_base,args.graph_evidence_port_base+4))
+        if min(ports)<1 or max(ports)>65535 or len(set(ports))!=len(ports):parser.error('valid distinct graph ports required')
     name='gpqa-c32-'+uuid.uuid4().hex[:12]
     out=args.work_root/name;destination=(args.export_root or args.work_root/'public-reports')/name
     contract=load_contract()
-    preview={v:service_command(v,args.work_root,args.model_path,'native-ep-'+name+'-'+v,args.port,args.evidence_port_base,'0'*64) for v in GROUPS}
+    preview={v:service_command(v,args.work_root,args.model_path,'native-ep-'+name+'-'+v,args.port,args.evidence_port_base,'0'*64,**graph_options) for v in GROUPS}
     if not args.execute:
         print(json.dumps({'status':'preview_not_executed','groups':preview,'seconds':SECONDS,'concurrency':32,
             'max_new_tokens':32768,'ignore_eos':False,'thinking_mode':'thinking','reasoning_effort':'high',
+            'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full',
+            'graph_gate_required':args.decode_graph=='full',
             'numerical_policy':'record_only','rerun_gpu_matrix':False,'prefill_evidence_dir':str(args.prefill_evidence_dir),
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
             'clients':{v:client_command(contract['image'],args.work_root,args.records,f'{name}/{v}',name+'-'+v,args.port) for v in GROUPS}},indent=2));return 0
     from src.weave.gpqa_c32 import load_gpqa_workload, validate_client_summary, compare_groups, validate_prefill_bundle
     allocation=allocated_gpus();out.mkdir(parents=True,exist_ok=False)
     owner,client_owner=OwnedChild(),OwnedChild()
-    report={'schema_version':1,'status':'running','scope':'GPQA_Main_C32_eager','formal_gpqa':True,
+    report={'schema_version':1,'status':'running','scope':'GPQA_Main_C32_'+args.decode_graph,'formal_gpqa':True,
         'accuracy_evaluated':False,'numerical_policy':'record_only','generation_comparison_policy':'record_only',
         'started_utc':datetime.now(timezone.utc).isoformat(),'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),
         'host_gpu_allocation':allocation.csv,'groups':{},'stage':'validating','rerun_gpu_matrix':False}
@@ -163,13 +177,34 @@ def main(argv=None):
         source=serving_source_manifest();source_digest=digest(source)
         image=subprocess.run(['docker','image','inspect',contract['image'],'--format','{{.Id}}'],check=True,capture_output=True,text=True,timeout=30).stdout.strip()
         proof=validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)
-        identity={**proof['identity'],**workload.identity,'image_id':image,'serving_source_sha256':source_digest}
+        identity={**proof['identity'],**workload.identity,'image_id':image,'serving_source_sha256':source_digest,'decode_graph':args.decode_graph}
+        if args.decode_graph=='full':
+            from src.weave.hopper_graph import graph_runtime_source_sha256
+            from src.weave.graph_hooks import graph_observer_source_sha256
+            identity.update(graph_runtime_source_sha256=graph_runtime_source_sha256(),observer_source_sha256=graph_observer_source_sha256(),graph_sources=json.loads((ROOT/'configs/sglang_graph_sources.json').read_text())['sha256'])
         report.update(identity=identity,core_gate=proof['core_gate']);save()
         atomic_json(out/'data-manifest.json',workload.identity)
         atomic_json(out/'source-manifest.json',kernel_source_manifest());atomic_json(out/'serving-source-manifest.json',source)
         atomic_json(out/'prefill-proof-check.json',proof)
         env={**os.environ,'CUDA_VISIBLE_DEVICES':allocation.csv,'WEAVE_MAX_RUNNING_REQUESTS':'32',
             'WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32','IMAGE':image,'RUNTIME_PYTHON':contract['python_executable']}
+        if args.decode_graph=='full':
+            gate_dir=out/'graph-gate';gate_dir.mkdir()
+            gate=graph_gate_command(image,args.work_root,args.model_path,name,allocation.csv)
+            lifecycle=gate_dir/'container-lifecycle.json'
+            manager=[sys.executable,str(ROOT/'scripts/manage_container.py'),'--name',gate[gate.index('--name')+1],
+                     '--evidence',str(lifecycle),'--log',str(gate_dir/'gate-private.log'),'--']+gate
+            child=owner.spawn(manager,lifecycle,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            gate_deadline=time.monotonic()+args.graph_gate_timeout
+            while child.poll() is None:
+                check_cancelled()
+                if time.monotonic()>=gate_deadline:raise TimeoutError('graph_gpu_gate_deadline')
+                time.sleep(.2)
+            if child.returncode!=0:raise RuntimeError('graph_gpu_gate_failed')
+            owner.stop();check_cancelled()
+            gate_runtime=json.loads((gate_dir/'runtime.json').read_text());validate_runtime(gate_runtime,identity,allocation.csv)
+            graph_proof=validate_graph_smoke(gate_dir,identity)
+            atomic_json(out/'graph-proof-check.json',graph_proof)
         for variant in GROUPS:
             check_cancelled();report.update(stage='serving_'+variant);save()
             folder=out/variant;folder.mkdir();run_name='native-ep-'+name+'-'+variant
@@ -177,9 +212,9 @@ def main(argv=None):
             group={'status':'running','variant':variant,'stage':'starting','identity':identity}
             report['groups'][variant]=group
             try:
-                assert_ports_free([args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4)))
+                assert_ports_free(ports)
                 with (folder/'server-launch-private.log').open('w') as log:
-                    server=owner.spawn(service_command(variant,args.work_root,args.model_path,run_name,args.port,args.evidence_port_base,identity['checkpoint_content_sha256']),server_dir/'container_lifecycle.json',env=env,stdout=log,stderr=subprocess.STDOUT)
+                    server=owner.spawn(service_command(variant,args.work_root,args.model_path,run_name,args.port,args.evidence_port_base,identity['checkpoint_content_sha256'],**graph_options),server_dir/'container_lifecycle.json',env=env,stdout=log,stderr=subprocess.STDOUT)
                     wait_ready(url,timeout=args.setup_timeout,process=server)
                     runtime=json.loads((server_dir/'runtime.json').read_text());validate_runtime(runtime,identity,allocation.csv)
                     flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
@@ -199,6 +234,9 @@ def main(argv=None):
                             if type(ready_time) not in (float,int) or not math.isfinite(ready_time) or ready_time>baseline_now:
                                 raise ValueError('invalid_warmup_ready_marker')
                             baseline_deadline=min(baseline_now+20.,ready_time+20.)
+                            if args.decode_graph=='full':
+                                graph_before=baseline_coverage(args.graph_evidence_port_base,deadline=baseline_deadline,endpoint='graph-coverage')
+                                atomic_json(folder/'graph-before.json',graph_before)
                             before=baseline_coverage(args.evidence_port_base,deadline=baseline_deadline) if variant!='native' else None
                             if before is not None:atomic_json(folder/'coverage-before.json',before)
                             log_offset=(server_dir/'server.log').stat().st_size
@@ -221,7 +259,17 @@ def main(argv=None):
                     flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
                     with (server_dir/'server.log').open('rb') as stream:stream.seek(log_offset);logs=stream.read().decode(errors='replace')
                     scheduler=scheduler_counts(logs);atomic_json(folder/'scheduler-summary.json',scheduler)
-                    if variant=='native':
+                    if args.decode_graph=='full':
+                        graph_after=baseline_coverage(args.graph_evidence_port_base,deadline=time.monotonic()+20.,endpoint='graph-coverage')
+                        atomic_json(folder/'graph-after.json',graph_after)
+                        graph_check=validate_graph_delta(graph_before,graph_after,expected_observer_source=identity['observer_source_sha256'],expected_sources=identity['graph_sources'])
+                        atomic_json(folder/'graph-check.json',graph_check)
+                        if variant=='native':batch=graph_check
+                        else:
+                            after=coverage(args.evidence_port_base);atomic_json(folder/'coverage-after.json',after)
+                            batch=validate_graph_weave_delta(before,after,graph_check,identity)
+                            atomic_json(folder/'coverage-check.json',batch)
+                    elif variant=='native':
                         if scheduler['max_running_requests']!=32:raise ValueError('native_actual_concurrency32_not_observed')
                         batch=scheduler
                     else:
@@ -242,7 +290,8 @@ def main(argv=None):
         if load_gpqa_workload(args.records,model_path=args.model_path).identity!=workload.identity:raise ValueError('data_changed_during_run')
         if digest(serving_source_manifest())!=source_digest:raise ValueError('source_changed_during_run')
         if validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)!=proof:raise ValueError('proof_or_checkpoint_changed_during_run')
-        atomic_json(out/'comparison.json',compare_groups(report['groups']))
+        if args.decode_graph=='full' and validate_graph_smoke(out/'graph-gate',identity)!=graph_proof:raise ValueError('graph_proof_changed_during_run')
+        atomic_json(out/'comparison.json',dict(compare_groups(report['groups']),decode_graph=args.decode_graph))
         report.update(status='comparison_complete',stage='complete');code=0
     except BaseException as exc:
         report.update(status='failed',error_type=type(exc).__name__)

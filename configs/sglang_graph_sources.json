@@ -1,0 +1,15 @@
+{
+  "version": "0.5.17",
+  "commit": "29481685462732237d80d86076d6563e1f658102",
+  "source": "https://github.com/sgl-project/sglang/tree/29481685462732237d80d86076d6563e1f658102",
+  "sha256": {
+    "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+    "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+    "srt/model_executor/runner/base_cuda_graph_runner.py": "ab5de94b6461d46b87de91afc9fc54c2717c710fa9a015418cc4851e75a14ff5",
+    "srt/model_executor/runner/decode_cuda_graph_runner.py": "c21e3535041c5f07ac466d77f156d81b28737ed96c8a8fcf1cd3f48e7f7c44cd",
+    "srt/model_executor/runner_backend/full_cuda_graph_backend.py": "141ed3003b076191f9a0b35e4d633c6e00d3ed520411a31e034446180a040194",
+    "srt/utils/common.py": "e1fc22ba7508205a32188dd1cb5b43201973468cb495ae492f8b523d28b3b446",
+    "srt/server_args.py": "79d9bbb61b429574e31e7a7e319831fcd129a83a475e6ffe2b7e8a5e8eb06b0f",
+    "srt/model_executor/cuda_graph_config.py": "a131496f543eb354e91ca818b0f3863918da51aadae8e8a6fba087edd30cec76"
+  }
+}

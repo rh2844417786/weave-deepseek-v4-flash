@@ -61,6 +61,8 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         '-e', f'WEAVE_IMAGE_REF={args.image}', '-e', f'WEAVE_IMAGE_ID={image}',
         '-e', f'WEAVE_HOST_HOSTNAME={os.uname().nodename}', '-e', f'WEAVE_HOST_ALLOCATION={allocation.csv}',
     ]
+    if getattr(args, 'graph_c32', False):
+        docker += ['-e', 'WEAVE_GRAPH_C32=1', '-e', f'WEAVE_GRAPH_EVIDENCE_PORT_BASE={args.graph_evidence_port_base}']
     functional = args.backend == 'weave_functional'
     if args.checkpoint_content_sha256:
         docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
@@ -116,6 +118,13 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         '--disable-shared-experts-fusion', '--reasoning-parser', 'deepseek-v4',
         '--decode-log-interval', '10', '--enable-metrics',
     ]
+    if getattr(args, 'graph_c32', False):
+        from src.weave.graph_observer import canonical_graph_config
+        for flag in ('--cuda-graph-backend-decode', '--cuda-graph-max-bs-decode'):
+            index = command.index(flag)
+            del command[index:index + 2]
+        command += ['--cuda-graph-config', json.dumps(canonical_graph_config(), separators=(',', ':')),
+                    '--disable-cuda-graph-padding']
     if args.request_timing:
         command += ['--stream-interval','1','--incremental-streaming-output']
     return command
@@ -130,6 +139,8 @@ def main() -> int:
     parser.add_argument('--port', type=int, default=30001)
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
+    parser.add_argument('--graph-c32', action='store_true')
+    parser.add_argument('--graph-evidence-port-base', type=int, default=30310)
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
     parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8'],
                         default=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'),
@@ -155,6 +166,18 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if args.graph_c32:
+        if (args.decode_graph != 'full' or not args.request_timing
+                or _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS') != '32'
+                or _concurrency_env('WEAVE_CUDA_GRAPH_MAX_BS_DECODE') != '32'
+                or args.stall_diagnostic or args.profile or args.execution_profile
+                or args.execution_profile_fixed_plan or args.replay_capture_dir):
+            parser.error('graph C32 requires full, request timing, both concurrency settings 32, no diagnostics/profiles/capture')
+        if args.backend == 'weave_functional' and (args.decode_implementation != 'hopper_fp8' or args.prefill_implementation != 'hopper_fp8'):
+            parser.error('graph C32 Weave requires Hopper decode and prefill')
+        ports = [args.port] + list(range(args.evidence_port_base, args.evidence_port_base + 4)) + list(range(args.graph_evidence_port_base, args.graph_evidence_port_base + 4))
+        if not 1 <= args.graph_evidence_port_base <= 65532 or len(set(ports)) != 9:
+            parser.error('graph evidence ports must be valid and disjoint')
     if args.stall_diagnostic:
         if (args.decode_graph!='disabled' or not args.request_timing or args.profile is not None
                 or args.execution_profile or args.execution_profile_fixed_plan or args.replay_capture_dir):
@@ -169,14 +192,14 @@ def main() -> int:
         validate_decode_configuration(decode_implementation=args.decode_implementation,kernel=args.kernel,
             hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
             profile_path=args.profile,execution_profile=True if args.execution_profile else None,
-            replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan)
+            replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan, graph_c32=args.graph_c32 and args.backend=='weave_functional')
         if args.prefill_implementation == 'hopper_fp8' and args.backend != 'weave_functional':
             raise ValueError('hopper_fp8 prefill requires weave_functional')
         validate_prefill_configuration(prefill_implementation=args.prefill_implementation,
             decode_implementation=args.decode_implementation,kernel=args.kernel,
             hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
             profile_path=args.profile,execution_profile=True if args.execution_profile else None,
-            replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan)
+            replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan, graph_c32=args.graph_c32 and args.backend=='weave_functional')
     except ValueError as error:parser.error(str(error))
     if args.replay_capture_dir and (args.backend!='weave_functional' or args.kernel!='tiled'
             or args.decode_graph=='full' or args.profile is not None or args.execution_profile
@@ -260,6 +283,8 @@ def main() -> int:
         'gpuq_job_id': os.environ.get('GPUQ_JOB_ID'),
         'docker_argv': command, 'generation_status': 'not_verified',
         'backend': args.backend,
+        'graph_mode': 'full' if args.graph_c32 else args.decode_graph,
+        'graph_c32': args.graph_c32,
         'hot_cache':args.hot_cache,
         'decode_implementation':args.decode_implementation if args.backend=='weave_functional' else 'native',
         'prefill_implementation':args.prefill_implementation if args.backend=='weave_functional' else 'native',

@@ -45,16 +45,18 @@ def serving_source_manifest():
         'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(paths)]}
 
 
-def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210):
+def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210,decode_graph="disabled",graph_evidence_port_base=30310):
+    if decode_graph not in ("disabled","full"):raise ValueError("unsupported decode graph")
     if variant not in set(VARIANTS)|set(HOPPER_VARIANTS)|set(PREFILL_VARIANTS):raise ValueError('unknown C32 group')
     result = [sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--execute',
         '--backend','native' if variant=='native' else 'weave_functional',
-        '--kernel','tiled','--decode-graph','disabled','--fixed-plan','1,1,0','--hot-cache',
+        '--kernel','tiled','--decode-graph',decode_graph,'--fixed-plan','1,1,0','--hot-cache',
         '--decode-implementation',('hopper_fp8' if variant=='hopper_prefill' else variant) if variant in ('staged_direct','hopper_fp8','hopper_prefill') else 'persistent',
         '--prefill-implementation','hopper_fp8' if variant=='hopper_prefill' else 'persistent',
         '--request-timing','--work-root',str(work),'--model-path',str(model),
         '--run-name',run_name,'--port',str(port),'--evidence-port-base',str(base),
         '--checkpoint-content-sha256',checkpoint]
+    if decode_graph=='full':result += ['--graph-c32','--graph-evidence-port-base',str(graph_evidence_port_base)]
     if stall_diagnostic:result += ['--stall-diagnostic','--stall-port-base',str(stall_port_base)]
     return result
 
