@@ -73,14 +73,19 @@ def assembled(slots, batch, rank):
     return result
 
 
-def capture(runtime, values, bound, stream, label):
+def capture(runtime, values, bound, stream, label, *, owned_graphs=None):
     """Agree CPU launch failures before the captured NCCL collective.
 
     There are no D2H reads or CUDA synchronizations inside the capture body.
     The test-only Gloo agreement before NCCL makes rank-local launch errors
     coherent. NCCL itself has a bounded process-group timeout.
     """
-    graph = smoke.agreed(label + ':allocate', lambda: torch.cuda.CUDAGraph())
+    def allocate():
+        graph = torch.cuda.CUDAGraph()
+        if owned_graphs is not None:
+            owned_graphs.append(graph)
+        return graph
+    graph = smoke.agreed(label + ':allocate', allocate)
     original = dist.all_reduce
     entered = False
     failure = None
@@ -204,12 +209,17 @@ def main(argv=None):
     dist.init_process_group('gloo', timeout=timedelta(minutes=30))
     smoke.torch, smoke.dist, probe.torch = torch, dist, torch
     group = None
+    owned_graphs = []
     fresh = False
-    report = {'schema_version': 1, 'status': 'failed', 'numerical_policy': 'record_only',
+    report = {'schema_version': 2, 'status': 'running', 'numerical_policy': 'record_only',
               'raw_content_exported': False, 'rank': rank, 'world_size': dist.get_world_size(),
               'cases': [], 'case_count': 0, 'stop_reason': 'runtime_failure'}
     def save():
         atomic_report(args.output_dir / f'hopper-graph-rank{rank}.json', report)
+    def cleanup_progress(state):
+        report['cleanup'] = state
+        if fresh:
+            atomic_report(args.output_dir / f'graph-cleanup-rank{rank}.json', state)
     try:
         def inspect():
             smoke.require(dist.get_world_size() == 4 and dist.get_rank() == rank, 'four single-node ranks required')
@@ -264,7 +274,7 @@ def main(argv=None):
                     smoke.run_captured(runtime, static[batch], bounds[handle], label + ':warm')
                 torch.cuda.current_stream().wait_stream(stream)
                 start = smoke.agreed(label + ':counter_before', runtime.device_slot_collectives_snapshot)
-                graph, output = capture(runtime, static[batch], bounds[handle], stream, label)
+                graph, output = capture(runtime, static[batch], bounds[handle], stream, label, owned_graphs=owned_graphs)
                 end = smoke.agreed(label + ':counter_after', runtime.device_slot_collectives_snapshot)
                 smoke.agreed(label + ':capture_counter', lambda: smoke.require(end == start, 'capture executed device counter'))
                 capture_counter_delta += end-start
@@ -305,24 +315,32 @@ def main(argv=None):
             smoke.require(len(report['cases']) == 38, 'incomplete graph matrix')
             smoke.require(smoke.addresses(runtime) == pointers, 'workspace addresses moved')
         smoke.agreed('complete', complete)
-        report.update(status='passed', stop_reason='none', case_count=len(report['cases']),
+        report.update(status='gpu_checks_passed_cleanup_pending', gpu_checks_status='passed',
+                      stop_reason='none', case_count=len(report['cases']),
                       replay_count=len(report['cases']), replay_device_collective_delta=sum(item['device_collective_delta'] for item in report['cases']),
                       device_slot_collectives=runtime.device_slot_collectives_snapshot(),
                       eager_slot_collectives=runtime.additional_slot_collectives,
                       stable_addresses=True, resources=public_resources(runtime.resources))
         smoke.agreed('save', save)
-        return 0
     except Exception as exc:
         smoke.private_exception('graph_main', exc)
         report.update(status='failed', case_count=len(report['cases']),
                       stop_reason=str(exc) if isinstance(exc,smoke.AgreedFailure) else 'runtime_failure')
         if fresh:
             save()
-        return 1
     finally:
-        if group is not None:
-            dist.destroy_process_group(group)
-        dist.destroy_process_group()
+        from src.weave.graph_cleanup import cleanup_graphs
+        try:
+            cleanup_graphs(owned_graphs, torch, dist, group, cleanup_progress)
+        except Exception as exc:
+            smoke.private_exception('graph_cleanup', exc)
+            report.update(status='failed', stop_reason='cleanup_failure')
+        else:
+            if report['status'] == 'gpu_checks_passed_cleanup_pending':
+                report['status'] = 'passed'
+        if fresh:
+            save()
+    return 0 if report['status'] == 'passed' else 1
 
 
 if __name__ == '__main__':

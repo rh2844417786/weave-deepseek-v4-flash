@@ -2,6 +2,12 @@
 
 请拉取 `rh2844417786/weave-deepseek-v4-flash` 的 main，记录完整 commit，阅读 `AGENTS.md`、`docs/HOPPER_GRAPH_C32.md` 和 `docs/GPQA_C32_COMPARISON.md`。本轮执行 Native SGLang 与 Weave Hopper prefill+decode 的 **full decode CUDA Graph 对照**：两组并发均 32，正式窗口各 1200 秒。
 
+## 本轮先确认退出修复已拉取
+
+上次 `gpqa-c32-189654a40ed7` 的四卡 GPU 检查通过，但进程组销毁挂起，两组服务都没有启动。该旧目录保持原样，不能当成完整成功结果或跳过新的检查。
+
+确认仓库包含 `src/weave/graph_cleanup.py`，并且 GPU 检查报告使用 schema version 2。新流程会在销毁 NCCL 前显式 reset 所有 CUDA Graph；`status: passed` 只在 GPU 检查和清理都完成后写入。每 rank 的 `graph-cleanup-rankN.json` 记录当前退出阶段；控制器从首个清理标记开始给予默认 120 秒，若挂起则终止它拥有的容器并导出失败证据。不要通过增加总超时来掩盖清理挂起，不跳过 gate，不手动把状态改成 passed。
+
 ## 环境与数据
 
 - 使用已有 `lmsysorg/sglang:v0.5.17`（Torch 2.11/CUDA 13/Python 3.12），不拉镜像、不在线 pip/apt/HF 下载。
@@ -23,6 +29,7 @@ python3 scripts/run_gpqa_c32.py \
   --model-path /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash \
   --decode-graph full \
   --graph-gate-timeout 7200 \
+  --graph-cleanup-timeout 120 \
   --setup-timeout 7200 --warmup-timeout 960 --drain-timeout 60 \
   --execute
 ```
@@ -36,7 +43,7 @@ python3 scripts/run_gpqa_c32.py \
 核对以下内容并汇报：
 
 1. 完整 commit、GPUQ job、分配卡、镜像 ID、运行/清理状态和公开目录。
-2. 四 rank graph smoke 的 64 次捕获与 38 次重放；两个 handle、动态输入/路由及 prefill 后重放是否完整。
+2. 四 rank graph smoke 的 64 次捕获与 38 次重放；schema version 2、`gpu_checks_status: passed`、`cleanup.status: complete`、`graphs_reset: 64`，检查容器正常退出；两个 handle、动态输入/路由及 prefill 后重放是否完整。
 3. 两组正式窗口真实 graph 重放次数和 batch 分布，实际 B32 次数；raw/captured 是否一致，有无 eager decode 回退、重捕获或失败重放。
 4. Weave 43 层设备 decode 次数、实际 slot collective 次数、prefill 单独计数是否满足报告检查。
 5. 两组窗口 decode tokens/s、TTFT/可用 ITL、token 数、完成/未完成/未尝试题数、数据是否耗尽、可否报告持续 C32 加速比。若补充请求耗尽，不循环题目填时间；保留观测吞吐与耗尽标记。

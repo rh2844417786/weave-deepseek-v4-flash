@@ -24,6 +24,7 @@ smoke 使用缩小的 H128/I128/E32 模型形状，检查 NCCL、finalizer、地
 新证据包括：
 
 - `graph-gate/hopper-graph-rank{0..3}.json` 与 `graph-proof-check.json`；
+- `graph-gate/graph-cleanup-rank{0..3}.json`，记录同步、图 reset、rank barrier 与进程组销毁阶段；
 - 两组 `graph-before.json`、`graph-after.json`、`graph-check.json`；
 - Weave 的 `coverage-before.json`、`coverage-after.json`、`coverage-check.json`；
 - `comparison.json` 中的 `decode_graph: full` 与既有吞吐和数据耗尽标记。
@@ -40,3 +41,9 @@ smoke 使用缩小的 H128/I128/E32 模型形状，检查 NCCL、finalizer、地
 - 服务器只从 GitHub 拉取本仓库和固定数据；继续使用已有镜像、包、编译缓存及只读模型。无在线安装或镜像拉取。
 
 具体执行见 [服务器 Graph Prompt](SERVER_PROMPT_HOPPER_GRAPH_C32.md)。
+
+## 检查进程退出修复
+
+`gpqa-c32-189654a40ed7` 暴露了 CUDA Graph 仍持有 NCCL 引用时就销毁 communicator 的顺序错误。当前检查程序先同步、reset 全部已创建的图（包括捕获失败的图），再经过 Gloo barrier 依次销毁 NCCL 和 Gloo。GPU 数值检查通过时只写 `gpu_checks_passed_cleanup_pending`，清理完成后才写最终 `passed`，报告 schema 升至 2。父控制器仍要求子进程正常退出和完整四 rank 报告；旧失败报告不能复用为成功证明。
+
+`--graph-cleanup-timeout` 默认 120 秒，独立于 7200 秒编译/检查总超时；清理挂起由父控制器终止其拥有的容器，不以线程超时假装中断 NCCL。实现与本地验证见 [退出修复记录](HOPPER_GRAPH_TEARDOWN_FIX.md)。

@@ -158,6 +158,13 @@ class GraphSmokeContractTest(unittest.TestCase):
         self.assertLess(events.index('case:pre_collective'),events.index('nccl'))
         self.assertFalse('sync' in events[events.index('capture_enter'):events.index('capture_exit')])
 
+    def test_failed_capture_retains_graph_for_explicit_cleanup(self):
+        check,events,runtime,output,dist=self.capture_case(fail_compute=True)
+        owned=[]
+        with self.assertRaises(check.smoke.AgreedFailure):
+            check.capture(runtime,(Tensor(7,128),None,None),object(),object(),'case',owned_graphs=owned)
+        self.assertEqual(len(owned),1)
+
     def test_pre_nccl_local_failure_joins_same_agreement_and_restores_reduce(self):
         check,events,runtime,output,dist=self.capture_case(fail_compute=True)
         original=dist.all_reduce

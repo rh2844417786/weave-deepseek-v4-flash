@@ -3,6 +3,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from .graph_cleanup import CLEANUP_PHASES
 
 
 def _index(rows):
@@ -93,6 +94,15 @@ def validate_graph_smoke(folder,identity):
         if (row.get('rank')!=rank or row.get('world_size')!=4 or row.get('status')!='passed' or row.get('numerical_policy')!='record_only'
             or row.get('raw_content_exported') is not False or row.get('graph_capture_count')!=64 or row.get('replay_count')!=38
             or row.get('replay_device_collective_delta')!=38):raise ValueError('complete four-rank graph smoke required')
+        cleanup = row.get('cleanup', {})
+        if (row.get('schema_version') != 2 or row.get('gpu_checks_status') != 'passed'
+            or cleanup.get('status') != 'complete' or cleanup.get('phase') != 'complete'
+            or cleanup.get('graphs_owned') != 64 or cleanup.get('graphs_reset') != 64
+            or cleanup.get('completed_phases') != list(CLEANUP_PHASES)):
+            raise ValueError('completed graph reset and communicator cleanup required')
+        start, end = cleanup.get('started_monotonic'), cleanup.get('finished_monotonic')
+        if any(type(t) not in (int, float) or not math.isfinite(t) or t < 0 for t in (start, end)) or end < start:
+            raise ValueError('valid graph cleanup timestamps required')
         for key in ('candidate_source_sha256','assembly_source_sha256','graph_runtime_source_sha256','prefill_source_sha256','prefill_runtime_source_sha256'):
             if row.get(key)!=identity.get(key) or not identity.get(key):raise ValueError('graph proof source differs')
         if row.get('runtime',{}).get('image_id')!=identity['image_id']:raise ValueError('graph smoke image differs')

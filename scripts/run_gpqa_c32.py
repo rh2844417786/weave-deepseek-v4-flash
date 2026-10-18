@@ -46,6 +46,34 @@ def client_command(image,work,records,output_relative,name,port):
 
 
 
+def wait_graph_gate(child, folder, *, gate_timeout, cleanup_timeout, cancel_check=lambda: None):
+    """Bound teardown from the parent, including a worker blocked inside C++."""
+    deadline = time.monotonic() + gate_timeout
+    cleanup_deadline = None
+    while child.poll() is None:
+        cancel_check()
+        for rank in range(4):
+            path = Path(folder) / f'graph-cleanup-rank{rank}.json'
+            if not path.exists():
+                continue
+            state = json.loads(path.read_text())
+            started = state.get('started_monotonic')
+            if type(started) not in (int, float) or not math.isfinite(started) or not 0 <= started <= time.monotonic():
+                raise ValueError('invalid_graph_cleanup_clock')
+            candidate = started + cleanup_timeout
+            cleanup_deadline = candidate if cleanup_deadline is None else min(cleanup_deadline, candidate)
+            if state.get('status') == 'failed':
+                raise RuntimeError('graph_cleanup_failed')
+        now = time.monotonic()
+        if cleanup_deadline is not None and now >= cleanup_deadline:
+            raise TimeoutError('graph_cleanup_deadline')
+        if now >= deadline:
+            raise TimeoutError('graph_gpu_gate_deadline')
+        time.sleep(.2)
+    if child.returncode != 0:
+        raise RuntimeError('graph_gpu_gate_failed')
+
+
 def baseline_coverage(base, *, deadline, endpoint="coverage"):
     """Collect the idle baseline within the controller's shared handshake budget."""
     reports=[]
@@ -91,6 +119,7 @@ def export_public(run,destination,*,proof_source=None,proof=None):
            'data-manifest.json','prefill-proof-check.json','graph-proof-check.json','graph-gate/runtime.json',
            'graph-gate/container-lifecycle.json']
     names += [f'graph-gate/hopper-graph-rank{rank}.json' for rank in range(4)]
+    names += [f'graph-gate/graph-cleanup-rank{rank}.json' for rank in range(4)]
     group_names=('group.json','launch.json','runtime.json','server-lifecycle.json','measurement-lifecycle.json',
                  'client-summary.json','measurement-summary.json','gpqa-rows.json','load-window.json',
                  'load-progress.json','warmup-ready.json','coverage-before.json','coverage-after.json',
@@ -130,6 +159,7 @@ def main(argv=None):
     parser.add_argument('--decode-graph',choices=('disabled','full'),default='disabled')
     parser.add_argument('--graph-evidence-port-base',type=int,default=30310)
     parser.add_argument('--graph-gate-timeout',type=float,default=7200.)
+    parser.add_argument('--graph-cleanup-timeout',type=float,default=120.)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
     for key in ('work_root','records','prefill_evidence_dir','model_path','export_root'):
@@ -137,7 +167,7 @@ def main(argv=None):
         if path is not None:
             if not path.is_absolute():parser.error(key+' must be absolute')
             setattr(args,key,path.resolve())
-    if any(not math.isfinite(x) or x<=0 for x in (args.setup_timeout,args.warmup_timeout,args.drain_timeout,args.graph_gate_timeout)):
+    if any(not math.isfinite(x) or x<=0 for x in (args.setup_timeout,args.warmup_timeout,args.drain_timeout,args.graph_gate_timeout,args.graph_cleanup_timeout)):
         parser.error('finite positive timeouts required')
     if not 1<=args.port<=65535 or not 1<=args.evidence_port_base<=65532 or args.port in range(args.evidence_port_base,args.evidence_port_base+4):
         parser.error('valid distinct serving/evidence ports required')
@@ -155,6 +185,7 @@ def main(argv=None):
             'max_new_tokens':32768,'ignore_eos':False,'thinking_mode':'thinking','reasoning_effort':'high',
             'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full',
             'graph_gate_required':args.decode_graph=='full',
+            'graph_cleanup_timeout':args.graph_cleanup_timeout,
             'numerical_policy':'record_only','rerun_gpu_matrix':False,'prefill_evidence_dir':str(args.prefill_evidence_dir),
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
             'clients':{v:client_command(contract['image'],args.work_root,args.records,f'{name}/{v}',name+'-'+v,args.port) for v in GROUPS}},indent=2));return 0
@@ -195,12 +226,9 @@ def main(argv=None):
             manager=[sys.executable,str(ROOT/'scripts/manage_container.py'),'--name',gate[gate.index('--name')+1],
                      '--evidence',str(lifecycle),'--log',str(gate_dir/'gate-private.log'),'--']+gate
             child=owner.spawn(manager,lifecycle,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
-            gate_deadline=time.monotonic()+args.graph_gate_timeout
-            while child.poll() is None:
-                check_cancelled()
-                if time.monotonic()>=gate_deadline:raise TimeoutError('graph_gpu_gate_deadline')
-                time.sleep(.2)
-            if child.returncode!=0:raise RuntimeError('graph_gpu_gate_failed')
+            report.update(stage='graph_gate',graph_cleanup_timeout=args.graph_cleanup_timeout);save()
+            wait_graph_gate(child,gate_dir,gate_timeout=args.graph_gate_timeout,
+                            cleanup_timeout=args.graph_cleanup_timeout,cancel_check=check_cancelled)
             owner.stop();check_cancelled()
             gate_runtime=json.loads((gate_dir/'runtime.json').read_text());validate_runtime(gate_runtime,identity,allocation.csv)
             graph_proof=validate_graph_smoke(gate_dir,identity)
