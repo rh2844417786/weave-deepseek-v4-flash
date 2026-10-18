@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-c32-prefill-63dac24bf44a-hopper_prefill-accept",
+  "started_utc": "2026-10-18T08:46:12.510927+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-18T08:46:21.550172+00:00"
+}
