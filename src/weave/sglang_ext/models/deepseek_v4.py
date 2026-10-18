@@ -22,7 +22,8 @@ class DeepseekV4ForCausalLM(NativeDeepseekV4):
                 profile_path=os.environ.get('WEAVE_PROFILE'), fixed_plan=fixed,
                 kernel=os.environ.get('WEAVE_KERNEL', 'scalar'),
                 allow_decode_graph=os.environ.get('WEAVE_DECODE_GRAPH') == '1',execution_profile=profiling,
-                decode_implementation=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'))
+                decode_implementation=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'),
+                prefill_implementation=os.environ.get('WEAVE_PREFILL_IMPLEMENTATION','persistent'))
             if os.environ.get('WEAVE_EVIDENCE_PORT_BASE'):
                 from weave.evidence_server import start_evidence_server
                 self.weave_evidence_server = start_evidence_server(self, int(os.environ['WEAVE_EVIDENCE_PORT_BASE']))

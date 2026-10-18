@@ -25,3 +25,7 @@ EP1 short-request performance as a performance claim for this candidate.
 
 The supplied fork's MIT license is reproduced in
 `experimental/hopper_fp8/LICENSE.reference.txt`.
+
+## Compact Hopper prefill adaptation
+
+`experimental/hopper_prefill/kernel.cu` and `math_contract.h` extend the same audited TMA/WGMMA and packed-MXFP4 mapping to compact multi-tile expert groups. The original license and provenance are also retained under `experimental/hopper_prefill`. Grouping, workspace sizing, multi-tile addressing and ordered distributed assembly are repository additions; the existing decode candidate remains independently versioned.

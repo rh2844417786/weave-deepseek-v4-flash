@@ -22,6 +22,23 @@ def validate_decode_configuration(*, decode_implementation, kernel, hot_cache,
                          'and no profile bank, execution profiling or replay capture')
 
 
+def validate_prefill_configuration(*, prefill_implementation='persistent',
+                                   decode_implementation, kernel, hot_cache,
+                                   allow_decode_graph, fixed_plan, profile_path=None,
+                                   execution_profile=None, replay_capture=False,
+                                   forward_profile=False):
+    if prefill_implementation not in ('persistent', 'hopper_fp8'):
+        raise ValueError('prefill implementation must be persistent or hopper_fp8')
+    if prefill_implementation == 'hopper_fp8':
+        if decode_implementation != 'hopper_fp8':
+            raise ValueError('hopper_fp8 prefill requires hopper_fp8 decode')
+        validate_decode_configuration(decode_implementation=decode_implementation,
+            kernel=kernel, hot_cache=hot_cache, allow_decode_graph=allow_decode_graph,
+            fixed_plan=fixed_plan, profile_path=profile_path,
+            execution_profile=execution_profile, replay_capture=replay_capture,
+            forward_profile=forward_profile)
+
+
 class StagedDecodeRuntime:
     """One workspace shared by sequential layers; bound handles own raw weights.
 

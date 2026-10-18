@@ -14,8 +14,9 @@ import torch
 from .ops import PeerRuntime
 from .weights import load_raw_experts
 from .runtime_contract import load_contract, verify_adapter_sources
-from .staged_decode import StagedDecodeRuntime, ModelBatchCounters, validate_decode_configuration
+from .staged_decode import StagedDecodeRuntime, ModelBatchCounters, validate_decode_configuration, validate_prefill_configuration
 from .hopper_decode import HopperDecodeRuntime
+from .hopper_prefill import HopperPrefillRuntime
 
 
 class RoutedExperts(torch.nn.Module):
@@ -32,6 +33,8 @@ class RoutedExperts(torch.nn.Module):
                                      if runtime.staged_decode is not None else None)
         hopper = getattr(runtime, 'hopper_decode', None)
         self.hopper_bound_weights = hopper.bind_weights(self.raw_weights) if hopper is not None else None
+        prefill = getattr(runtime, 'hopper_prefill', None)
+        self.hopper_prefill_bound_weights = prefill.bind_weights(self.raw_weights) if prefill is not None else None
         self.profile, self.fixed_plan, self.clamp = profile, fixed_plan, clamp
         self.layer_id=layer_id
         self.quant_method = native.quant_method
@@ -45,6 +48,8 @@ class RoutedExperts(torch.nn.Module):
                                      'persistent_prefill': 0, 'persistent_other': 0}
         if hopper is not None:
             self.implementation_calls['hopper_decode'] = 0
+        if prefill is not None:
+            self.implementation_calls['hopper_prefill'] = 0
         self.capture_calls = 0
         self.register_buffer('device_calls', torch.zeros(3, dtype=torch.int64, device=f'cuda:{runtime.device}'))
 
@@ -65,7 +70,11 @@ class RoutedExperts(torch.nn.Module):
         if replay_capture is not None:
             replay_capture.record_layer(self.layer_id, hidden_states, ids, weights)
         phase = self.runtime.phase
-        if phase == 'decode' and self.runtime.decode_implementation == 'hopper_fp8':
+        if phase == 'prefill' and getattr(self.runtime, 'prefill_implementation', 'persistent') == 'hopper_fp8':
+            partial = self.runtime.hopper_prefill.run(hidden_states, ids, weights,
+                self.hopper_prefill_bound_weights, self.clamp)
+            implementation = 'hopper_prefill'
+        elif phase == 'decode' and self.runtime.decode_implementation == 'hopper_fp8':
             # Full replicated input; the Hopper finalizer already masks origins.
             # SGLang still owns shared experts, scaling and the outer TP SUM.
             partial = self.runtime.hopper_decode.run(hidden_states, ids, weights,
@@ -108,7 +117,7 @@ class RoutedExperts(torch.nn.Module):
 
 def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None, fixed_plan=(1, 1, 0),
                           kernel='scalar', allow_decode_graph=False,execution_profile=None,
-                          decode_implementation='persistent'):
+                          decode_implementation='persistent', prefill_implementation='persistent'):
     expected_version = load_contract()['sglang_version']
     if importlib.metadata.version('sglang') != expected_version:
         raise RuntimeError(f'adapter requires the source-audited SGLang {expected_version}')
@@ -153,6 +162,12 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         profile_path=profile_path,execution_profile=execution_profile,
         replay_capture=bool(os.environ.get('WEAVE_REPLAY_CAPTURE_DIR')),
         forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1')
+    validate_prefill_configuration(prefill_implementation=prefill_implementation,
+        decode_implementation=decode_implementation,kernel=kernel,hot_cache=hot_cache,
+        allow_decode_graph=allow_decode_graph,fixed_plan=fixed_plan,
+        profile_path=profile_path,execution_profile=execution_profile,
+        replay_capture=bool(os.environ.get('WEAVE_REPLAY_CAPTURE_DIR')),
+        forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1')
     runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
                           kernel=kernel, cache_views=hot_cache)
     runtime.hot_cache=hot_cache
@@ -163,6 +178,9 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
                            if decode_implementation=='staged_direct' else None)
     runtime.hopper_decode=(HopperDecodeRuntime(runtime,get_tp_group().device_group)
                            if decode_implementation=='hopper_fp8' else None)
+    runtime.prefill_implementation=prefill_implementation
+    runtime.hopper_prefill=(HopperPrefillRuntime(runtime,get_tp_group().device_group)
+                            if prefill_implementation=='hopper_fp8' else None)
     runtime.model_batch_counters=ModelBatchCounters()
     profile = runtime.profile_from_file(profile_path) if profile_path else None
     if execution_profile is not None: runtime.enable_execution_profile(execution_profile)
@@ -203,6 +221,7 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
             'staged_additional_slot_collective':runtime.staged_decode is not None,
             'staged_resources':dict(runtime.staged_decode.resources) if runtime.staged_decode is not None else None,
             **_hopper_metadata(runtime.hopper_decode),
+            **_prefill_metadata(runtime),
             'tile_rows': 16 if kernel=='tiled' else 1,
             'tile_columns': 64 if kernel=='tiled' else None}
 
@@ -216,6 +235,15 @@ def _hopper_metadata(hopper):
             'hopper_max_batch': 32,
             'hopper_slot_collective': 'torch.distributed.all_reduce/SUM/tp_device_group',
             'hopper_resources': dict(hopper.resources)}
+
+
+def _prefill_metadata(runtime):
+    prefill = getattr(runtime, 'hopper_prefill', None)
+    return {'prefill_implementation': getattr(runtime, 'prefill_implementation', 'persistent'),
+            'prefill_source_sha256': prefill.candidate_source_sha256 if prefill is not None else None,
+            'prefill_runtime_source_sha256': prefill.runtime_source_sha256 if prefill is not None else None,
+            'prefill_resources': dict(prefill.resources) if prefill is not None else None,
+            'additional_prefill_slot_collectives': prefill.additional_slot_collectives if prefill is not None else 0}
 
 
 def execution_profile(model):
@@ -253,6 +281,7 @@ def coverage(model):
             'additional_slot_collectives':slot_runtime.additional_slot_collectives if slot_runtime is not None else 0,
             'staged_resources':dict(staged.resources) if staged is not None else None,
             **_hopper_metadata(hopper),
+            **_prefill_metadata(runtime),
             'model_batch_counts':batch_counts,
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),

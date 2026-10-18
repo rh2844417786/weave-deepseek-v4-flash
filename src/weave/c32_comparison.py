@@ -7,6 +7,7 @@ from collections import Counter
 
 VARIANTS=('native','persistent_cached','staged_direct')
 HOPPER_VARIANTS=('native','staged_direct','hopper_fp8')
+PREFILL_VARIANTS=('native','hopper_fp8','hopper_prefill')
 
 
 def digest(value):
@@ -56,12 +57,16 @@ def compare_acceptance(reference,candidate):
             'sequence_commitment_sha256':digest(before),'logprob_policy':'record_only'}
 
 
-def validate_coverage_delta(before,after,mode,source,checkpoint, *, candidate_source_sha256=None,assembly_source_sha256=None):
+def validate_coverage_delta(before,after,mode,source,checkpoint, *, candidate_source_sha256=None,assembly_source_sha256=None,
+                            prefill_implementation=None,prefill_source_sha256=None,prefill_runtime_source_sha256=None):
     if mode not in ('persistent','staged_direct','hopper_fp8'):raise ValueError('unsupported decode implementation')
     def index(values):
         if len(values)!=4 or {v.get('rank') for v in values}!={0,1,2,3}:
             raise ValueError('four distinct ranks required')
         for v in values:
+            if prefill_implementation is not None:
+                if v.get('prefill_implementation')!=prefill_implementation:raise ValueError('prefill implementation differs')
+                if prefill_implementation=='hopper_fp8' and (v.get('prefill_source_sha256')!=prefill_source_sha256 or not prefill_source_sha256 or v.get('prefill_runtime_source_sha256')!=prefill_runtime_source_sha256 or not prefill_runtime_source_sha256):raise ValueError('prefill source/runtime differs')
             if mode=='hopper_fp8' and (not candidate_source_sha256 or not assembly_source_sha256
                     or v.get('candidate_source_sha256')!=candidate_source_sha256
                     or v.get('assembly_source_sha256')!=assembly_source_sha256
@@ -80,7 +85,7 @@ def validate_coverage_delta(before,after,mode,source,checkpoint, *, candidate_so
         return {v['rank']:v for v in values}
     a,b=index(before),index(after);result={'status':'passed','mode':mode,'ranks':{}}
     for rank in range(4):
-        old,new=a[rank],b[rank];layers={};collectives=0
+        old,new=a[rank],b[rank];layers={};collectives=0;prefill_collectives=0
         if new['model_batch_counts']['failed_forwards']!=old['model_batch_counts']['failed_forwards']:
             raise ValueError('model forward failed during measured execution')
         ah=old['model_batch_counts']['decode_valid_batch_histogram'];bh=new['model_batch_counts']['decode_valid_batch_histogram']
@@ -93,15 +98,26 @@ def validate_coverage_delta(before,after,mode,source,checkpoint, *, candidate_so
             if len(delta)!=3 or min(delta)<0 or delta[1]<1:raise ValueError('missing all43 decode execution')
             keys=('staged_decode','persistent_decode','persistent_prefill','persistent_other')
             if mode=='hopper_fp8' or 'hopper_decode' in x['implementation_calls'] or 'hopper_decode' in y['implementation_calls']:keys+=('hopper_decode',)
-            calls={k:y['implementation_calls'][k]-x['implementation_calls'][k] for k in keys}
+            if prefill_implementation is not None:keys+=('hopper_prefill',)
+            if prefill_implementation=='hopper_fp8' and any('hopper_prefill' not in row['implementation_calls'] for row in (x,y)):
+                raise ValueError('actual Hopper prefill counter required')
+            calls={k:(y['implementation_calls'].get(k,0)-x['implementation_calls'].get(k,0)
+                      if k=='hopper_prefill' and prefill_implementation=='persistent'
+                      else y['implementation_calls'][k]-x['implementation_calls'][k]) for k in keys}
             wanted={'staged_direct':'staged_decode','persistent':'persistent_decode','hopper_fp8':'hopper_decode'}[mode]
             other=[k for k in ('staged_decode','persistent_decode','hopper_decode') if k!=wanted]
             if any(type(v) is not int or v<0 for v in calls.values()) or calls[wanted]!=delta[1] or any(calls.get(k,0)!=0 for k in other):
                 raise ValueError('decode silently changed implementation or coverage is incomplete')
+            if prefill_implementation is not None:
+                expected_prefill='hopper_prefill' if prefill_implementation=='hopper_fp8' else 'persistent_prefill'
+                if calls[expected_prefill]!=delta[0] or (expected_prefill=='hopper_prefill' and calls['persistent_prefill']!=0) or (expected_prefill=='persistent_prefill' and calls['hopper_prefill']!=0):raise ValueError('prefill silently changed implementation')
+                if prefill_implementation=='hopper_fp8' and delta[0]<1:raise ValueError('all43 actual prefill execution required')
+                prefill_collectives+=calls['hopper_prefill']
             collectives+=calls['staged_decode']+calls.get('hopper_decode',0);layers[layer]={'device_delta':delta,'implementation_delta':calls}
         if new['additional_slot_collectives']-old['additional_slot_collectives']!=collectives:
             raise ValueError('exactly one slot all-reduce per staged layer call required')
-        result['ranks'][str(rank)]={'layers':layers,'decode_batch_histogram':histogram,
+        if prefill_implementation is not None and new.get('additional_prefill_slot_collectives',0)-old.get('additional_prefill_slot_collectives',0)!=prefill_collectives:raise ValueError('exactly one separate prefill slot SUM required')
+        result['ranks'][str(rank)]={'additional_prefill_slot_collectives':prefill_collectives,'layers':layers,'decode_batch_histogram':histogram,
             'additional_slot_collectives':collectives}
     result['decode_batch32_forwards_rank0']=result['ranks']['0']['decode_batch_histogram']['32']
     return result
@@ -143,8 +159,8 @@ def validate_client_summary(value,seconds,dataset_sha256):
 
 
 def summarize_comparison(groups,comparison_suite='staged'):
-    if comparison_suite not in ('staged','hopper'):raise ValueError('unknown comparison suite')
-    variants=HOPPER_VARIANTS if comparison_suite=='hopper' else VARIANTS
+    if comparison_suite not in ('staged','hopper','prefill'):raise ValueError('unknown comparison suite')
+    variants=PREFILL_VARIANTS if comparison_suite=='prefill' else HOPPER_VARIANTS if comparison_suite=='hopper' else VARIANTS
     if set(groups)!=set(variants):raise ValueError('all three eager groups required')
     identities=[groups[v]['identity'] for v in variants]
     if any(x!=identities[0] for x in identities[1:]) or identities[0].get('decode_graph')!='disabled':
@@ -153,11 +169,17 @@ def summarize_comparison(groups,comparison_suite='staged'):
     for variant in variants:
         group=groups[variant];client=group['client'];rate=client.get('decode_tokens_per_second')
         if (group['status']!='passed' or client.get('status')!='passed'
-                or group['acceptance'].get('status')!=('recorded' if comparison_suite=='hopper' else 'passed')
+                or group['acceptance'].get('status')!=('recorded' if comparison_suite in ('hopper','prefill') else 'passed')
                 or group['batch_evidence'].get('max_running_requests')!=32
                 or type(rate) not in (int,float) or not math.isfinite(rate) or rate<=0):
             raise ValueError('complete accepted C32 measurement required before ratio')
         rates[variant]=rate
+    if comparison_suite=='prefill':
+        return {'schema_version':2,'status':'passed','scope':'Hopper prefill C32 eager serving comparison',
+            'formal_gpqa':False,'identity':identities[0],'numerical_policy':'record_only',
+            'generation_comparison_policy':'record_only','decode_tokens_per_second':rates,
+            'prefill_vs_native_ratio':rates['hopper_prefill']/rates['native'],
+            'prefill_vs_old_hopper_ratio':rates['hopper_prefill']/rates['hopper_fp8']}
     if comparison_suite=='hopper':
         return {'schema_version':2,'status':'passed','scope':'Hopper C32 eager serving comparison on fixed custom workload',
             'metric':'client-observed decode tokens/s; cumulative stream counts inside window; first token excluded',

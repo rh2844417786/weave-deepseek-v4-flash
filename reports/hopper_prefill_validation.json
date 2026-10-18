@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "cpu_verified_gpu_pending",
+  "base_commit": "5629aaf",
+  "numerical_policy": "record_only",
+  "generation_comparison_policy": "record_only",
+  "prefill_source_sha256": "415a9931de1c875782fcf87a59d6294d342e392a44ca60b4ae68ddf3cf2e9345",
+  "prefill_runtime_source_sha256": "2538d4394a73d9630d733f9ef7f9a2826b6f6e52005b35f277d2618b8456c25b",
+  "decode_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "assembly_source_sha256": "8ed74ed9c02e136673dc6c6aa6eea63552d5affa7fb3bdc7c7276a0d73bae311",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "workspace_bytes_per_rank": 2369723140,
+  "focused_cpu": {
+    "tests": 108,
+    "failures": 0,
+    "errors": 0,
+    "stage": "final tree after rank coordination and coverage/wrapper fixes"
+  },
+  "full_cpu": {
+    "tests": 402,
+    "failures": 7,
+    "errors": 3,
+    "skips": 2,
+    "unchanged_baseline": true,
+    "stage": "before additional rank-failure, wrapper and coverage regression tests; all changed paths covered by final focused suite",
+    "known_methods": [
+      "PerformanceTest.test_formal_reuse_rejects_contradictory_or_missing_saved_provenance",
+      "PerformanceTest.test_wrong_order_and_modified_prepared_data_rejected",
+      "ServiceAcceptanceTest.test_logprob_drift_is_recorded_without_failing_generation"
+    ]
+  },
+  "cpu_python": "3.12.14",
+  "portable_cpp_contract": "passed",
+  "task_reviews": {
+    "cuda": "passed source review only",
+    "adapter": "passed",
+    "experiment": "passed after coordinated CUDA failure fix; wrapper and coverage reviewed in final review"
+  },
+  "whole_branch_review": "passed_after_old_prefill_counter_compatibility_fix",
+  "gpu": "not_run_locally",
+  "server_matrix": {
+    "synthetic_per_rank": 7,
+    "real_b129_layers": 43,
+    "real_large_layer0_batches": [
+      8035,
+      8192
+    ],
+    "cases_per_rank": 52
+  },
+  "server_groups": [
+    "native",
+    "hopper_fp8",
+    "hopper_prefill"
+  ],
+  "decisions": [
+    {
+      "choice": "independent compact multi-tile prefill extension",
+      "cost": "new compilation and approximately2.207GiB workspace perrank; olddecode unchanged"
+    },
+    {
+      "choice": "retain slot SUM plus outer TP assembly layout",
+      "cost": "communication remains part of actual serving performance"
+    },
+    {
+      "choice": "compare native/oldprefill+Hopperdecode/newprefill+sameHopperdecode",
+      "cost": "three model startups and600s measurement each"
+    },
+    {
+      "choice": "finite numerical and generated-content differences record-only",
+      "cost": "throughput is not task accuracy evidence"
+    },
+    {
+      "choice": "report existing GPQA baseline failures outside current scope",
+      "cost": "those preexisting tests remain unresolved"
+    }
+  ],
+  "cli_preview": "passed exact3groups/prefill flags/eager/newGPUgate"
+}

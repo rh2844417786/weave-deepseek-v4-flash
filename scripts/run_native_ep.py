@@ -22,7 +22,7 @@ from src.weave.container_lifecycle import run_container
 from src.weave.gpu_allocation import allocated_gpus
 from src.weave.execution_profile import add_profile_arguments,profile_options,profile_configuration
 from src.weave.replay_trace import validate_capture_id
-from src.weave.staged_decode import validate_decode_configuration
+from src.weave.staged_decode import validate_decode_configuration, validate_prefill_configuration
 CONTRACT = load_contract()
 DEFAULT_IMAGE = CONTRACT['image']
 
@@ -65,8 +65,12 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     if args.checkpoint_content_sha256:
         docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
     if getattr(args,'stall_diagnostic',False):
+        stall_candidate = 'native'
+        if functional:
+            stall_candidate = ('hopper_prefill' if getattr(args, 'prefill_implementation', 'persistent') == 'hopper_fp8'
+                               else args.decode_implementation)
         docker += ['-e','WEAVE_STALL_DIAGNOSTIC=1','-e',f'WEAVE_STALL_PORT_BASE={args.stall_port_base}',
-                   '-e',f'WEAVE_STALL_CANDIDATE={args.decode_implementation if functional else "native"}']
+                   '-e',f'WEAVE_STALL_CANDIDATE={stall_candidate}']
     if args.request_timing:
         docker += ['-e','WEAVE_REQUEST_TIMING=1','-e','PYTHONPATH=/workspace/timing_hooks:/workspace/src']
     elif functional:
@@ -80,6 +84,7 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
             '-e', f'WEAVE_EVIDENCE_PORT_BASE={args.evidence_port_base}',
             '-e', f'WEAVE_HOT_CACHE={int(args.hot_cache)}',
             '-e', f'WEAVE_DECODE_IMPLEMENTATION={args.decode_implementation}',
+            '-e', f'WEAVE_PREFILL_IMPLEMENTATION={getattr(args,"prefill_implementation","persistent")}',
         ]
         if args.replay_capture_dir:
             relative=args.replay_capture_dir.relative_to(args.work_root)
@@ -129,6 +134,8 @@ def main() -> int:
     parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8'],
                         default=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'),
                         help='routed expert decode implementation; staged_direct/hopper_fp8 require eager tiled hot-cache')
+    parser.add_argument('--prefill-implementation',choices=['persistent','hopper_fp8'],
+                        default=os.environ.get('WEAVE_PREFILL_IMPLEMENTATION','persistent'))
     parser.add_argument('--fixed-plan', default='1,1,0', help='explicit c,K,completed-task steal budget per comm worker')
     parser.add_argument('--evidence-port-base', type=int, default=30110)
     parser.add_argument('--run-name', help='fresh native-ep-* directory name, for acceptance orchestration')
@@ -160,6 +167,13 @@ def main() -> int:
         if args.decode_implementation in ('staged_direct','hopper_fp8') and args.backend!='weave_functional':
             raise ValueError(f'{args.decode_implementation} requires weave_functional')
         validate_decode_configuration(decode_implementation=args.decode_implementation,kernel=args.kernel,
+            hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
+            profile_path=args.profile,execution_profile=True if args.execution_profile else None,
+            replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan)
+        if args.prefill_implementation == 'hopper_fp8' and args.backend != 'weave_functional':
+            raise ValueError('hopper_fp8 prefill requires weave_functional')
+        validate_prefill_configuration(prefill_implementation=args.prefill_implementation,
+            decode_implementation=args.decode_implementation,kernel=args.kernel,
             hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
             profile_path=args.profile,execution_profile=True if args.execution_profile else None,
             replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan)
@@ -248,6 +262,7 @@ def main() -> int:
         'backend': args.backend,
         'hot_cache':args.hot_cache,
         'decode_implementation':args.decode_implementation if args.backend=='weave_functional' else 'native',
+        'prefill_implementation':args.prefill_implementation if args.backend=='weave_functional' else 'native',
         'replay_capture_enabled':args.replay_capture_dir is not None,
         'execution_profile_configuration':profile_configuration(args),
         'runtime_contract': CONTRACT, 'runtime_report': str(run_dir/'runtime.json'),
