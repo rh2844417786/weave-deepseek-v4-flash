@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-online-gate-gpqa-c32-9f1635df2afe",
+  "started_utc": "2026-10-18T12:01:51.166585+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-18T12:02:22.823189+00:00"
+}

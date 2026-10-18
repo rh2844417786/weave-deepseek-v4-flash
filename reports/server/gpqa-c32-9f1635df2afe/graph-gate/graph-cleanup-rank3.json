@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "phase": "complete",
+  "started_monotonic": 5634743.996326391,
+  "graphs_owned": 64,
+  "graphs_reset": 64,
+  "completed_phases": [
+    "synchronize",
+    "reset_graphs",
+    "synchronize_after_reset",
+    "rank_barrier",
+    "destroy_nccl",
+    "destroy_gloo"
+  ],
+  "finished_monotonic": 5634744.890124419
+}

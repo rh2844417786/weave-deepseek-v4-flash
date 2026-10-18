@@ -1,0 +1,2051 @@
+{
+  "schema_version": 1,
+  "rank": 1,
+  "world_size": 4,
+  "status": "passed",
+  "numerical_policy": "record_only",
+  "cases": [
+    {
+      "case": "b1_spread",
+      "layer": -1,
+      "batch": 1,
+      "compute_wall_seconds": 0.0007055280730128288,
+      "local_slots": 2,
+      "active_tiles": 2,
+      "max_expert_rows": 1,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.022934567673287366,
+          "max_abs": 0.000732421875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.022934567673287366,
+          "max_abs": 0.000732421875
+        }
+      },
+      "oracle_tokens": 1,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b33_empty",
+      "layer": -1,
+      "batch": 33,
+      "compute_wall_seconds": 0.00022682547569274902,
+      "local_slots": 198,
+      "active_tiles": 6,
+      "max_expert_rows": 33,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.03630719191484138,
+          "max_abs": 0.001708984375
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.03630719191484138,
+          "max_abs": 0.001708984375
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b65_skewed",
+      "layer": -1,
+      "batch": 65,
+      "compute_wall_seconds": 0.00012865569442510605,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b129_spread",
+      "layer": -1,
+      "batch": 129,
+      "compute_wall_seconds": 0.0003190934658050537,
+      "local_slots": 194,
+      "active_tiles": 8,
+      "max_expert_rows": 25,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 2.7105436416789173e-05,
+          "max_abs": 3.814697265625e-06
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04214696833493806,
+          "max_abs": 0.002197265625
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04214696833493806,
+          "max_abs": 0.002197265625
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b8035_spread",
+      "layer": -1,
+      "batch": 8035,
+      "compute_wall_seconds": 0.00032417476177215576,
+      "local_slots": 12052,
+      "active_tiles": 192,
+      "max_expert_rows": 1508,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 3.666160127895908e-05,
+          "max_abs": 4.76837158203125e-07
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.013841425629156742,
+          "max_abs": 0.0001220703125
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.013841425629156742,
+          "max_abs": 0.0001220703125
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b8192_skewed",
+      "layer": -1,
+      "batch": 8192,
+      "compute_wall_seconds": 0.0005385559052228928,
+      "local_slots": 49152,
+      "active_tiles": 768,
+      "max_expert_rows": 8192,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 1.9705937410584264e-05,
+          "max_abs": 9.5367431640625e-07
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04252816692804925,
+          "max_abs": 0.0008544921875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04252816692804925,
+          "max_abs": 0.0008544921875
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b1_shrink",
+      "layer": -1,
+      "batch": 1,
+      "compute_wall_seconds": 0.0001225098967552185,
+      "local_slots": 2,
+      "active_tiles": 2,
+      "max_expert_rows": 1,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.022934567673287366,
+          "max_abs": 0.000732421875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.022934567673287366,
+          "max_abs": 0.000732421875
+        }
+      },
+      "oracle_tokens": 1,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 0,
+      "batch": 129,
+      "compute_wall_seconds": 0.005601879209280014,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 1,
+      "batch": 129,
+      "compute_wall_seconds": 0.001961573027074337,
+      "local_slots": 774,
+      "active_tiles": 18,
+      "max_expert_rows": 129,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01605520808557392,
+          "max_abs": 0.0004119873046875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04416399285628309,
+          "max_abs": 0.0010318756103515625
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.044164913904505027,
+          "max_abs": 0.0010318756103515625
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 2,
+      "batch": 129,
+      "compute_wall_seconds": 0.00020190980285406113,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 3,
+      "batch": 129,
+      "compute_wall_seconds": 0.005648480728268623,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 4,
+      "batch": 129,
+      "compute_wall_seconds": 0.005650468170642853,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 5,
+      "batch": 129,
+      "compute_wall_seconds": 0.0019548889249563217,
+      "local_slots": 774,
+      "active_tiles": 18,
+      "max_expert_rows": 129,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.010901410770659205,
+          "max_abs": 0.0002593994140625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.042262682405571836,
+          "max_abs": 0.0009613037109375
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04226269760171955,
+          "max_abs": 0.0009613037109375
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 6,
+      "batch": 129,
+      "compute_wall_seconds": 0.005633234977722168,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 7,
+      "batch": 129,
+      "compute_wall_seconds": 0.005642535164952278,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 8,
+      "batch": 129,
+      "compute_wall_seconds": 0.005680236034095287,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 9,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056253839284181595,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 10,
+      "batch": 129,
+      "compute_wall_seconds": 0.00564546138048172,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 11,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056463927030563354,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 12,
+      "batch": 129,
+      "compute_wall_seconds": 0.005639961920678616,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 13,
+      "batch": 129,
+      "compute_wall_seconds": 0.005659741349518299,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 14,
+      "batch": 129,
+      "compute_wall_seconds": 0.005656197667121887,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 15,
+      "batch": 129,
+      "compute_wall_seconds": 0.005668658763170242,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 16,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056153712794184685,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 17,
+      "batch": 129,
+      "compute_wall_seconds": 0.005615293979644775,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 18,
+      "batch": 129,
+      "compute_wall_seconds": 0.005645787343382835,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 19,
+      "batch": 129,
+      "compute_wall_seconds": 0.005665910430252552,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 20,
+      "batch": 129,
+      "compute_wall_seconds": 0.005661705508828163,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 21,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056204721331596375,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 22,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056617604568600655,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 23,
+      "batch": 129,
+      "compute_wall_seconds": 0.005651100538671017,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 24,
+      "batch": 129,
+      "compute_wall_seconds": 0.005648622289299965,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 25,
+      "batch": 129,
+      "compute_wall_seconds": 0.005613966844975948,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 26,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056656766682863235,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 27,
+      "batch": 129,
+      "compute_wall_seconds": 0.005638987757265568,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 28,
+      "batch": 129,
+      "compute_wall_seconds": 0.005662046372890472,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 29,
+      "batch": 129,
+      "compute_wall_seconds": 0.005621002055704594,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 30,
+      "batch": 129,
+      "compute_wall_seconds": 0.005652612075209618,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 31,
+      "batch": 129,
+      "compute_wall_seconds": 0.005615811794996262,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 32,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056502921506762505,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.002694480280856017,
+          "max_abs": 0.0001220703125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04398363975310122,
+          "max_abs": 0.0007781982421875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04398363975310122,
+          "max_abs": 0.0007781982421875
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 33,
+      "batch": 129,
+      "compute_wall_seconds": 0.005648266524076462,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.025552047238781628,
+          "max_abs": 0.00042724609375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.043267487823459565,
+          "max_abs": 0.0008697509765625
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04326818356586565,
+          "max_abs": 0.0008697509765625
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 34,
+      "batch": 129,
+      "compute_wall_seconds": 0.00561651773750782,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.017270891525946408,
+          "max_abs": 0.0003662109375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.044765966240145116,
+          "max_abs": 0.000701904296875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04476376884564851,
+          "max_abs": 0.000701904296875
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 35,
+      "batch": 129,
+      "compute_wall_seconds": 0.005650808103382587,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.00045482190657696064,
+          "max_abs": 6.103515625e-05
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.042786573380552646,
+          "max_abs": 0.0007781982421875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04278648550008119,
+          "max_abs": 0.0007781982421875
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 36,
+      "batch": 129,
+      "compute_wall_seconds": 0.005633910186588764,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.024936097081183536,
+          "max_abs": 0.0004425048828125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.045106600032428966,
+          "max_abs": 0.0007495880126953125
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.045106600032428966,
+          "max_abs": 0.0007495880126953125
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 37,
+      "batch": 129,
+      "compute_wall_seconds": 0.005619850009679794,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.020116749237512565,
+          "max_abs": 0.000415802001953125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04269124795429799,
+          "max_abs": 0.0009765625
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04269380263406472,
+          "max_abs": 0.0009765625
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 38,
+      "batch": 129,
+      "compute_wall_seconds": 0.00564984604716301,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.016317546836866398,
+          "max_abs": 0.000335693359375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04220488006566093,
+          "max_abs": 0.0010852813720703125
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04220488006566093,
+          "max_abs": 0.0010852813720703125
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 39,
+      "batch": 129,
+      "compute_wall_seconds": 0.005691850557923317,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.012425629265757292,
+          "max_abs": 0.0003662109375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.039541174536098664,
+          "max_abs": 0.00091552734375
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.03954046658999508,
+          "max_abs": 0.00091552734375
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 40,
+      "batch": 129,
+      "compute_wall_seconds": 0.005660040304064751,
+      "local_slots": 220,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.014621097744323353,
+          "max_abs": 0.00042724609375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.043390326706683226,
+          "max_abs": 0.0010986328125
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.04339019956090314,
+          "max_abs": 0.0010986328125
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 41,
+      "batch": 129,
+      "compute_wall_seconds": 0.005639461800456047,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.015499322356349626,
+          "max_abs": 0.000457763671875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04312949710478502,
+          "max_abs": 0.00146484375
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.043130291114789214,
+          "max_abs": 0.00146484375
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 42,
+      "batch": 129,
+      "compute_wall_seconds": 0.005668686702847481,
+      "local_slots": 219,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.02271961098708212,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04244736808054958,
+          "max_abs": 0.0013427734375
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.042447335669149294,
+          "max_abs": 0.0013427734375
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_large",
+      "layer": 0,
+      "batch": 8035,
+      "compute_wall_seconds": 0.017214431427419186,
+      "local_slots": 12068,
+      "active_tiles": 192,
+      "max_expert_rows": 189,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_large",
+      "layer": 0,
+      "batch": 8192,
+      "compute_wall_seconds": 0.0172407366335392,
+      "local_slots": 12288,
+      "active_tiles": 192,
+      "max_expert_rows": 192,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    }
+  ],
+  "raw_content_exported": false,
+  "prefill_source_sha256": "415a9931de1c875782fcf87a59d6294d342e392a44ca60b4ae68ddf3cf2e9345",
+  "prefill_runtime_source_sha256": "2538d4394a73d9630d733f9ef7f9a2826b6f6e52005b35f277d2618b8456c25b",
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "resources": {
+    "synthetic": {
+      "numeric_contract": "hopper_fp8_e4m3_rne_satfinite_block128_mxfp4_k32_bf16_v1",
+      "numerical_policy": "record_only",
+      "max_tiles": 776,
+      "workspace_bytes": 93792356,
+      "kernel": "SM90a_TMA_FP8_M64N64K32_stage128",
+      "threads": 128,
+      "registers_per_thread": 137,
+      "static_shared_bytes": 28680,
+      "local_bytes": 8,
+      "active_blocks_per_sm": 3,
+      "binary_version": 90,
+      "ptx_version": 90,
+      "max_batch": 8192,
+      "local_experts": 8,
+      "active_expert_capacity": 8,
+      "gate_grid_capacity": 1552,
+      "down_grid_capacity": 1552,
+      "tma_transaction_bytes": 12288,
+      "weight_storage": "original readonly packed MXFP4 and E8M0 tensors; no copies",
+      "activation_quantization": "per-row K128 maxabs/448; zero=1; E4M3 RNE SATFINITE",
+      "accumulation": "FP32 K32 partial; (partial*a_scale)*b_scale then ordered FP32 add",
+      "output_boundary": "BF16 GEMM/SwiGLU/routed product; FP32 local slot storage",
+      "concurrency": "one workspace per stream; no concurrent reuse; bound storage immutable"
+    },
+    "real": {
+      "numeric_contract": "hopper_fp8_e4m3_rne_satfinite_block128_mxfp4_k32_bf16_v1",
+      "numerical_policy": "record_only",
+      "max_tiles": 832,
+      "workspace_bytes": 2369723140,
+      "kernel": "SM90a_TMA_FP8_M64N64K32_stage128",
+      "threads": 128,
+      "registers_per_thread": 137,
+      "static_shared_bytes": 28680,
+      "local_bytes": 8,
+      "active_blocks_per_sm": 3,
+      "binary_version": 90,
+      "ptx_version": 90,
+      "max_batch": 8192,
+      "local_experts": 64,
+      "active_expert_capacity": 64,
+      "gate_grid_capacity": 26624,
+      "down_grid_capacity": 53248,
+      "tma_transaction_bytes": 12288,
+      "weight_storage": "original readonly packed MXFP4 and E8M0 tensors; no copies",
+      "activation_quantization": "per-row K128 maxabs/448; zero=1; E4M3 RNE SATFINITE",
+      "accumulation": "FP32 K32 partial; (partial*a_scale)*b_scale then ordered FP32 add",
+      "output_boundary": "BF16 GEMM/SwiGLU/routed product; FP32 local slot storage",
+      "concurrency": "one workspace per stream; no concurrent reuse; bound storage immutable"
+    }
+  },
+  "binding_lifetime": {
+    "status": "passed",
+    "external_raw_references_dropped": true,
+    "bound_handle_execution_after_gc": true,
+    "local_execution_finite": true
+  },
+  "case_count": 52
+}
