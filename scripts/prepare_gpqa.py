@@ -21,6 +21,7 @@ from tokenizers import Tokenizer
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.weave.gpqa import PROMPT_PREFIX, build_message, ordered_indices
+from src.weave.calibration import atomic_json
 
 
 def sha256(path: Path) -> str:
@@ -70,6 +71,8 @@ def percentile(values: list, fraction: float) -> float:
 def write_jsonl_atomically(path: Path, records: list) -> None:
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as stream:
         temporary = Path(stream.name)
+        # Preserve inherited GPUQ named-user ACL access across root containers.
+        os.fchmod(stream.fileno(), 0o664)
         for record in records:
             stream.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n")
     os.replace(temporary, path)
@@ -143,9 +146,7 @@ def main() -> None:
         "record_sha256": sha256(records_path),
         **audit,
     }
-    (args.output_dir / "manifest.json").write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    atomic_json(args.output_dir / "manifest.json", manifest)
     print(json.dumps({"status": "prepared", "audit": audit, "record_sha256": manifest["record_sha256"]}))
 
 

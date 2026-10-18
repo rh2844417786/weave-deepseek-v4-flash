@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "cpu_verified_server_run_pending",
+  "base_commit": "95a27da",
+  "concurrency": 32,
+  "measurement_seconds_per_group": 1200,
+  "groups": [
+    "native",
+    "hopper_prefill"
+  ],
+  "decode_graph": "disabled",
+  "max_new_tokens": 32768,
+  "ignore_eos": false,
+  "reasoning_mode": "Think High",
+  "numerical_policy": "record_only",
+  "generation_comparison_policy": "record_only",
+  "accuracy_evaluated": false,
+  "focused_cpu": {
+    "tests": 103,
+    "failures": 0,
+    "errors": 0
+  },
+  "full_cpu": {
+    "tests": 442,
+    "failures": 7,
+    "errors": 3,
+    "skips": 2,
+    "existing_baseline_unchanged": true,
+    "stage": "before review regressions; all changed paths covered by final focused suite"
+  },
+  "actual_local_dataset": {
+    "count": 448,
+    "record_sha256": "cdcba49397971a26d71b444c7a00785cff3f4cb305456b2acf70e2c0dc30f888",
+    "validation": "passed"
+  },
+  "prior_gpu_bundle": {
+    "path": "reports/server/c32-prefill-63dac24bf44a",
+    "manifest_files": 98,
+    "validation": "CPU semantic validation passed with only unavailable live checkpoint/tokenizer filesystem checks mocked"
+  },
+  "cli_preview": "passed_native_and_hopper_prefill_eager_fixed32_1200",
+  "task_reviews": "passed_after_plaintext_flush_privacy_exhaustion_handshake_fixes",
+  "whole_branch_review": "passed_after_refill_exhaustion_ratio_fix",
+  "server_execution": "not_run_locally",
+  "local_test_runtime": {
+    "python": "3.12.14",
+    "aiohttp": "3.14.5"
+  },
+  "decisions": [
+    {
+      "choice": "1200 second formal window per group; setup/warmup/cleanup separate",
+      "cost": "total job longer than40minutes"
+    },
+    {
+      "choice": "32 continuous clients and maxrunning32 with actual batch evidence",
+      "cost": "natural EOS/prefill transitions can make actual batch smaller"
+    },
+    {
+      "choice": "448 unique questions once; no padding/repeats",
+      "cost": "cannot maintain C32 after queue depletion; suppress sustained ratio on refill or full exhaustion"
+    },
+    {
+      "choice": "reuse source-bound passed GPU proof",
+      "cost": "fresh workload behavior still requires real server execution"
+    },
+    {
+      "choice": "retain legacy GPQA failures outside new strict loader scope",
+      "cost": "old generic loader tests remain unresolved"
+    }
+  ],
+  "refill_regression": "417 completed31unfinished suppresses ratio;416completed32unfinished preserves it"
+}

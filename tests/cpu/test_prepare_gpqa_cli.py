@@ -75,6 +75,8 @@ class PrepareGPQACLITest(unittest.TestCase):
             ]
             result = subprocess.run(command, cwd=Path(__file__).resolve().parents[2], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual((output / "main.jsonl").stat().st_mode & 0o777, 0o664)
+            self.assertEqual((output / "manifest.json").stat().st_mode & 0o777, 0o664)
             records = [json.loads(line) for line in (output / "main.jsonl").read_text().splitlines()]
             self.assertEqual([record["row_index"] for record in records], [1, 0])
             self.assertTrue(all(record["input_token_ids"] for record in records))

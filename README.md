@@ -8,6 +8,9 @@ P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，st
 
 ## 入口
 
+- [GPQA Main：两组 C32、各20分钟对照](docs/GPQA_C32_COMPARISON.md)
+- [本轮 GPQA C32 服务器执行 Prompt](docs/SERVER_PROMPT_GPQA_C32.md)
+
 - [大行数 Hopper FP8 prefill 与三组 C32 对照](docs/HOPPER_PREFILL.md)
 - [本轮 prefill 服务器执行 Prompt](docs/SERVER_PROMPT_HOPPER_PREFILL.md)
 

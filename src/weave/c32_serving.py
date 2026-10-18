@@ -171,7 +171,7 @@ class _Moments:
                 "min": self.minimum, "max": self.maximum}
 
 
-def _count_and_terminal(value, maximum):
+def _count_and_terminal(value, maximum, *, allow_normal_eos=False):
     if not isinstance(value, dict) or "error" in value:
         raise ClientError("stream_error_event")
     meta = value.get("meta_info")
@@ -181,9 +181,13 @@ def _count_and_terminal(value, maximum):
     if type(count) is not int or not 0 <= count <= maximum:
         raise ClientError("stream_invalid_completion_tokens")
     reason = meta.get("finish_reason")
-    if reason is not None and (not isinstance(reason, dict) or reason.get("type") != "length"
-                               or count != maximum):
-        raise ClientError("stream_invalid_finish")
+    if reason is not None:
+        kind = reason.get("type") if isinstance(reason, dict) else None
+        valid = kind == "length" and count == maximum
+        if allow_normal_eos and kind in {"stop", "eos"} and count > 0:
+            valid = True
+        if not valid:
+            raise ClientError("stream_invalid_finish")
     return count, reason is not None
 
 
@@ -204,10 +208,11 @@ class WindowMetrics:
     their observed counters for diagnosis but have no usable throughput rate.
     """
 
-    def __init__(self, start, deadline, *, output_tokens=OUTPUT_TOKENS):
+    def __init__(self, start, deadline, *, output_tokens=OUTPUT_TOKENS, allow_normal_eos=False):
         if not all(math.isfinite(v) for v in (start, deadline)) or deadline <= start:
             raise ClientError("invalid_measurement_window")
         self.started, self.deadline, self.output_limit = start, deadline, output_tokens
+        self.allow_normal_eos = allow_normal_eos
         self.states = {}
         self.output_tokens = self.decode_tokens = self.positive_chunks = self.multi_chunks = 0
         self.peak_active = 0
@@ -222,7 +227,7 @@ class WindowMetrics:
         self.peak_active = max(self.peak_active, sum(v["status"] == "unfinished" for v in self.states.values()))
 
     def observe(self, index, value, timestamp):
-        count, terminal = _count_and_terminal(value, self.output_limit)
+        count, terminal = _count_and_terminal(value, self.output_limit, allow_normal_eos=self.allow_normal_eos)
         row = self.states[index]
         if count < row["count"]:
             raise ClientError("stream_regressing_completion_tokens")
