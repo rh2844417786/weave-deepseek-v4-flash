@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-gpqa-c32-862079582654-hopper_prefill",
+  "started_utc": "2026-10-18T16:07:23.929832+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-18T16:27:28.717507+00:00"
+}

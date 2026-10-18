@@ -1,0 +1,2051 @@
+{
+  "schema_version": 1,
+  "rank": 2,
+  "world_size": 4,
+  "status": "passed",
+  "numerical_policy": "record_only",
+  "cases": [
+    {
+      "case": "b1_spread",
+      "layer": -1,
+      "batch": 1,
+      "compute_wall_seconds": 0.0005728248506784439,
+      "local_slots": 1,
+      "active_tiles": 1,
+      "max_expert_rows": 1,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.279294993200827,
+          "max_abs": 0.001190185546875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.279294993200827,
+          "max_abs": 0.001190185546875
+        }
+      },
+      "oracle_tokens": 1,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b33_empty",
+      "layer": -1,
+      "batch": 33,
+      "compute_wall_seconds": 0.00024359580129384995,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b65_skewed",
+      "layer": -1,
+      "batch": 65,
+      "compute_wall_seconds": 0.00013978034257888794,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b129_spread",
+      "layer": -1,
+      "batch": 129,
+      "compute_wall_seconds": 0.00014896411448717117,
+      "local_slots": 194,
+      "active_tiles": 8,
+      "max_expert_rows": 25,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0543137182668952,
+          "max_abs": 0.0029296875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0543137182668952,
+          "max_abs": 0.0029296875
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b8035_spread",
+      "layer": -1,
+      "batch": 8035,
+      "compute_wall_seconds": 0.00033893343061208725,
+      "local_slots": 12053,
+      "active_tiles": 192,
+      "max_expert_rows": 1507,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.040024276641147404,
+          "max_abs": 0.00030517578125
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.040024276641147404,
+          "max_abs": 0.00030517578125
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b8192_skewed",
+      "layer": -1,
+      "batch": 8192,
+      "compute_wall_seconds": 0.00019064918160438538,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "b1_shrink",
+      "layer": -1,
+      "batch": 1,
+      "compute_wall_seconds": 0.000329507514834404,
+      "local_slots": 1,
+      "active_tiles": 1,
+      "max_expert_rows": 1,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.279294993200827,
+          "max_abs": 0.001190185546875
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.279294993200827,
+          "max_abs": 0.001190185546875
+        }
+      },
+      "oracle_tokens": 1,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 0,
+      "batch": 129,
+      "compute_wall_seconds": 0.005673498846590519,
+      "local_slots": 178,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 1,
+      "batch": 129,
+      "compute_wall_seconds": 0.0001970110461115837,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 2,
+      "batch": 129,
+      "compute_wall_seconds": 0.00020613055676221848,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 3,
+      "batch": 129,
+      "compute_wall_seconds": 0.005647024139761925,
+      "local_slots": 182,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 4,
+      "batch": 129,
+      "compute_wall_seconds": 0.005676792934536934,
+      "local_slots": 182,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 5,
+      "batch": 129,
+      "compute_wall_seconds": 0.00020988751202821732,
+      "local_slots": 0,
+      "active_tiles": 0,
+      "max_expert_rows": 0,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 6,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056421151384711266,
+      "local_slots": 184,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 7,
+      "batch": 129,
+      "compute_wall_seconds": 0.005674184300005436,
+      "local_slots": 184,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 8,
+      "batch": 129,
+      "compute_wall_seconds": 0.005677787587046623,
+      "local_slots": 185,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 9,
+      "batch": 129,
+      "compute_wall_seconds": 0.00565648078918457,
+      "local_slots": 187,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 10,
+      "batch": 129,
+      "compute_wall_seconds": 0.005655564367771149,
+      "local_slots": 188,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 11,
+      "batch": 129,
+      "compute_wall_seconds": 0.005692122504115105,
+      "local_slots": 188,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 12,
+      "batch": 129,
+      "compute_wall_seconds": 0.005687114782631397,
+      "local_slots": 189,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 13,
+      "batch": 129,
+      "compute_wall_seconds": 0.005662000738084316,
+      "local_slots": 190,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 14,
+      "batch": 129,
+      "compute_wall_seconds": 0.005632706917822361,
+      "local_slots": 190,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 15,
+      "batch": 129,
+      "compute_wall_seconds": 0.005702688358724117,
+      "local_slots": 191,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 16,
+      "batch": 129,
+      "compute_wall_seconds": 0.005665772594511509,
+      "local_slots": 193,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 17,
+      "batch": 129,
+      "compute_wall_seconds": 0.0056299204006791115,
+      "local_slots": 194,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 18,
+      "batch": 129,
+      "compute_wall_seconds": 0.00563850998878479,
+      "local_slots": 194,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 19,
+      "batch": 129,
+      "compute_wall_seconds": 0.005653100088238716,
+      "local_slots": 195,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 20,
+      "batch": 129,
+      "compute_wall_seconds": 0.005742551758885384,
+      "local_slots": 196,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 21,
+      "batch": 129,
+      "compute_wall_seconds": 0.005638313479721546,
+      "local_slots": 196,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 22,
+      "batch": 129,
+      "compute_wall_seconds": 0.005663016811013222,
+      "local_slots": 197,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 23,
+      "batch": 129,
+      "compute_wall_seconds": 0.005638914182782173,
+      "local_slots": 199,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 24,
+      "batch": 129,
+      "compute_wall_seconds": 0.005740519613027573,
+      "local_slots": 200,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 25,
+      "batch": 129,
+      "compute_wall_seconds": 0.005683521740138531,
+      "local_slots": 200,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 26,
+      "batch": 129,
+      "compute_wall_seconds": 0.005675707943737507,
+      "local_slots": 201,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 27,
+      "batch": 129,
+      "compute_wall_seconds": 0.005644567310810089,
+      "local_slots": 202,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 28,
+      "batch": 129,
+      "compute_wall_seconds": 0.005683543160557747,
+      "local_slots": 202,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 29,
+      "batch": 129,
+      "compute_wall_seconds": 0.005646067671477795,
+      "local_slots": 203,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 30,
+      "batch": 129,
+      "compute_wall_seconds": 0.005655504763126373,
+      "local_slots": 205,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 31,
+      "batch": 129,
+      "compute_wall_seconds": 0.005684484727680683,
+      "local_slots": 206,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 32,
+      "batch": 129,
+      "compute_wall_seconds": 0.005745369009673595,
+      "local_slots": 206,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 33,
+      "batch": 129,
+      "compute_wall_seconds": 0.005646464414894581,
+      "local_slots": 207,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 34,
+      "batch": 129,
+      "compute_wall_seconds": 0.005683932453393936,
+      "local_slots": 208,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 35,
+      "batch": 129,
+      "compute_wall_seconds": 0.005668540485203266,
+      "local_slots": 208,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 36,
+      "batch": 129,
+      "compute_wall_seconds": 0.005677332170307636,
+      "local_slots": 209,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 37,
+      "batch": 129,
+      "compute_wall_seconds": 0.005677926354110241,
+      "local_slots": 211,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 38,
+      "batch": 129,
+      "compute_wall_seconds": 0.005645260214805603,
+      "local_slots": 212,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 39,
+      "batch": 129,
+      "compute_wall_seconds": 0.005770980380475521,
+      "local_slots": 211,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 40,
+      "batch": 129,
+      "compute_wall_seconds": 0.005683017894625664,
+      "local_slots": 212,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 41,
+      "batch": 129,
+      "compute_wall_seconds": 0.005687527358531952,
+      "local_slots": 213,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_b129",
+      "layer": 42,
+      "batch": 129,
+      "compute_wall_seconds": 0.005682008340954781,
+      "local_slots": 213,
+      "active_tiles": 64,
+      "max_expert_rows": 4,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_large",
+      "layer": 0,
+      "batch": 8035,
+      "compute_wall_seconds": 0.01719560194760561,
+      "local_slots": 12064,
+      "active_tiles": 192,
+      "max_expert_rows": 189,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    },
+    {
+      "case": "real_large",
+      "layer": 0,
+      "batch": 8192,
+      "compute_wall_seconds": 0.017296554520726204,
+      "local_slots": 12288,
+      "active_tiles": 192,
+      "max_expert_rows": 192,
+      "numerical": {
+        "old_fp8": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "bf16_reference": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        }
+      },
+      "oracle_tokens": 2,
+      "metadata_exact": true,
+      "finite": true,
+      "assembly_exact": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "additional_slot_collectives": 1
+    }
+  ],
+  "raw_content_exported": false,
+  "prefill_source_sha256": "415a9931de1c875782fcf87a59d6294d342e392a44ca60b4ae68ddf3cf2e9345",
+  "prefill_runtime_source_sha256": "2538d4394a73d9630d733f9ef7f9a2826b6f6e52005b35f277d2618b8456c25b",
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "resources": {
+    "synthetic": {
+      "numeric_contract": "hopper_fp8_e4m3_rne_satfinite_block128_mxfp4_k32_bf16_v1",
+      "numerical_policy": "record_only",
+      "max_tiles": 776,
+      "workspace_bytes": 93792356,
+      "kernel": "SM90a_TMA_FP8_M64N64K32_stage128",
+      "threads": 128,
+      "registers_per_thread": 137,
+      "static_shared_bytes": 28680,
+      "local_bytes": 8,
+      "active_blocks_per_sm": 3,
+      "binary_version": 90,
+      "ptx_version": 90,
+      "max_batch": 8192,
+      "local_experts": 8,
+      "active_expert_capacity": 8,
+      "gate_grid_capacity": 1552,
+      "down_grid_capacity": 1552,
+      "tma_transaction_bytes": 12288,
+      "weight_storage": "original readonly packed MXFP4 and E8M0 tensors; no copies",
+      "activation_quantization": "per-row K128 maxabs/448; zero=1; E4M3 RNE SATFINITE",
+      "accumulation": "FP32 K32 partial; (partial*a_scale)*b_scale then ordered FP32 add",
+      "output_boundary": "BF16 GEMM/SwiGLU/routed product; FP32 local slot storage",
+      "concurrency": "one workspace per stream; no concurrent reuse; bound storage immutable"
+    },
+    "real": {
+      "numeric_contract": "hopper_fp8_e4m3_rne_satfinite_block128_mxfp4_k32_bf16_v1",
+      "numerical_policy": "record_only",
+      "max_tiles": 832,
+      "workspace_bytes": 2369723140,
+      "kernel": "SM90a_TMA_FP8_M64N64K32_stage128",
+      "threads": 128,
+      "registers_per_thread": 137,
+      "static_shared_bytes": 28680,
+      "local_bytes": 8,
+      "active_blocks_per_sm": 3,
+      "binary_version": 90,
+      "ptx_version": 90,
+      "max_batch": 8192,
+      "local_experts": 64,
+      "active_expert_capacity": 64,
+      "gate_grid_capacity": 26624,
+      "down_grid_capacity": 53248,
+      "tma_transaction_bytes": 12288,
+      "weight_storage": "original readonly packed MXFP4 and E8M0 tensors; no copies",
+      "activation_quantization": "per-row K128 maxabs/448; zero=1; E4M3 RNE SATFINITE",
+      "accumulation": "FP32 K32 partial; (partial*a_scale)*b_scale then ordered FP32 add",
+      "output_boundary": "BF16 GEMM/SwiGLU/routed product; FP32 local slot storage",
+      "concurrency": "one workspace per stream; no concurrent reuse; bound storage immutable"
+    }
+  },
+  "binding_lifetime": {
+    "status": "passed",
+    "external_raw_references_dropped": true,
+    "bound_handle_execution_after_gc": true,
+    "local_execution_finite": true
+  },
+  "case_count": 52
+}

@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-stage-event-gate-gpqa-c32-862079582654",
+  "started_utc": "2026-10-18T15:18:57.926186+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-18T15:19:20.707667+00:00"
+}

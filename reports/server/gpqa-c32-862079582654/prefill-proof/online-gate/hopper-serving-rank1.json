@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "numerical_policy": "record_only",
+  "status": "passed",
+  "rank": 1,
+  "world_size": 4,
+  "cases": [
+    {
+      "case": "b1_spread",
+      "batch": 1,
+      "additional_slot_collectives": 1,
+      "assembly_exact": true,
+      "finite": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "local_slots": 2,
+      "origin_rows": 0
+    },
+    {
+      "case": "b7_empty_rank",
+      "batch": 7,
+      "additional_slot_collectives": 1,
+      "assembly_exact": true,
+      "finite": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "local_slots": 42,
+      "origin_rows": 2
+    },
+    {
+      "case": "b17_spread",
+      "batch": 17,
+      "additional_slot_collectives": 1,
+      "assembly_exact": true,
+      "finite": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "local_slots": 25,
+      "origin_rows": 5
+    },
+    {
+      "case": "b32_spread",
+      "batch": 32,
+      "additional_slot_collectives": 1,
+      "assembly_exact": true,
+      "finite": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "local_slots": 48,
+      "origin_rows": 8
+    },
+    {
+      "case": "b7_shrink",
+      "batch": 7,
+      "additional_slot_collectives": 1,
+      "assembly_exact": true,
+      "finite": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "local_slots": 10,
+      "origin_rows": 2
+    },
+    {
+      "case": "b1_shrink",
+      "batch": 1,
+      "additional_slot_collectives": 1,
+      "assembly_exact": true,
+      "finite": true,
+      "stable_addresses": true,
+      "binding_alive": true,
+      "local_slots": 2,
+      "origin_rows": 0
+    }
+  ],
+  "case_count": 6,
+  "stop_reason": "none",
+  "runtime": {
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.3",
+    "triton": "3.6.0",
+    "device_name": "NVIDIA H100 80GB HBM3",
+    "capability": [
+      9,
+      0
+    ],
+    "device_count": 4,
+    "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155"
+  },
+  "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+  "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+  "assembly_source_sha256": "8ed74ed9c02e136673dc6c6aa6eea63552d5affa7fb3bdc7c7276a0d73bae311",
+  "ordered_finalizer": {
+    "status": "passed",
+    "case_count": 4,
+    "batches": [
+      1,
+      7,
+      17,
+      32
+    ],
+    "exact": true
+  },
+  "source_hashes_after": {
+    "candidate_source_sha256": "bcabd0f4d1ea9430c480f4637940b13dcb8becd13bb016fdf6fda658e3d3b2ce",
+    "bf16_source_sha256": "25b51a34436de7494a80d739afb03ad0065f63639e4208b784270adf3632498f",
+    "assembly_source_sha256": "8ed74ed9c02e136673dc6c6aa6eea63552d5affa7fb3bdc7c7276a0d73bae311"
+  },
+  "additional_slot_collectives": 6,
+  "stable_addresses": true,
+  "binding_lifetime": true,
+  "empty_local_rank_exercised": true,
+  "empty_origin_rank_exercised": true,
+  "resources": {
+    "threads": 128,
+    "registers_per_thread": 138,
+    "static_shared_bytes": 28680,
+    "local_bytes": 8,
+    "active_blocks_per_sm": 3,
+    "binary_version": 90,
+    "ptx_version": 90,
+    "max_batch": 32,
+    "local_experts": 8,
+    "active_expert_capacity": 8,
+    "gate_grid_capacity": 16,
+    "down_grid_capacity": 16,
+    "tma_transaction_bytes": 12288,
+    "a_map_shape": [
+      8,
+      64,
+      128
+    ],
+    "middle_map_shape": [
+      8,
+      64,
+      128
+    ]
+  }
+}
