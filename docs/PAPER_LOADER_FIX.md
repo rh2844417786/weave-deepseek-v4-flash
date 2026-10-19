@@ -1,0 +1,15 @@
+# Persistent loader 源码变更误报修复（2026-10-19）
+
+服务器提交1c8b553、报告paper-reproduction-0935002956b4停在smoke阶段，四rank cases均为空。环境校验通过；服务器提交说明记录sm_90a编译成功：persistent242寄存器、1024字节静态shared、8字节stack，无spill，prepare10寄存器；另有C7510 WGMMA跨函数边界串行化提示。原始编译日志留在服务器，因此这些编译资源数字的直接来源是服务器提交说明。
+
+阻塞为`persistent source changed during build; discard and retry`。loader把manifest内的flags列表原样传给torch.utils.cpp_extension.load；构建器会修改ldflags，使内存中的manifest与重新读取的manifest不同，即使只读源码没有变化。原独立Hopper loader已有list拷贝，新persistent loader遗漏了它。
+
+修复只将cuda_cflags、cxx_cflags、ldflags分别复制后传入。构建前后source_manifest校验保留，未关闭来源校验或修改CUDA、数值策略。
+
+两项新增回归：
+- 模拟构建器原地修改三类flags，修复前复现同样RuntimeError，修复后module attestation与原manifest/hash一致。
+- 模拟真正的source manifest变化，仍抛出错误且失败结果不进入lru_cache。
+
+与运行时、证明、controller测试组合执行23项通过（Python3.12，1.564秒），独立限定代码审查通过。当前CUDA manifest与服务器失败记录完全相同，SHA256仍为6b2d506ed5209c05b37bb13f6012e1040c78bb21d1e0b49d5d2633d89b7a98ca。无需清空已有编译缓存；Python source证明应按新版本重跑。
+
+本地修复不代表四卡机制已经运行。原失败报告不改写；拉取修复后使用SERVER_PROMPT_PAPER_REPRODUCTION.md的统一入口，从新的工作目录重新执行smoke、校准、原权重检查及服务阶段。C7510是后续需要结合真实GPU性能分析的编译提示，本轮没有吞吐数据可用于判断其影响。

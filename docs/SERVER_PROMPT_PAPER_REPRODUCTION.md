@@ -4,6 +4,10 @@
 
 目标是验证新 `hopper_persistent_paper_v1` 的真实论文机制集成：同一persistent kernel内的Hopper设备tile、路由驱动SM/chunk选择、去重dispatch、chunk流水、bubble stealing。旧hopper_fp8+NCCL路径只叫operator_candidate，不把旧结果或本地CPU测试称为完整Weave。
 
+## 本轮重跑说明
+
+上次 `paper-reproduction-0935002956b4` 编译成功，但loader把构建器对链接参数列表的修改误判成源码变化，四rank机制案例均未运行。最新修复对构建flags做副本传递，保留真正的source校验。请拉取新版本后从统一入口重跑；保留已有编译缓存和旧失败报告，不跳过smoke，不修改manifest来绕过检查。详见docs/PAPER_LOADER_FIX.md。
+
 ## 环境
 
 沿用已有lmsysorg/sglang:v0.5.17、Torch2.11/CUDA13/Python3.12、只读模型/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash、工作盘/srv/weave-work。服务器仅从GitHub取材料，不在线pip/apt/HF下载、不拉镜像。保留现有编译缓存、数据和历史报告。

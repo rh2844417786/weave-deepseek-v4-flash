@@ -93,8 +93,10 @@ def extension():
     root = _root()
     sources = [str(root / r['path']) for r in manifest['files']
                if r['path'].startswith(SOURCE_DIR.as_posix() + '/') and r['path'].endswith('.cu')]
-    module = load(name=name, sources=sources, extra_cuda_cflags=manifest['cuda_cflags'],
-        extra_cflags=manifest['cxx_cflags'], extra_ldflags=manifest['ldflags'],
+    # Torch's build helper may extend flag lists in place (notably ldflags).
+    # Keep the attested manifest unchanged for the post-build source check.
+    module = load(name=name, sources=sources, extra_cuda_cflags=list(manifest['cuda_cflags']),
+        extra_cflags=list(manifest['cxx_cflags']), extra_ldflags=list(manifest['ldflags']),
         extra_include_paths=[str(root / p) for p in manifest['include_paths']], verbose=True)
     if source_manifest() != manifest:
         raise RuntimeError('persistent source changed during build; discard and retry')
