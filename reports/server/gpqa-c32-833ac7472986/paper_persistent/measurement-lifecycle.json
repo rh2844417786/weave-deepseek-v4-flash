@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-gpqa-c32-833ac7472986-paper_persistent",
+  "started_utc": "2026-10-19T14:05:46.393434+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-19T14:26:00.460973+00:00"
+}

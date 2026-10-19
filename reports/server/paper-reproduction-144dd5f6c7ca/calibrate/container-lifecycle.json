@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-paper-calibrate-paper-reproduction-144dd5f6c7ca",
+  "started_utc": "2026-10-19T13:15:57.931518+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-19T13:16:53.618113+00:00"
+}

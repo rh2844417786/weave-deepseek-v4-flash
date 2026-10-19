@@ -1,0 +1,1396 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "implementation": "hopper_persistent_paper_v1",
+  "method_status": "paper_candidate",
+  "numerical_policy": "record_only",
+  "raw_content_exported": false,
+  "rank": 2,
+  "world_size": 4,
+  "stage": "smoke",
+  "cases": [
+    {
+      "case": "serial",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 0,
+        "computed_tiles": 32,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 24,
+        "remote_pairs": 34,
+        "remote_unique": 17,
+        "return_compute_overlap": 3,
+        "dispatch_compute_overlap": 10,
+        "c_sum": 1,
+        "k_sum": 1,
+        "steal_budget_sum": 0,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 8,
+        "profile_candidates": 0
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "dispatch_pipeline",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 0,
+        "computed_tiles": 128,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 64,
+        "remote_pairs": 384,
+        "remote_unique": 64,
+        "return_compute_overlap": 13,
+        "dispatch_compute_overlap": 117,
+        "c_sum": 1,
+        "k_sum": 4,
+        "steal_budget_sum": 0,
+        "rows": 64,
+        "tasks": 384,
+        "groups": 32,
+        "profile_candidates": 0
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "pipeline",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 0,
+        "computed_tiles": 128,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 64,
+        "remote_pairs": 384,
+        "remote_unique": 64,
+        "return_compute_overlap": 384,
+        "dispatch_compute_overlap": 0,
+        "c_sum": 130,
+        "k_sum": 4,
+        "steal_budget_sum": 0,
+        "rows": 64,
+        "tasks": 384,
+        "groups": 32,
+        "profile_candidates": 0
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "stealing",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 0,
+        "computed_tiles": 128,
+        "stolen_tiles": 62,
+        "dispatch_payloads": 64,
+        "remote_pairs": 384,
+        "remote_unique": 64,
+        "return_compute_overlap": 384,
+        "dispatch_compute_overlap": 0,
+        "c_sum": 130,
+        "k_sum": 4,
+        "steal_budget_sum": 1,
+        "rows": 64,
+        "tasks": 384,
+        "groups": 32,
+        "profile_candidates": 0
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "dynamic",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 176,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 24,
+        "remote_pairs": 34,
+        "remote_unique": 17,
+        "return_compute_overlap": 48,
+        "dispatch_compute_overlap": 0,
+        "c_sum": 32,
+        "k_sum": 8,
+        "steal_budget_sum": 0,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 44,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "dynamic_skew",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 0,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 0,
+        "remote_pairs": 0,
+        "remote_unique": 0,
+        "return_compute_overlap": 0,
+        "dispatch_compute_overlap": 0,
+        "c_sum": 0,
+        "k_sum": 1,
+        "steal_budget_sum": 0,
+        "rows": 32,
+        "tasks": 0,
+        "groups": 0,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "graph_3",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 180,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 24,
+        "remote_pairs": 35,
+        "remote_unique": 18,
+        "return_compute_overlap": 33,
+        "dispatch_compute_overlap": 8,
+        "c_sum": 32,
+        "k_sum": 8,
+        "steal_budget_sum": 0,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 45,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "graph_4",
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 180,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 24,
+        "remote_pairs": 35,
+        "remote_unique": 17,
+        "return_compute_overlap": 48,
+        "dispatch_compute_overlap": 0,
+        "c_sum": 32,
+        "k_sum": 8,
+        "steal_budget_sum": 0,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 45,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 2,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 2,
+          "ep": 4,
+          "capacity": 64,
+          "hidden_size": 128,
+          "intermediate_size": 128,
+          "top_k": 6,
+          "experts": 32
+        },
+        "workspace_bytes": 3334912,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    }
+  ],
+  "serving_source_sha256": "d3ccf78dc77f4f61117e01d8abf617f16063d9e3cadb22b749caf2de15e2bc8e",
+  "source_sha256": "6b2d506ed5209c05b37bb13f6012e1040c78bb21d1e0b49d5d2633d89b7a98ca",
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+  "resources": {
+    "implementation": "hopper_persistent_paper_v1",
+    "device": 2,
+    "clock_khz": 1980000,
+    "dimensions": {
+      "rank": 2,
+      "ep": 4,
+      "capacity": 64,
+      "hidden_size": 128,
+      "intermediate_size": 128,
+      "top_k": 6,
+      "experts": 32
+    },
+    "workspace_bytes": 3334912,
+    "workers": 132,
+    "sm_count": 132,
+    "one_cta_per_sm": true,
+    "active_blocks_per_sm": 1,
+    "grid_blocks": 132,
+    "threads_per_block": 128,
+    "dynamic_shared_bytes": 117760,
+    "shared_bytes_per_sm": 233472,
+    "tile_shared_bytes": 21504,
+    "hopper_device_compute": true,
+    "tile_rows": 64,
+    "tile_columns": 64,
+    "a_quantization": "per_output_tile_k128",
+    "kernel_attributes": {
+      "numRegs": 242,
+      "localSizeBytes": 8,
+      "sharedSizeBytes": 1024,
+      "constSizeBytes": 0,
+      "maxThreadsPerBlock": 256,
+      "binaryVersion": 90,
+      "ptxVersion": 90,
+      "maxDynamicSharedSizeBytes": 117760
+    },
+    "numerical_policy": "record_only"
+  },
+  "shape": {
+    "hidden": 128,
+    "intermediate": 128,
+    "experts": 32,
+    "capacity": 64
+  },
+  "calibration": [
+    {
+      "max_local_tokens": 8,
+      "c": 1,
+      "k": 1,
+      "compute_ms": 0.675711989402771,
+      "communication_ms": 0.6212159991264343,
+      "padded_flops": 50331648,
+      "communication_bytes": 26624,
+      "candidate": [
+        1,
+        1,
+        74486835795.95161,
+        42857878.80131737,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 1,
+      "k": 2,
+      "compute_ms": 0.675167977809906,
+      "communication_ms": 0.6263359785079956,
+      "padded_flops": 100663296,
+      "communication_bytes": 26624,
+      "candidate": [
+        1,
+        2,
+        149093706023.39468,
+        42507537.34987639,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 1,
+      "k": 4,
+      "compute_ms": 0.6976959705352783,
+      "communication_ms": 0.6432639956474304,
+      "padded_flops": 176160768,
+      "communication_bytes": 26624,
+      "candidate": [
+        1,
+        4,
+        252489301127.60712,
+        41388916.80577203,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 1,
+      "k": 8,
+      "compute_ms": 0.6996480226516724,
+      "communication_ms": 0.6546559929847717,
+      "padded_flops": 301989888,
+      "communication_bytes": 26624,
+      "candidate": [
+        1,
+        8,
+        431631160559.0702,
+        40668687.50198597,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 8,
+      "k": 1,
+      "compute_ms": 0.6378560066223145,
+      "communication_ms": 0.5985919833183289,
+      "padded_flops": 50331648,
+      "communication_bytes": 26624,
+      "candidate": [
+        8,
+        1,
+        78907539440.64093,
+        44477708.92688595,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 8,
+      "k": 2,
+      "compute_ms": 0.6511039733886719,
+      "communication_ms": 0.6023359894752502,
+      "padded_flops": 100663296,
+      "communication_bytes": 26624,
+      "candidate": [
+        8,
+        2,
+        154604026567.5199,
+        44201243.93230195,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 8,
+      "k": 4,
+      "compute_ms": 0.668287992477417,
+      "communication_ms": 0.6103360056877136,
+      "padded_flops": 176160768,
+      "communication_bytes": 26624,
+      "candidate": [
+        8,
+        4,
+        263600079580.8895,
+        43621873.44657906,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 8,
+      "k": 8,
+      "compute_ms": 0.6961600184440613,
+      "communication_ms": 0.6487360000610352,
+      "padded_flops": 301989888,
+      "communication_bytes": 26624,
+      "candidate": [
+        8,
+        8,
+        433793783037.0617,
+        41039806.635511406,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 16,
+      "k": 1,
+      "compute_ms": 0.6416959762573242,
+      "communication_ms": 0.5876799821853638,
+      "padded_flops": 50331648,
+      "communication_bytes": 26624,
+      "candidate": [
+        16,
+        1,
+        78435349234.31822,
+        45303567.94014869,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 16,
+      "k": 2,
+      "compute_ms": 0.6555839776992798,
+      "communication_ms": 0.604416012763977,
+      "padded_flops": 100663296,
+      "communication_bytes": 26624,
+      "candidate": [
+        16,
+        2,
+        153547523161.36505,
+        44049130.79362212,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 16,
+      "k": 4,
+      "compute_ms": 0.6569280028343201,
+      "communication_ms": 0.6096000075340271,
+      "padded_flops": 176160768,
+      "communication_bytes": 26624,
+      "candidate": [
+        16,
+        4,
+        268158408897.09866,
+        43674540.14264244,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 16,
+      "k": 8,
+      "compute_ms": 0.696287989616394,
+      "communication_ms": 0.6402559876441956,
+      "padded_flops": 301989888,
+      "communication_bytes": 26624,
+      "candidate": [
+        16,
+        8,
+        433714055826.7784,
+        41583367.45582385,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 32,
+      "k": 1,
+      "compute_ms": 0.6361920237541199,
+      "communication_ms": 0.5873600244522095,
+      "padded_flops": 50331648,
+      "communication_bytes": 26624,
+      "candidate": [
+        32,
+        1,
+        79113924916.87782,
+        45328246.54662255,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 32,
+      "k": 2,
+      "compute_ms": 0.6488000154495239,
+      "communication_ms": 0.5965440273284912,
+      "padded_flops": 100663296,
+      "communication_bytes": 26624,
+      "candidate": [
+        32,
+        2,
+        155153041928.11246,
+        44630402.41846107,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 32,
+      "k": 4,
+      "compute_ms": 0.6572160124778748,
+      "communication_ms": 0.6085759997367859,
+      "padded_flops": 176160768,
+      "communication_bytes": 26624,
+      "candidate": [
+        32,
+        4,
+        268040894706.48813,
+        43748028.20274723,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 8,
+      "c": 32,
+      "k": 8,
+      "compute_ms": 0.6927040219306946,
+      "communication_ms": 0.641759991645813,
+      "padded_flops": 301989888,
+      "communication_bytes": 26624,
+      "candidate": [
+        32,
+        8,
+        435958040431.60913,
+        41485914.27727045,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 1,
+      "k": 1,
+      "compute_ms": 1.2165440320968628,
+      "communication_ms": 1.15392005443573,
+      "padded_flops": 50331648,
+      "communication_bytes": 106496,
+      "candidate": [
+        1,
+        1,
+        41372647986.48285,
+        92290622.37944798,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 1,
+      "k": 2,
+      "compute_ms": 1.2110079526901245,
+      "communication_ms": 1.163040041923523,
+      "padded_flops": 100663296,
+      "communication_bytes": 106496,
+      "candidate": [
+        1,
+        2,
+        83123563124.74023,
+        91566924.74995866,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 1,
+      "k": 4,
+      "compute_ms": 1.1727039813995361,
+      "communication_ms": 1.150272011756897,
+      "padded_flops": 201326592,
+      "communication_bytes": 106496,
+      "candidate": [
+        1,
+        4,
+        171677247790.81204,
+        92583318.47728838,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 1,
+      "k": 8,
+      "compute_ms": 1.2252800464630127,
+      "communication_ms": 1.1812160015106201,
+      "padded_flops": 402653184,
+      "communication_bytes": 106496,
+      "candidate": [
+        1,
+        8,
+        328621350818.80225,
+        90157938.82220154,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 8,
+      "k": 1,
+      "compute_ms": 1.098431944847107,
+      "communication_ms": 1.048416018486023,
+      "padded_flops": 50331648,
+      "communication_bytes": 106496,
+      "candidate": [
+        8,
+        1,
+        45821362202.83157,
+        101577997.78163134,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 8,
+      "k": 2,
+      "compute_ms": 1.0716160535812378,
+      "communication_ms": 1.0178240537643433,
+      "padded_flops": 100663296,
+      "communication_bytes": 106496,
+      "candidate": [
+        8,
+        2,
+        93935972369.57486,
+        104631050.52993472,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 8,
+      "k": 4,
+      "compute_ms": 1.0911680459976196,
+      "communication_ms": 1.0477759838104248,
+      "padded_flops": 201326592,
+      "communication_bytes": 106496,
+      "candidate": [
+        8,
+        4,
+        184505578896.35928,
+        101640046.7709789,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 8,
+      "k": 8,
+      "compute_ms": 1.1431360244750977,
+      "communication_ms": 1.0950720310211182,
+      "padded_flops": 402653184,
+      "communication_bytes": 106496,
+      "candidate": [
+        8,
+        8,
+        352235582974.379,
+        97250223.71423005,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 16,
+      "k": 1,
+      "compute_ms": 1.1104320287704468,
+      "communication_ms": 0.9973440170288086,
+      "padded_flops": 50331648,
+      "communication_bytes": 106496,
+      "candidate": [
+        16,
+        1,
+        45326185390.861755,
+        106779604.81205136,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 16,
+      "k": 2,
+      "compute_ms": 1.0618239641189575,
+      "communication_ms": 1.002560019493103,
+      "padded_flops": 100663296,
+      "communication_bytes": 106496,
+      "candidate": [
+        16,
+        2,
+        94802245383.04219,
+        106224064.32469214,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 16,
+      "k": 4,
+      "compute_ms": 1.1045759916305542,
+      "communication_ms": 1.0350719690322876,
+      "padded_flops": 201326592,
+      "communication_bytes": 106496,
+      "candidate": [
+        16,
+        4,
+        182265949581.97986,
+        102887531.6752762,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 16,
+      "k": 8,
+      "compute_ms": 1.1397440433502197,
+      "communication_ms": 1.0865600109100342,
+      "padded_flops": 402653184,
+      "communication_bytes": 106496,
+      "candidate": [
+        16,
+        8,
+        353283867855.4717,
+        98012073.82075994,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 32,
+      "k": 1,
+      "compute_ms": 1.1075199842453003,
+      "communication_ms": 0.9980159997940063,
+      "padded_flops": 50331648,
+      "communication_bytes": 106496,
+      "candidate": [
+        32,
+        1,
+        45445363258.431496,
+        106707708.11488104,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 32,
+      "k": 2,
+      "compute_ms": 1.076192021369934,
+      "communication_ms": 1.002336025238037,
+      "padded_flops": 100663296,
+      "communication_bytes": 106496,
+      "candidate": [
+        32,
+        2,
+        93536556674.952,
+        106247802.45198618,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 32,
+      "k": 4,
+      "compute_ms": 1.0904959440231323,
+      "communication_ms": 1.0384960174560547,
+      "padded_flops": 201326592,
+      "communication_bytes": 106496,
+      "candidate": [
+        32,
+        4,
+        184619294646.115,
+        102548298.8956253,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 32,
+      "c": 32,
+      "k": 8,
+      "compute_ms": 1.1443519592285156,
+      "communication_ms": 1.0951679944992065,
+      "padded_flops": 402653184,
+      "communication_bytes": 106496,
+      "candidate": [
+        32,
+        8,
+        351861313954.0177,
+        97241702.21820444,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 1,
+      "k": 1,
+      "compute_ms": 1.9595520496368408,
+      "communication_ms": 1.8576639890670776,
+      "padded_flops": 50331648,
+      "communication_bytes": 212992,
+      "candidate": [
+        1,
+        1,
+        25685282516.138237,
+        114655826.48612626,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 1,
+      "k": 2,
+      "compute_ms": 1.8587199449539185,
+      "communication_ms": 1.861664056777954,
+      "padded_flops": 100663296,
+      "communication_bytes": 212992,
+      "candidate": [
+        1,
+        2,
+        54157322771.12659,
+        114409471.04529297,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 1,
+      "k": 4,
+      "compute_ms": 1.8477120399475098,
+      "communication_ms": 1.8256319761276245,
+      "padded_flops": 201326592,
+      "communication_bytes": 212992,
+      "candidate": [
+        1,
+        4,
+        108959939453.40062,
+        116667544.60106497,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 1,
+      "k": 8,
+      "compute_ms": 1.8337279558181763,
+      "communication_ms": 1.827936053276062,
+      "padded_flops": 402653184,
+      "communication_bytes": 212992,
+      "candidate": [
+        1,
+        8,
+        219581744785.2255,
+        116520487.47453263,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 8,
+      "k": 1,
+      "compute_ms": 1.7078720331192017,
+      "communication_ms": 1.6352319717407227,
+      "padded_flops": 50331648,
+      "communication_bytes": 212992,
+      "candidate": [
+        8,
+        1,
+        29470385968.0142,
+        130251856.42209995,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 8,
+      "k": 2,
+      "compute_ms": 1.632256031036377,
+      "communication_ms": 1.5656960010528564,
+      "padded_flops": 100663296,
+      "communication_bytes": 212992,
+      "candidate": [
+        8,
+        2,
+        61671266079.55329,
+        136036625.15378013,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 8,
+      "k": 4,
+      "compute_ms": 1.674880027770996,
+      "communication_ms": 1.6172800064086914,
+      "padded_flops": 201326592,
+      "communication_bytes": 212992,
+      "candidate": [
+        8,
+        4,
+        120203589906.03899,
+        131697664.6938009,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 8,
+      "k": 8,
+      "compute_ms": 1.7255359888076782,
+      "communication_ms": 1.667423963546753,
+      "padded_flops": 402653184,
+      "communication_bytes": 212992,
+      "candidate": [
+        8,
+        8,
+        233349629687.07935,
+        127737159.02879785,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 16,
+      "k": 1,
+      "compute_ms": 1.6877440214157104,
+      "communication_ms": 1.5693440437316895,
+      "padded_flops": 50331648,
+      "communication_bytes": 212992,
+      "candidate": [
+        16,
+        1,
+        29821849380.79703,
+        135720399.13793132,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 16,
+      "k": 2,
+      "compute_ms": 1.6424640417099,
+      "communication_ms": 1.5561280250549316,
+      "padded_flops": 100663296,
+      "communication_bytes": 212992,
+      "candidate": [
+        16,
+        2,
+        61287975531.691826,
+        136873057.08184347,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 16,
+      "k": 4,
+      "compute_ms": 1.6758400201797485,
+      "communication_ms": 1.6096960306167603,
+      "padded_flops": 201326592,
+      "communication_bytes": 212992,
+      "candidate": [
+        16,
+        4,
+        120134732179.51076,
+        132318149.4821674,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 16,
+      "k": 8,
+      "compute_ms": 1.7161920070648193,
+      "communication_ms": 1.6596479415893555,
+      "padded_flops": 402653184,
+      "communication_bytes": 212992,
+      "candidate": [
+        16,
+        8,
+        234620125453.59213,
+        128335651.59369223,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 32,
+      "k": 1,
+      "compute_ms": 1.68995201587677,
+      "communication_ms": 1.583359956741333,
+      "padded_flops": 50331648,
+      "communication_bytes": 212992,
+      "candidate": [
+        32,
+        1,
+        29782885861.340424,
+        134519001.24994487,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 32,
+      "k": 2,
+      "compute_ms": 1.6351360082626343,
+      "communication_ms": 1.5637439489364624,
+      "padded_flops": 100663296,
+      "communication_bytes": 212992,
+      "candidate": [
+        32,
+        2,
+        61562644019.41514,
+        136206442.33019137,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 32,
+      "k": 4,
+      "compute_ms": 1.678655982017517,
+      "communication_ms": 1.6132160425186157,
+      "padded_flops": 201326592,
+      "communication_bytes": 212992,
+      "candidate": [
+        32,
+        4,
+        119933204990.59773,
+        132029433.37178113,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "max_local_tokens": 64,
+      "c": 32,
+      "k": 8,
+      "compute_ms": 1.721567988395691,
+      "communication_ms": 1.659551978111267,
+      "padded_flops": 402653184,
+      "communication_bytes": 212992,
+      "candidate": [
+        32,
+        8,
+        233887471603.8533,
+        128343072.59384896,
+        1.0,
+        0.0
+      ]
+    }
+  ],
+  "profile_bank_sha256": "5e0371cfed468a273b8c8788b7b4e1725865f9e8322e6b1c8a8a75d1db2bffb2",
+  "gpu_checks_status": "passed",
+  "source_sha256_after": "6b2d506ed5209c05b37bb13f6012e1040c78bb21d1e0b49d5d2633d89b7a98ca",
+  "serving_source_sha256_after": "d3ccf78dc77f4f61117e01d8abf617f16063d9e3cadb22b749caf2de15e2bc8e",
+  "cleanup": {
+    "status": "complete",
+    "phase": "complete",
+    "started_monotonic": 5725559.937478344,
+    "graphs_owned": 1,
+    "graphs_reset": 1,
+    "completed_phases": [
+      "synchronize",
+      "reset_graphs",
+      "synchronize_after_reset",
+      "rank_barrier",
+      "destroy_nccl",
+      "destroy_gloo"
+    ],
+    "finished_monotonic": 5725559.94186435
+  }
+}

@@ -1,0 +1,4570 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "implementation": "hopper_persistent_paper_v1",
+  "method_status": "paper_candidate",
+  "numerical_policy": "record_only",
+  "raw_content_exported": false,
+  "rank": 1,
+  "world_size": 4,
+  "stage": "checkpoint",
+  "cases": [
+    {
+      "case": "checkpoint",
+      "layer": 0,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01943840074021821,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04341018667581541,
+          "max_abs": 0.001720428466796875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4992,
+        "stolen_tiles": 30,
+        "dispatch_payloads": 19,
+        "remote_pairs": 28,
+        "remote_unique": 11,
+        "return_compute_overlap": 2,
+        "dispatch_compute_overlap": 149,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 36,
+        "rows": 8,
+        "tasks": 52,
+        "groups": 52,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 1,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01512040825583562,
+          "max_abs": 0.00075531005859375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04256254548551129,
+          "max_abs": 0.0018310546875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4992,
+        "stolen_tiles": 35,
+        "dispatch_payloads": 19,
+        "remote_pairs": 27,
+        "remote_unique": 11,
+        "return_compute_overlap": 52,
+        "dispatch_compute_overlap": 148,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 36,
+        "rows": 8,
+        "tasks": 52,
+        "groups": 52,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 2,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.021737147305608603,
+          "max_abs": 0.000823974609375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0438199311535492,
+          "max_abs": 0.0015869140625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4992,
+        "stolen_tiles": 36,
+        "dispatch_payloads": 18,
+        "remote_pairs": 27,
+        "remote_unique": 10,
+        "return_compute_overlap": 52,
+        "dispatch_compute_overlap": 140,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 36,
+        "rows": 8,
+        "tasks": 52,
+        "groups": 52,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 3,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.021338103679335096,
+          "max_abs": 0.00115966796875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.041998679219240616,
+          "max_abs": 0.00168609619140625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4896,
+        "stolen_tiles": 35,
+        "dispatch_payloads": 18,
+        "remote_pairs": 27,
+        "remote_unique": 10,
+        "return_compute_overlap": 19,
+        "dispatch_compute_overlap": 139,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 35,
+        "rows": 8,
+        "tasks": 51,
+        "groups": 51,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 4,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.014264481772944303,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04244622858642304,
+          "max_abs": 0.001708984375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4800,
+        "stolen_tiles": 33,
+        "dispatch_payloads": 18,
+        "remote_pairs": 27,
+        "remote_unique": 10,
+        "return_compute_overlap": 7,
+        "dispatch_compute_overlap": 135,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 34,
+        "rows": 8,
+        "tasks": 50,
+        "groups": 50,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 5,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.02013078484927155,
+          "max_abs": 0.00086212158203125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.040223193751084824,
+          "max_abs": 0.0016021728515625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4896,
+        "stolen_tiles": 32,
+        "dispatch_payloads": 18,
+        "remote_pairs": 28,
+        "remote_unique": 10,
+        "return_compute_overlap": 50,
+        "dispatch_compute_overlap": 135,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 35,
+        "rows": 8,
+        "tasks": 51,
+        "groups": 51,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 6,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0036524302392349343,
+          "max_abs": 0.000244140625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04151861186294075,
+          "max_abs": 0.00152587890625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4896,
+        "stolen_tiles": 33,
+        "dispatch_payloads": 18,
+        "remote_pairs": 29,
+        "remote_unique": 10,
+        "return_compute_overlap": 9,
+        "dispatch_compute_overlap": 142,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 35,
+        "rows": 8,
+        "tasks": 51,
+        "groups": 51,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 7,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.015342404958960063,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.041778827026618934,
+          "max_abs": 0.00164794921875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4800,
+        "stolen_tiles": 34,
+        "dispatch_payloads": 18,
+        "remote_pairs": 29,
+        "remote_unique": 10,
+        "return_compute_overlap": 50,
+        "dispatch_compute_overlap": 146,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 34,
+        "rows": 8,
+        "tasks": 50,
+        "groups": 50,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 8,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.012436249396247188,
+          "max_abs": 0.0006103515625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04133407116088794,
+          "max_abs": 0.0015869140625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4800,
+        "stolen_tiles": 34,
+        "dispatch_payloads": 18,
+        "remote_pairs": 28,
+        "remote_unique": 10,
+        "return_compute_overlap": 48,
+        "dispatch_compute_overlap": 137,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 34,
+        "rows": 8,
+        "tasks": 50,
+        "groups": 50,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 9,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.004984055604901677,
+          "max_abs": 0.000244140625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0417949022008404,
+          "max_abs": 0.001495361328125
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4800,
+        "stolen_tiles": 34,
+        "dispatch_payloads": 17,
+        "remote_pairs": 28,
+        "remote_unique": 9,
+        "return_compute_overlap": 50,
+        "dispatch_compute_overlap": 134,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 34,
+        "rows": 8,
+        "tasks": 50,
+        "groups": 50,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 10,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01717189178814379,
+          "max_abs": 0.0007476806640625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.039273419165393335,
+          "max_abs": 0.00146484375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4704,
+        "stolen_tiles": 32,
+        "dispatch_payloads": 17,
+        "remote_pairs": 28,
+        "remote_unique": 9,
+        "return_compute_overlap": 0,
+        "dispatch_compute_overlap": 130,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 49,
+        "groups": 49,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 11,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.014890955393568566,
+          "max_abs": 0.00067138671875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.03988976123954022,
+          "max_abs": 0.00152587890625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4608,
+        "stolen_tiles": 27,
+        "dispatch_payloads": 17,
+        "remote_pairs": 27,
+        "remote_unique": 9,
+        "return_compute_overlap": 47,
+        "dispatch_compute_overlap": 136,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 48,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 12,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01431548193883444,
+          "max_abs": 0.000640869140625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04159304758408499,
+          "max_abs": 0.001434326171875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4704,
+        "stolen_tiles": 32,
+        "dispatch_payloads": 17,
+        "remote_pairs": 28,
+        "remote_unique": 9,
+        "return_compute_overlap": 4,
+        "dispatch_compute_overlap": 135,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 49,
+        "groups": 49,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 13,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01773945578495589,
+          "max_abs": 0.0008544921875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.03992069014981641,
+          "max_abs": 0.0017242431640625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4704,
+        "stolen_tiles": 33,
+        "dispatch_payloads": 17,
+        "remote_pairs": 29,
+        "remote_unique": 9,
+        "return_compute_overlap": 33,
+        "dispatch_compute_overlap": 128,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 49,
+        "groups": 49,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 14,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.021069270704656914,
+          "max_abs": 0.000885009765625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.042355849217385666,
+          "max_abs": 0.001556396484375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4608,
+        "stolen_tiles": 33,
+        "dispatch_payloads": 17,
+        "remote_pairs": 29,
+        "remote_unique": 9,
+        "return_compute_overlap": 48,
+        "dispatch_compute_overlap": 138,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 48,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 15,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0158574260624396,
+          "max_abs": 0.00067138671875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04232333827144043,
+          "max_abs": 0.001628875732421875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4608,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 17,
+        "remote_pairs": 29,
+        "remote_unique": 9,
+        "return_compute_overlap": 47,
+        "dispatch_compute_overlap": 141,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 48,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 16,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.02201951474768805,
+          "max_abs": 0.00079345703125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04217325221342409,
+          "max_abs": 0.001739501953125
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4608,
+        "stolen_tiles": 33,
+        "dispatch_payloads": 16,
+        "remote_pairs": 29,
+        "remote_unique": 8,
+        "return_compute_overlap": 47,
+        "dispatch_compute_overlap": 130,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 48,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 17,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.017750979325098788,
+          "max_abs": 0.00067138671875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04249349693417326,
+          "max_abs": 0.00152587890625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4512,
+        "stolen_tiles": 32,
+        "dispatch_payloads": 16,
+        "remote_pairs": 29,
+        "remote_unique": 8,
+        "return_compute_overlap": 46,
+        "dispatch_compute_overlap": 130,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 32,
+        "rows": 8,
+        "tasks": 47,
+        "groups": 47,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 18,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.013716961181221971,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.039391096713623494,
+          "max_abs": 0.001708984375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4512,
+        "stolen_tiles": 32,
+        "dispatch_payloads": 17,
+        "remote_pairs": 29,
+        "remote_unique": 9,
+        "return_compute_overlap": 47,
+        "dispatch_compute_overlap": 146,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 32,
+        "rows": 8,
+        "tasks": 47,
+        "groups": 47,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 19,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01459638797405148,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04358405850229731,
+          "max_abs": 0.00152587890625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4608,
+        "stolen_tiles": 32,
+        "dispatch_payloads": 17,
+        "remote_pairs": 30,
+        "remote_unique": 9,
+        "return_compute_overlap": 0,
+        "dispatch_compute_overlap": 142,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 33,
+        "rows": 8,
+        "tasks": 48,
+        "groups": 48,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 20,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.008106205735481733,
+          "max_abs": 0.00048828125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04146543480151962,
+          "max_abs": 0.00164794921875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4512,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 17,
+        "remote_pairs": 30,
+        "remote_unique": 9,
+        "return_compute_overlap": 5,
+        "dispatch_compute_overlap": 144,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 32,
+        "rows": 8,
+        "tasks": 47,
+        "groups": 47,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 21,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01350768257657746,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04291773395374616,
+          "max_abs": 0.00173187255859375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4416,
+        "stolen_tiles": 31,
+        "dispatch_payloads": 17,
+        "remote_pairs": 30,
+        "remote_unique": 9,
+        "return_compute_overlap": 46,
+        "dispatch_compute_overlap": 137,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 31,
+        "rows": 8,
+        "tasks": 46,
+        "groups": 46,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 22,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.019965115242062303,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.042608249291682505,
+          "max_abs": 0.00164794921875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4416,
+        "stolen_tiles": 31,
+        "dispatch_payloads": 17,
+        "remote_pairs": 30,
+        "remote_unique": 9,
+        "return_compute_overlap": 46,
+        "dispatch_compute_overlap": 132,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 31,
+        "rows": 8,
+        "tasks": 46,
+        "groups": 46,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 23,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.02131657683188474,
+          "max_abs": 0.000885009765625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.043594604135027554,
+          "max_abs": 0.00146484375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4416,
+        "stolen_tiles": 27,
+        "dispatch_payloads": 16,
+        "remote_pairs": 31,
+        "remote_unique": 9,
+        "return_compute_overlap": 46,
+        "dispatch_compute_overlap": 139,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 31,
+        "rows": 8,
+        "tasks": 46,
+        "groups": 46,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 24,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.016813351595521282,
+          "max_abs": 0.00087738037109375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.043306337791046805,
+          "max_abs": 0.001617431640625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4320,
+        "stolen_tiles": 30,
+        "dispatch_payloads": 16,
+        "remote_pairs": 31,
+        "remote_unique": 9,
+        "return_compute_overlap": 18,
+        "dispatch_compute_overlap": 121,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 30,
+        "rows": 8,
+        "tasks": 45,
+        "groups": 45,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 25,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.016579165015659824,
+          "max_abs": 0.0005645751953125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.044754787080208525,
+          "max_abs": 0.0015869140625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4320,
+        "stolen_tiles": 25,
+        "dispatch_payloads": 17,
+        "remote_pairs": 31,
+        "remote_unique": 10,
+        "return_compute_overlap": 42,
+        "dispatch_compute_overlap": 135,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 30,
+        "rows": 8,
+        "tasks": 45,
+        "groups": 45,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 26,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01495424561899503,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.0438940251646367,
+          "max_abs": 0.00167083740234375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4416,
+        "stolen_tiles": 31,
+        "dispatch_payloads": 17,
+        "remote_pairs": 32,
+        "remote_unique": 10,
+        "return_compute_overlap": 46,
+        "dispatch_compute_overlap": 147,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 31,
+        "rows": 8,
+        "tasks": 46,
+        "groups": 46,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 27,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01894408760744058,
+          "max_abs": 0.00081634521484375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04255871728409105,
+          "max_abs": 0.001708984375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4320,
+        "stolen_tiles": 30,
+        "dispatch_payloads": 17,
+        "remote_pairs": 32,
+        "remote_unique": 10,
+        "return_compute_overlap": 45,
+        "dispatch_compute_overlap": 135,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 30,
+        "rows": 8,
+        "tasks": 45,
+        "groups": 45,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 28,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0038378098151270984,
+          "max_abs": 0.000244140625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04258117169588357,
+          "max_abs": 0.0018310546875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4224,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 17,
+        "remote_pairs": 31,
+        "remote_unique": 10,
+        "return_compute_overlap": 22,
+        "dispatch_compute_overlap": 130,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 30,
+        "rows": 8,
+        "tasks": 44,
+        "groups": 44,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 29,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.018104237598221697,
+          "max_abs": 0.0007152557373046875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04348828110001638,
+          "max_abs": 0.00164794921875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4224,
+        "stolen_tiles": 28,
+        "dispatch_payloads": 17,
+        "remote_pairs": 31,
+        "remote_unique": 10,
+        "return_compute_overlap": 42,
+        "dispatch_compute_overlap": 137,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 30,
+        "rows": 8,
+        "tasks": 44,
+        "groups": 44,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 30,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.020225802641853207,
+          "max_abs": 0.000823974609375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04342626250033797,
+          "max_abs": 0.001678466796875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4224,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 16,
+        "remote_pairs": 32,
+        "remote_unique": 10,
+        "return_compute_overlap": 11,
+        "dispatch_compute_overlap": 141,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 30,
+        "rows": 8,
+        "tasks": 44,
+        "groups": 44,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 31,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.020416262019211342,
+          "max_abs": 0.000885009765625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04366289973001091,
+          "max_abs": 0.00177001953125
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4128,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 16,
+        "remote_pairs": 32,
+        "remote_unique": 10,
+        "return_compute_overlap": 43,
+        "dispatch_compute_overlap": 124,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 29,
+        "rows": 8,
+        "tasks": 43,
+        "groups": 43,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 32,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.010580370917026509,
+          "max_abs": 0.000579833984375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04333672508177542,
+          "max_abs": 0.00191497802734375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4128,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 17,
+        "remote_pairs": 32,
+        "remote_unique": 11,
+        "return_compute_overlap": 43,
+        "dispatch_compute_overlap": 134,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 29,
+        "rows": 8,
+        "tasks": 43,
+        "groups": 43,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 33,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.014455322711922751,
+          "max_abs": 0.000823974609375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04239329423123931,
+          "max_abs": 0.0015411376953125
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4224,
+        "stolen_tiles": 26,
+        "dispatch_payloads": 17,
+        "remote_pairs": 33,
+        "remote_unique": 11,
+        "return_compute_overlap": 1,
+        "dispatch_compute_overlap": 139,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 29,
+        "rows": 8,
+        "tasks": 44,
+        "groups": 44,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 34,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.008820794169788869,
+          "max_abs": 0.0003662109375
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04385379193260698,
+          "max_abs": 0.0015869140625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4128,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 17,
+        "remote_pairs": 33,
+        "remote_unique": 11,
+        "return_compute_overlap": 23,
+        "dispatch_compute_overlap": 143,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 29,
+        "rows": 8,
+        "tasks": 43,
+        "groups": 43,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 35,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.0172717737701705,
+          "max_abs": 0.0006866455078125
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.042881540317180944,
+          "max_abs": 0.001708984375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4128,
+        "stolen_tiles": 29,
+        "dispatch_payloads": 17,
+        "remote_pairs": 33,
+        "remote_unique": 11,
+        "return_compute_overlap": 43,
+        "dispatch_compute_overlap": 130,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 29,
+        "rows": 8,
+        "tasks": 43,
+        "groups": 43,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 36,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.021856871338489344,
+          "max_abs": 0.0008697509765625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04380436288649482,
+          "max_abs": 0.00152587890625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4128,
+        "stolen_tiles": 28,
+        "dispatch_payloads": 17,
+        "remote_pairs": 33,
+        "remote_unique": 11,
+        "return_compute_overlap": 41,
+        "dispatch_compute_overlap": 136,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 29,
+        "rows": 8,
+        "tasks": 43,
+        "groups": 43,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 37,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.014835980230684893,
+          "max_abs": 0.0006103515625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04192960761270849,
+          "max_abs": 0.00164794921875
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4032,
+        "stolen_tiles": 22,
+        "dispatch_payloads": 16,
+        "remote_pairs": 33,
+        "remote_unique": 11,
+        "return_compute_overlap": 42,
+        "dispatch_compute_overlap": 133,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 28,
+        "rows": 8,
+        "tasks": 42,
+        "groups": 42,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 38,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.017208157839669433,
+          "max_abs": 0.0008544921875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04298268041080471,
+          "max_abs": 0.001983642578125
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 3936,
+        "stolen_tiles": 27,
+        "dispatch_payloads": 16,
+        "remote_pairs": 33,
+        "remote_unique": 11,
+        "return_compute_overlap": 40,
+        "dispatch_compute_overlap": 135,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 27,
+        "rows": 8,
+        "tasks": 41,
+        "groups": 41,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 39,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.01443163943588153,
+          "max_abs": 0.000946044921875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.03198622234429141,
+          "max_abs": 0.001861572265625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 3936,
+        "stolen_tiles": 24,
+        "dispatch_payloads": 17,
+        "remote_pairs": 33,
+        "remote_unique": 12,
+        "return_compute_overlap": 26,
+        "dispatch_compute_overlap": 137,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 27,
+        "rows": 8,
+        "tasks": 41,
+        "groups": 41,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 40,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.015974969848968755,
+          "max_abs": 0.000732421875
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04089944865795449,
+          "max_abs": 0.00177001953125
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 4032,
+        "stolen_tiles": 24,
+        "dispatch_payloads": 17,
+        "remote_pairs": 34,
+        "remote_unique": 12,
+        "return_compute_overlap": 40,
+        "dispatch_compute_overlap": 143,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 28,
+        "rows": 8,
+        "tasks": 42,
+        "groups": 42,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 41,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.021810619484224646,
+          "max_abs": 0.0009765625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04301341443894698,
+          "max_abs": 0.002197265625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 3936,
+        "stolen_tiles": 25,
+        "dispatch_payloads": 17,
+        "remote_pairs": 34,
+        "remote_unique": 12,
+        "return_compute_overlap": 41,
+        "dispatch_compute_overlap": 134,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 27,
+        "rows": 8,
+        "tasks": 41,
+        "groups": 41,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 42,
+      "phase": "decode",
+      "batch": 32,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.014314672761092731,
+          "max_abs": 0.00103759765625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04200752302515129,
+          "max_abs": 0.00238037109375
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 32,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 3936,
+        "stolen_tiles": 27,
+        "dispatch_payloads": 17,
+        "remote_pairs": 34,
+        "remote_unique": 12,
+        "return_compute_overlap": 39,
+        "dispatch_compute_overlap": 143,
+        "c_sum": 1,
+        "k_sum": 8,
+        "steal_budget_sum": 27,
+        "rows": 8,
+        "tasks": 41,
+        "groups": 41,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    },
+    {
+      "case": "checkpoint",
+      "layer": 0,
+      "phase": "prefill",
+      "batch": 128,
+      "numerical": {
+        "original_hopper": {
+          "finite": true,
+          "relative_l2": 0.0,
+          "max_abs": 0.0
+        },
+        "fp8_oracle": {
+          "finite": true,
+          "relative_l2": 0.018871459608701808,
+          "max_abs": 0.0007476806640625
+        },
+        "bf16_oracle": {
+          "finite": true,
+          "relative_l2": 0.04196616757137432,
+          "max_abs": 0.00174713134765625
+        }
+      },
+      "numerical_coverage": {
+        "original_hopper": {
+          "rows": 128,
+          "scope": "full_global_batch"
+        },
+        "fp8_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        },
+        "bf16_oracle": {
+          "rows": 2,
+          "global_rows": [
+            0,
+            1
+          ]
+        }
+      },
+      "mechanisms": {
+        "calls": 1,
+        "dynamic_calls": 1,
+        "computed_tiles": 0,
+        "stolen_tiles": 0,
+        "dispatch_payloads": 0,
+        "remote_pairs": 0,
+        "remote_unique": 0,
+        "return_compute_overlap": 0,
+        "dispatch_compute_overlap": 0,
+        "c_sum": 0,
+        "k_sum": 1,
+        "steal_budget_sum": 0,
+        "rows": 32,
+        "tasks": 0,
+        "groups": 0,
+        "profile_candidates": 16
+      },
+      "unique_worker_smids": true,
+      "resources": {
+        "implementation": "hopper_persistent_paper_v1",
+        "device": 1,
+        "clock_khz": 1980000,
+        "dimensions": {
+          "rank": 1,
+          "ep": 4,
+          "capacity": 2048,
+          "hidden_size": 4096,
+          "intermediate_size": 2048,
+          "top_k": 6,
+          "experts": 256
+        },
+        "workspace_bytes": 1445452544,
+        "workers": 132,
+        "sm_count": 132,
+        "one_cta_per_sm": true,
+        "active_blocks_per_sm": 1,
+        "grid_blocks": 132,
+        "threads_per_block": 128,
+        "dynamic_shared_bytes": 117760,
+        "shared_bytes_per_sm": 233472,
+        "tile_shared_bytes": 21504,
+        "hopper_device_compute": true,
+        "tile_rows": 64,
+        "tile_columns": 64,
+        "a_quantization": "per_output_tile_k128",
+        "kernel_attributes": {
+          "numRegs": 242,
+          "localSizeBytes": 8,
+          "sharedSizeBytes": 1024,
+          "constSizeBytes": 0,
+          "maxThreadsPerBlock": 256,
+          "binaryVersion": 90,
+          "ptxVersion": 90,
+          "maxDynamicSharedSizeBytes": 117760
+        },
+        "numerical_policy": "record_only"
+      },
+      "routed_collectives": 0
+    }
+  ],
+  "serving_source_sha256": "d3ccf78dc77f4f61117e01d8abf617f16063d9e3cadb22b749caf2de15e2bc8e",
+  "source_sha256": "6b2d506ed5209c05b37bb13f6012e1040c78bb21d1e0b49d5d2633d89b7a98ca",
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "checkpoint_content_sha256": "237f65430f3ab4ab14a18b9673cf2a5cef1c8628eb13dd08b64f0503274ef226",
+  "resources": {
+    "implementation": "hopper_persistent_paper_v1",
+    "device": 1,
+    "clock_khz": 1980000,
+    "dimensions": {
+      "rank": 1,
+      "ep": 4,
+      "capacity": 2048,
+      "hidden_size": 4096,
+      "intermediate_size": 2048,
+      "top_k": 6,
+      "experts": 256
+    },
+    "workspace_bytes": 1445452544,
+    "workers": 132,
+    "sm_count": 132,
+    "one_cta_per_sm": true,
+    "active_blocks_per_sm": 1,
+    "grid_blocks": 132,
+    "threads_per_block": 128,
+    "dynamic_shared_bytes": 117760,
+    "shared_bytes_per_sm": 233472,
+    "tile_shared_bytes": 21504,
+    "hopper_device_compute": true,
+    "tile_rows": 64,
+    "tile_columns": 64,
+    "a_quantization": "per_output_tile_k128",
+    "kernel_attributes": {
+      "numRegs": 242,
+      "localSizeBytes": 8,
+      "sharedSizeBytes": 1024,
+      "constSizeBytes": 0,
+      "maxThreadsPerBlock": 256,
+      "binaryVersion": 90,
+      "ptxVersion": 90,
+      "maxDynamicSharedSizeBytes": 117760
+    },
+    "numerical_policy": "record_only"
+  },
+  "shape": {
+    "hidden": 4096,
+    "intermediate": 2048,
+    "experts": 256,
+    "capacity": 2048
+  },
+  "profile_bank_sha256": "087d2a48a99360e84e0a1457713297a25fdb212c82e6fd6a9df188f31d4d1028",
+  "gpu_checks_status": "passed",
+  "source_sha256_after": "6b2d506ed5209c05b37bb13f6012e1040c78bb21d1e0b49d5d2633d89b7a98ca",
+  "serving_source_sha256_after": "d3ccf78dc77f4f61117e01d8abf617f16063d9e3cadb22b749caf2de15e2bc8e",
+  "cleanup": {
+    "status": "complete",
+    "phase": "complete",
+    "started_monotonic": 5725661.195894621,
+    "graphs_owned": 0,
+    "graphs_reset": 0,
+    "completed_phases": [
+      "synchronize",
+      "reset_graphs",
+      "synchronize_after_reset",
+      "rank_barrier",
+      "destroy_nccl",
+      "destroy_gloo"
+    ],
+    "finished_monotonic": 5725662.19508366
+  }
+}
