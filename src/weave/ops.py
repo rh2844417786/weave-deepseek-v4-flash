@@ -97,7 +97,7 @@ class PeerRuntime:
     uses peer memory and the persistent kernel; no CPU routing statistics or
     NCCL dispatch are hidden outside the kernel.
     """
-    def __init__(self, group, capacity, hidden_size, intermediate_size, top_k, experts, *, kernel='scalar', cache_views=True):
+    def __init__(self, group, capacity, hidden_size, intermediate_size, top_k, experts, *, kernel='scalar', cache_views=True, extension_factory=None):
         import torch
         import torch.distributed as dist
         self.torch, self.group = torch, group
@@ -136,7 +136,7 @@ class PeerRuntime:
             raise ValueError('ranks disagree on workspace dimensions')
 
         def allocate():
-            module = extension()
+            module = (extension_factory or extension)()
             workspace = module.Workspace(self.rank,self.ep,*signature)
             return module,workspace,bytes(workspace.handle())
         module,self.ws,handle = local_stage('IPC allocation', allocate)

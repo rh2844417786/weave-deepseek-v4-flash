@@ -31,7 +31,19 @@ from scripts.run_graph_gate import graph_gate_command, stage_event_gate_command
 from src.weave.graph_stage_evidence import summarize_graph_stages, validate_stage_event_smoke
 
 GROUPS=('native','hopper_prefill')
+PAPER_GROUPS=('native','paper_persistent')
 SECONDS=1200
+
+
+def paper_service_command(variant,work,model,name,port,base,checkpoint,*,paper_profile_dir=None,**options):
+    mapped='hopper_prefill' if variant=='paper_persistent' else variant
+    command=service_command(mapped,work,model,name,port,base,checkpoint,**options)
+    if variant=='paper_persistent':
+        if paper_profile_dir is None:raise ValueError('paper profile required')
+        for flag in ('--decode-implementation','--prefill-implementation'):
+            command[command.index(flag)+1]='hopper_persistent'
+        command+=['--profile',str(paper_profile_dir)]
+    return command
 
 
 def client_command(image,work,records,output_relative,name,port):
@@ -112,13 +124,13 @@ def _safe(value):
         for item in value:_safe(item)
 
 
-def export_public(run,destination,*,proof_source=None,proof=None):
+def export_public(run,destination,*,proof_source=None,proof=None,paper_source=None,paper_proof=None):
     """Static current-artifact allowlist plus independently verified original proof bytes."""
     run,destination=Path(run),Path(destination)
     if destination.exists():raise FileExistsError('fresh_public_destination_required')
     names=['experiment.json','comparison.json','source-manifest.json','serving-source-manifest.json',
            'data-manifest.json','prefill-proof-check.json','graph-proof-check.json','graph-gate/runtime.json',
-           'graph-gate/container-lifecycle.json']
+           'graph-gate/container-lifecycle.json','paper-proof-check.json']
     names += [f'graph-gate/hopper-graph-rank{rank}.json' for rank in range(4)]
     names += [f'graph-gate/graph-cleanup-rank{rank}.json' for rank in range(4)]
     names += ['stage-event-proof-check.json','stage-event-gate/runtime.json','stage-event-gate/container-lifecycle.json','stage-diagnostic-summary.json']
@@ -127,7 +139,7 @@ def export_public(run,destination,*,proof_source=None,proof=None):
                  'client-summary.json','measurement-summary.json','gpqa-rows.json','load-window.json',
                  'load-progress.json','warmup-ready.json','coverage-before.json','coverage-after.json',
                  'coverage-check.json','scheduler-summary.json','graph-before.json','graph-after.json','graph-check.json','stage-profile-check.json')
-    names += [f'{group}/{name}' for group in GROUPS for name in group_names]
+    names += [f'{group}/{name}' for group in (*GROUPS,'paper_persistent') for name in group_names]
     files={}
     for name in names:
         path=run/name
@@ -143,6 +155,15 @@ def export_public(run,destination,*,proof_source=None,proof=None):
         for path in sorted((destination/'prefill-proof').rglob('*')):
             if path.is_file():
                 path.chmod(0o664);files[path.relative_to(destination).as_posix()]=path.read_bytes()
+    if paper_source is not None and paper_proof is not None:
+        for name,expected in paper_proof['files'].items():
+            source=Path(paper_source)/name
+            if source.is_symlink():raise ValueError('paper proof symlink forbidden')
+            raw=source.read_bytes()
+            if hashlib.sha256(raw).hexdigest()!=expected:raise ValueError('paper proof changed before export')
+            _safe(json.loads(raw));target=destination/'paper-proof'/name
+            target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(raw);target.chmod(0o664)
+            files['paper-proof/'+name]=raw
     manifest={'schema_version':1,'status':json.loads(files['experiment.json'])['status'],
               'raw_content_exported':False,'files':{name:hashlib.sha256(raw).hexdigest() for name,raw in files.items()}}
     atomic_json(destination/'manifest.json',manifest);(destination/'manifest.json').chmod(0o664)
@@ -163,15 +184,19 @@ def main(argv=None):
     parser.add_argument('--graph-evidence-port-base',type=int,default=30310)
     parser.add_argument('--graph-gate-timeout',type=float,default=7200.)
     parser.add_argument('--graph-cleanup-timeout',type=float,default=120.)
+    parser.add_argument('--paper-proof-dir',type=Path)
     parser.add_argument('--graph-stage-profile',action='store_true')
     parser.add_argument('--graph-stage-stride',type=int,default=128)
     parser.add_argument('--graph-stage-capacity',type=int,default=64)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
+    paper_mode=args.paper_proof_dir is not None
+    if paper_mode and (args.decode_graph!='full' or args.graph_stage_profile):parser.error('paper verification requires full graph without operator stage profiler')
+    groups=PAPER_GROUPS if paper_mode else GROUPS
     if args.graph_stage_profile and args.decode_graph!='full':parser.error('stage diagnostic requires full graph')
     if not 1<=args.graph_stage_stride<=65536 or not 1<=args.graph_stage_capacity<=256:parser.error('invalid stage sampling bounds')
     measurement_mode='instrumented_diagnostic' if args.graph_stage_profile else 'uninstrumented_performance'
-    for key in ('work_root','records','prefill_evidence_dir','model_path','export_root'):
+    for key in ('work_root','records','prefill_evidence_dir','model_path','export_root','paper_proof_dir'):
         path=getattr(args,key)
         if path is not None:
             if not path.is_absolute():parser.error(key+' must be absolute')
@@ -181,6 +206,7 @@ def main(argv=None):
     if not 1<=args.port<=65535 or not 1<=args.evidence_port_base<=65532 or args.port in range(args.evidence_port_base,args.evidence_port_base+4):
         parser.error('valid distinct serving/evidence ports required')
     graph_options={'decode_graph':args.decode_graph,'graph_evidence_port_base':args.graph_evidence_port_base}
+    service_options=dict(paper_profile_dir=args.paper_proof_dir/'calibrate') if paper_mode else {}
     if args.graph_stage_profile:graph_options.update(graph_stage_profile=True,graph_stage_stride=args.graph_stage_stride,graph_stage_capacity=args.graph_stage_capacity)
     ports=[args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))
     if args.decode_graph=='full':
@@ -189,18 +215,18 @@ def main(argv=None):
     name='gpqa-c32-'+uuid.uuid4().hex[:12]
     out=args.work_root/name;destination=(args.export_root or args.work_root/'public-reports')/name
     contract=load_contract()
-    preview={v:service_command(v,args.work_root,args.model_path,'native-ep-'+name+'-'+v,args.port,args.evidence_port_base,'0'*64,**graph_options) for v in GROUPS}
+    preview={v:paper_service_command(v,args.work_root,args.model_path,'native-ep-'+name+'-'+v,args.port,args.evidence_port_base,'0'*64,**graph_options,**service_options) for v in groups}
     if not args.execute:
         print(json.dumps({'status':'preview_not_executed','groups':preview,'seconds':SECONDS,'concurrency':32,
             'max_new_tokens':32768,'ignore_eos':False,'thinking_mode':'thinking','reasoning_effort':'high',
-            'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full',
-            'graph_gate_required':args.decode_graph=='full',
+            'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full' and not paper_mode,
+            'graph_gate_required':args.decode_graph=='full' and not paper_mode,
             'graph_cleanup_timeout':args.graph_cleanup_timeout,
             'measurement_mode':measurement_mode,'formal_gpqa':not args.graph_stage_profile,
-            'stage_event_gate_required':args.graph_stage_profile,
+            'stage_event_gate_required':args.graph_stage_profile,'paper_mode':paper_mode,'complete_weave_claim':False,
             'numerical_policy':'record_only','rerun_gpu_matrix':False,'prefill_evidence_dir':str(args.prefill_evidence_dir),
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
-            'clients':{v:client_command(contract['image'],args.work_root,args.records,f'{name}/{v}',name+'-'+v,args.port) for v in GROUPS}},indent=2));return 0
+            'clients':{v:client_command(contract['image'],args.work_root,args.records,f'{name}/{v}',name+'-'+v,args.port) for v in groups}},indent=2));return 0
     from src.weave.gpqa_c32 import load_gpqa_workload, validate_client_summary, compare_groups, validate_prefill_bundle
     allocation=allocated_gpus();out.mkdir(parents=True,exist_ok=False)
     owner,client_owner=OwnedChild(),OwnedChild()
@@ -209,7 +235,7 @@ def main(argv=None):
         'accuracy_evaluated':False,'numerical_policy':'record_only','generation_comparison_policy':'record_only',
         'started_utc':datetime.now(timezone.utc).isoformat(),'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),
         'host_gpu_allocation':allocation.csv,'groups':{},'stage':'validating','rerun_gpu_matrix':False}
-    proof=None;code=1
+    proof=None;paper_proof=None;code=1
     def save():atomic_json(out/'experiment.json',report)
     def cancel(number,frame):
         for child in (owner,client_owner):child.requested=number
@@ -230,13 +256,19 @@ def main(argv=None):
         if args.graph_stage_profile:
             from src.weave.graph_stage_profile import graph_stage_source_sha256
             identity.update(graph_stage_source_sha256=graph_stage_source_sha256(),graph_stage_stride=args.graph_stage_stride,graph_stage_capacity=args.graph_stage_capacity)
+        if paper_mode:
+            from src.weave.paper_evidence import validate_paper_bundle
+            paper_proof=validate_paper_bundle(args.paper_proof_dir,identity)
+            identity.update(paper_source_sha256=paper_proof['paper_source_sha256'],paper_profiles=paper_proof['profile_sha256'])
+            report.update(method_status='paper_candidate',complete_weave_claim=False)
+            atomic_json(out/'paper-proof-check.json',paper_proof)
         report.update(identity=identity,core_gate=proof['core_gate']);save()
         atomic_json(out/'data-manifest.json',workload.identity)
         atomic_json(out/'source-manifest.json',kernel_source_manifest());atomic_json(out/'serving-source-manifest.json',source)
         atomic_json(out/'prefill-proof-check.json',proof)
         env={**os.environ,'CUDA_VISIBLE_DEVICES':allocation.csv,'WEAVE_MAX_RUNNING_REQUESTS':'32',
             'WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32','IMAGE':image,'RUNTIME_PYTHON':contract['python_executable']}
-        if args.decode_graph=='full':
+        if args.decode_graph=='full' and not paper_mode:
             gate_dir=out/'graph-gate';gate_dir.mkdir()
             gate=graph_gate_command(image,args.work_root,args.model_path,name,allocation.csv)
             lifecycle=gate_dir/'container-lifecycle.json'
@@ -264,7 +296,7 @@ def main(argv=None):
             validate_runtime(json.loads((stage_dir/'runtime.json').read_text()),identity,allocation.csv)
             stage_proof=validate_stage_event_smoke(stage_dir,identity)
             atomic_json(out/'stage-event-proof-check.json',stage_proof)
-        for variant in GROUPS:
+        for variant in groups:
             check_cancelled();report.update(stage='serving_'+variant);save()
             folder=out/variant;folder.mkdir();run_name='native-ep-'+name+'-'+variant
             server_dir=args.work_root/run_name;url=f'http://127.0.0.1:{args.port}'
@@ -273,7 +305,7 @@ def main(argv=None):
             try:
                 assert_ports_free(ports)
                 with (folder/'server-launch-private.log').open('w') as log:
-                    server=owner.spawn(service_command(variant,args.work_root,args.model_path,run_name,args.port,args.evidence_port_base,identity['checkpoint_content_sha256'],**graph_options),server_dir/'container_lifecycle.json',env=env,stdout=log,stderr=subprocess.STDOUT)
+                    server=owner.spawn(paper_service_command(variant,args.work_root,args.model_path,run_name,args.port,args.evidence_port_base,identity['checkpoint_content_sha256'],**graph_options,**service_options),server_dir/'container_lifecycle.json',env=env,stdout=log,stderr=subprocess.STDOUT)
                     wait_ready(url,timeout=args.setup_timeout,process=server)
                     runtime=json.loads((server_dir/'runtime.json').read_text());validate_runtime(runtime,identity,allocation.csv)
                     flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
@@ -333,7 +365,10 @@ def main(argv=None):
                         if variant=='native':batch=graph_check
                         else:
                             after=coverage(args.evidence_port_base);atomic_json(folder/'coverage-after.json',after)
-                            batch=validate_graph_weave_delta(before,after,graph_check,identity)
+                            if paper_mode:
+                                from src.weave.paper_evidence import validate_paper_coverage
+                                batch=validate_paper_coverage(before,after,graph_check,identity,paper_proof)
+                            else:batch=validate_graph_weave_delta(before,after,graph_check,identity)
                             atomic_json(folder/'coverage-check.json',batch)
                     elif variant=='native':
                         if scheduler['max_running_requests']!=32:raise ValueError('native_actual_concurrency32_not_observed')
@@ -356,8 +391,15 @@ def main(argv=None):
         if load_gpqa_workload(args.records,model_path=args.model_path).identity!=workload.identity:raise ValueError('data_changed_during_run')
         if digest(serving_source_manifest())!=source_digest:raise ValueError('source_changed_during_run')
         if validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)!=proof:raise ValueError('proof_or_checkpoint_changed_during_run')
-        if args.decode_graph=='full' and validate_graph_smoke(out/'graph-gate',identity)!=graph_proof:raise ValueError('graph_proof_changed_during_run')
-        comparison=dict(compare_groups(report['groups']),decode_graph=args.decode_graph,measurement_mode=measurement_mode)
+        if args.decode_graph=='full' and not paper_mode and validate_graph_smoke(out/'graph-gate',identity)!=graph_proof:raise ValueError('graph_proof_changed_during_run')
+        comparison_groups=report['groups'] if not paper_mode else {'native':report['groups']['native'],'hopper_prefill':report['groups']['paper_persistent']}
+        comparison=dict(compare_groups(comparison_groups),decode_graph=args.decode_graph,measurement_mode=measurement_mode)
+        if paper_mode:
+            if validate_paper_bundle(args.paper_proof_dir,identity)!=paper_proof:raise ValueError('paper proof changed')
+            comparison['decode_tokens_per_second']['paper_persistent']=comparison['decode_tokens_per_second'].pop('hopper_prefill')
+            comparison['paper_vs_native_ratio']=comparison.pop('prefill_vs_native_ratio')
+            comparison.update(method_identity='hopper_persistent_paper_v1',method_status='paper_service_execution_verified',complete_weave_claim=False)
+        else:comparison['group_labels']={'native':'SGLang native','hopper_prefill':'Hopper operator candidate; paper scheduler not used'}
         if args.graph_stage_profile:
             if validate_stage_event_smoke(out/'stage-event-gate',identity)!=stage_proof:raise ValueError('stage_event_proof_changed')
             comparison.update(formal_gpqa=False,sustained_c32_ratio_available=False,prefill_vs_native_ratio=None,
@@ -385,7 +427,7 @@ def main(argv=None):
             lifecycle=args.work_root/('native-ep-'+name+'-'+variant)/'container_lifecycle.json'
             if lifecycle.is_file():atomic_json(out/variant/'server-lifecycle.json',json.loads(lifecycle.read_text()))
         report.update(finished_utc=datetime.now(timezone.utc).isoformat(),export_directory=str(destination));save()
-        try:export_public(out,destination,proof_source=args.prefill_evidence_dir,proof=proof)
+        try:export_public(out,destination,proof_source=args.prefill_evidence_dir,proof=proof,paper_source=args.paper_proof_dir,paper_proof=paper_proof)
         finally:
             for sig,handler in previous.items():signal.signal(sig,handler)
     print(json.dumps({'status':report['status'],'work_directory':str(out),'export_directory':str(destination)}),flush=True)

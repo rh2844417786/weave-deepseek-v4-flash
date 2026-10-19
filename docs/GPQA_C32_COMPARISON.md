@@ -1,5 +1,7 @@
 # GPQA Main：两组 C32、各20分钟对照
 
+> 方法身份更正：本文中已有的 Hopper/“Weave”实验组是独立算子候选，未执行论文persistent调度；新论文机制路径见 [PAPER_REPRODUCTION.md](PAPER_REPRODUCTION.md)。历史数值保持原样。
+
 ## 固定实验设置
 
 | 项目 | 设置 |

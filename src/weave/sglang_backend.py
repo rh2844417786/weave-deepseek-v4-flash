@@ -12,6 +12,7 @@ from dataclasses import asdict
 import torch
 
 from .ops import PeerRuntime
+from .hopper_persistent import HopperPersistentRuntime, IMPLEMENTATION as PAPER_IMPLEMENTATION
 from .weights import load_raw_experts
 from .runtime_contract import load_contract, verify_adapter_sources
 from .staged_decode import StagedDecodeRuntime, ModelBatchCounters, validate_decode_configuration, validate_prefill_configuration
@@ -52,6 +53,9 @@ class RoutedExperts(torch.nn.Module):
             self.implementation_calls['hopper_decode'] = 0
         if prefill is not None:
             self.implementation_calls['hopper_prefill'] = 0
+        if getattr(runtime, 'implementation', None) == PAPER_IMPLEMENTATION:
+            self.implementation_calls.update({f'paper_persistent_{phase}': 0
+                                              for phase in ('prefill', 'decode', 'other')})
         self.capture_calls = 0
         self.register_buffer('device_calls', torch.zeros(3, dtype=torch.int64, device=f'cuda:{runtime.device}'))
 
@@ -101,7 +105,8 @@ class RoutedExperts(torch.nn.Module):
             # existing contiguous origin partition and outer TP restoration.
             partial = torch.zeros_like(hidden_states)
             partial[start:end].copy_(own)
-            implementation = 'persistent_' + phase
+            implementation = ('paper_persistent_' if getattr(self.runtime, 'implementation', None)
+                              == PAPER_IMPLEMENTATION else 'persistent_') + phase
         self.device_calls[{'prefill': 0, 'decode': 1, 'other': 2}[phase]].add_(1)
         if capturing:
             self.capture_calls += 1
@@ -183,7 +188,10 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
         profile_path=profile_path,execution_profile=execution_profile,
         replay_capture=bool(os.environ.get('WEAVE_REPLAY_CAPTURE_DIR')),
         forward_profile=os.environ.get('WEAVE_FORWARD_PROFILE')=='1', graph_c32=graph_c32)
-    runtime = PeerRuntime(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
+    if decode_implementation == 'hopper_persistent' and os.environ.get('WEAVE_STALL_DIAGNOSTIC') == '1':
+        raise ValueError('paper runtime does not support legacy stall instrumentation')
+    runtime_class = HopperPersistentRuntime if decode_implementation == 'hopper_persistent' else PeerRuntime
+    runtime = runtime_class(get_tp_group().cpu_group, capacity, 4096, 2048, 6, 256,
                           kernel=kernel, cache_views=hot_cache)
     runtime.graph_c32 = graph_c32
     runtime.graph_stage_profile = stage_options is not None
@@ -246,19 +254,32 @@ def install_weave_backend(model, model_path, *, capacity=2048, profile_path=None
             'staged_resources':dict(runtime.staged_decode.resources) if runtime.staged_decode is not None else None,
             **_hopper_metadata(runtime.hopper_decode),
             **_prefill_metadata(runtime),
-            'tile_rows': 16 if kernel=='tiled' else 1,
+            **_paper_metadata(runtime),
+            'tile_rows': 64 if decode_implementation == 'hopper_persistent' else 16 if kernel=='tiled' else 1,
             'tile_columns': 64 if kernel=='tiled' else None}
 
 
 def _hopper_metadata(hopper):
     if hopper is None:
         return {}
-    return {'candidate_source_sha256': hopper.candidate_source_sha256,
+    return {'method_status': 'operator_candidate', 'method_label': 'operator_candidate',
+            'candidate_source_sha256': hopper.candidate_source_sha256,
             'assembly_source_sha256': hopper.assembly_source_sha256,
             'numerical_policy': 'record_only',
             'hopper_max_batch': 32,
             'hopper_slot_collective': 'torch.distributed.all_reduce/SUM/tp_device_group',
             'hopper_resources': dict(hopper.resources)}
+
+
+def _paper_metadata(runtime):
+    if getattr(runtime, 'implementation', None) != PAPER_IMPLEMENTATION:
+        return {}
+    return {'method_identity': PAPER_IMPLEMENTATION, 'implementation': PAPER_IMPLEMENTATION,
+            'method_status': 'paper_candidate', 'method_label': 'paper_candidate',
+            'implementation_status': 'paper_mechanisms_implemented_gpu_pending',
+            'numerical_policy': 'record_only', 'paper_source_sha256': runtime.source_sha256,
+            'paper_profile_bank_sha256': runtime.profile_bank_sha256,
+            'paper_resources': dict(runtime.resources)}
 
 
 def _prefill_metadata(runtime):
@@ -306,6 +327,7 @@ def coverage(model):
             'staged_resources':dict(staged.resources) if staged is not None else None,
             **_hopper_metadata(hopper),
             **_prefill_metadata(runtime),
+            **_paper_metadata(runtime),
             'model_batch_counts':batch_counts,
             'layers': {str(layer.mlp.layer_id): {
                 'device_calls': layer.mlp.experts.device_calls.cpu().tolist(),
@@ -313,7 +335,11 @@ def coverage(model):
                 'python_decode_calls': layer.mlp.experts.coverage['decode'],
                 'python_calls': dict(layer.mlp.experts.coverage),
                 'implementation_calls':dict(layer.mlp.experts.implementation_calls)} for layer in model.model.layers}}
-    if getattr(runtime, 'graph_c32', False):
+    if getattr(runtime, 'implementation', None) == PAPER_IMPLEMENTATION:
+        result['mechanism_evidence'] = runtime.mechanism_snapshot()
+        if getattr(runtime, 'graph_c32', False):
+            result.update(graph_mode='full', numerical_policy='record_only')
+    elif getattr(runtime, 'graph_c32', False):
         result.update(graph_mode='full', numerical_policy='record_only',
             graph_runtime_source_sha256=hopper.graph_runtime_source_sha256,
             device_slot_collectives=hopper.device_slot_collectives_snapshot())

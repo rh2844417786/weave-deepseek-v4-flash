@@ -1,5 +1,15 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
+## 当前方法身份与状态
+
+- **`hopper_fp8`：Hopper 算子候选**。独立专家计算 + NCCL slot SUM + finalizer；未执行论文persistent调度。已回传的1894.69 vs247.69 token/s及约80%专家处理占比属于这条候选路径，不能作为论文Weave性能结论。
+- **`hopper_persistent`：论文机制集成的新路径**，标识`hopper_persistent_paper_v1`。在同一persistent grid内实现Hopper设备tile、路由驱动c/K选择、chunk流水和bubble stealing。当前为代码/CPU验证交付，CUDA编译与GPU机制/服务验证待服务器执行。
+- 不因路径名或开关宣称“完整Weave”。必须区分源码实现、kernel机制证据、43层服务证据与完整论文实验复现。历史报告不改写。
+
+优先入口：[论文机制实现说明](docs/PAPER_REPRODUCTION.md) · [服务器执行Prompt](docs/SERVER_PROMPT_PAPER_REPRODUCTION.md)
+
+## 历史阶段记录
+
 本项目使用原版 DeepSeek-V4-Flash 混合精度权重，routed专家保留MXFP4/E8M0。历史服务器提交2910864已回传完整374点校准、native/Weave eager/graph验收和两组各1200秒的GPQA预算对照。共同完成4题上，SGLang为107.64 tokens/s，当时Weave为11.31 tokens/s，约0.1051倍；全448题未完成，当轮Weave另有6次cache_flush_error。原始42文件摘要已核对。
 
 P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，staged直接tile映射相对132 CTA的配对时间比中位数约1.68；这是计算回放结果。随后714af26回传的两次C32作业均通过core/online GPU门，但在cached persistent生成token验收处停止，staged服务吞吐尚未测得。
@@ -56,7 +66,7 @@ P0/P1的2408点真实trace回放已在09f905e回传：热路径缓存有效，st
 - [GPQA 数据、长度与复核方法](data/gpqa/README.md)
 - [DeepSeek GPQA 输入长度审计](data/gpqa/deepseek_length_audit.json)
 
-当前目标：原版 DeepSeek-V4-Flash 混合精度权重，在调度器分配的四张 H100 上以 EP=4 比较原生 SGLang 与完整 Weave。两组采用相同的专家划分和 attention/dense 并行布局；原生Marlin专家EP4已在服务器验收中执行。SGLang 的 TP 参数可与 EP 参数同时使用，不能把 `--tp-size 4` 等同于 MoE 只使用 TP。GPQA Main、batch=1、Think High、最多生成 32K（32768）tokens，每组服务 ready 后预热与测量共最多20分钟。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
+当前目标：原版 DeepSeek-V4-Flash 混合精度权重，在调度器分配的四张 H100 上以 EP=4 比较原生 SGLang 与完整 Weave。两组采用相同的专家划分和 attention/dense 并行布局；原生Marlin专家EP4已在服务器验收中执行。SGLang 的 TP 参数可与 EP 参数同时使用，不能把 `--tp-size 4` 等同于 MoE 只使用 TP。当前GPQA Main使用32并发、Think High、最多生成32K（32768）tokens，每组正式测量1200秒，加载和预热另计。论文机制实现状态以上方说明为准。旧 Qwen 设计、计划和交接文件保留为历史记录，不能直接作为 DeepSeek 实现合同。
 
 已有代码包括：只读预检、DeepSeek GPQA token ID 准备、decode 计数、EP 路由去重/合并 CPU 参考，以及原生 EP4 Docker 启动入口。现已加入 CUDA IPC persistent 功能核心、GPU 端 c/K 选择和连续 stealing、raw MXFP4 专家加载器，以及源码核对后的 SGLang 0.5.17 eager adapter。默认使用当前服务器已有的 `lmsysorg/sglang:v0.5.17`，工作目录为 `<repo>/work`。后端名为 `weave_functional`：历史 H100 CUDA 编译、两轮四卡小张量功能与 core graph replay 已通过并核对原始报告；修正后的 BF16 WMMA、真实 checkpoint 与 batch=1 SGLang graph 在 e59e064 的服务器摘要中报告通过。9906ca7c源码的完整rank/coverage、实测bank及GPQA报告已回传；新增诊断源码需要重新执行源码绑定的H100 gates。证据见 `reports/core_acceptance.json`，状态见 `reports/implementation_status.json`。
 

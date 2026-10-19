@@ -150,10 +150,10 @@ def main() -> int:
     parser.add_argument('--graph-stage-capacity', type=int, default=64)
     parser.add_argument('--graph-evidence-port-base', type=int, default=30310)
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
-    parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8'],
+    parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8','hopper_persistent'],
                         default=os.environ.get('WEAVE_DECODE_IMPLEMENTATION','persistent'),
                         help='routed expert decode implementation; staged_direct/hopper_fp8 require eager tiled hot-cache')
-    parser.add_argument('--prefill-implementation',choices=['persistent','hopper_fp8'],
+    parser.add_argument('--prefill-implementation',choices=['persistent','hopper_fp8','hopper_persistent'],
                         default=os.environ.get('WEAVE_PREFILL_IMPLEMENTATION','persistent'))
     parser.add_argument('--fixed-plan', default='1,1,0', help='explicit c,K,completed-task steal budget per comm worker')
     parser.add_argument('--evidence-port-base', type=int, default=30110)
@@ -176,6 +176,8 @@ def main() -> int:
     args = parser.parse_args()
     if not 1 <= args.graph_stage_stride <= 65536 or not 1 <= args.graph_stage_capacity <= 256:
         parser.error('graph stage stride must be in 1..65536 and capacity in 1..256')
+    if args.graph_stage_profile and args.decode_implementation == 'hopper_persistent':
+        parser.error('paper runtime rejects legacy graph stage profiling')
     if args.graph_stage_profile and not args.graph_c32:
         parser.error('graph stage profiling requires --graph-c32')
     if not args.graph_stage_profile and (args.graph_stage_stride != 128 or args.graph_stage_capacity != 64):
@@ -184,10 +186,10 @@ def main() -> int:
         if (args.decode_graph != 'full' or not args.request_timing
                 or _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS') != '32'
                 or _concurrency_env('WEAVE_CUDA_GRAPH_MAX_BS_DECODE') != '32'
-                or args.stall_diagnostic or args.profile or args.execution_profile
+                or args.stall_diagnostic or (args.profile and args.decode_implementation != 'hopper_persistent') or args.execution_profile
                 or args.execution_profile_fixed_plan or args.replay_capture_dir):
             parser.error('graph C32 requires full, request timing, both concurrency settings 32, no diagnostics/profiles/capture')
-        if args.backend == 'weave_functional' and (args.decode_implementation != 'hopper_fp8' or args.prefill_implementation != 'hopper_fp8'):
+        if args.backend == 'weave_functional' and (args.decode_implementation not in ('hopper_fp8', 'hopper_persistent') or args.prefill_implementation != args.decode_implementation):
             parser.error('graph C32 Weave requires Hopper decode and prefill')
         ports = [args.port] + list(range(args.evidence_port_base, args.evidence_port_base + 4)) + list(range(args.graph_evidence_port_base, args.graph_evidence_port_base + 4))
         if not 1 <= args.graph_evidence_port_base <= 65532 or len(set(ports)) != 9:
@@ -201,13 +203,13 @@ def main() -> int:
             parser.error('stall ports must be valid and distinct from serving/evidence ports')
     try:
         staged_fixed=tuple(int(value) for value in args.fixed_plan.split(','))
-        if args.decode_implementation in ('staged_direct','hopper_fp8') and args.backend!='weave_functional':
+        if args.decode_implementation in ('staged_direct','hopper_fp8','hopper_persistent') and args.backend!='weave_functional':
             raise ValueError(f'{args.decode_implementation} requires weave_functional')
         validate_decode_configuration(decode_implementation=args.decode_implementation,kernel=args.kernel,
             hot_cache=args.hot_cache,allow_decode_graph=args.decode_graph=='full',fixed_plan=staged_fixed,
             profile_path=args.profile,execution_profile=True if args.execution_profile else None,
             replay_capture=bool(args.replay_capture_dir),forward_profile=args.execution_profile_fixed_plan, graph_c32=args.graph_c32 and args.backend=='weave_functional')
-        if args.prefill_implementation == 'hopper_fp8' and args.backend != 'weave_functional':
+        if args.prefill_implementation in ('hopper_fp8','hopper_persistent') and args.backend != 'weave_functional':
             raise ValueError('hopper_fp8 prefill requires weave_functional')
         validate_prefill_configuration(prefill_implementation=args.prefill_implementation,
             decode_implementation=args.decode_implementation,kernel=args.kernel,

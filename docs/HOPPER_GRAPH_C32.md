@@ -1,5 +1,7 @@
 # Weave Hopper：C32 CUDA Graph 适配
 
+> 方法身份更正：本文中已有的 Hopper/“Weave”实验组是独立算子候选，未执行论文persistent调度；新论文机制路径见 [PAPER_REPRODUCTION.md](PAPER_REPRODUCTION.md)。历史数值保持原样。
+
 ## 本轮实现
 
 Native SGLang 与 Weave 均使用 full decode CUDA Graph；为 batch 1–32 每个整数分别捕获图，并关闭 graph padding。服务最多同时处理 32 个请求，实际 decode batch 随请求完成及调度变化。两组 prefill graph 均关闭；Weave prefill 保留已优化的 Hopper FP8 实现。

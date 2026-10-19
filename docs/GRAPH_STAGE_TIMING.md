@@ -1,5 +1,7 @@
 # CUDA Graph C32 分阶段计时
 
+> 方法身份更正：本文中已有的 Hopper/“Weave”实验组是独立算子候选，未执行论文persistent调度；新论文机制路径见 [PAPER_REPRODUCTION.md](PAPER_REPRODUCTION.md)。历史数值保持原样。
+
 ## 目的与已有证据
 
 `reports/server/gpqa-c32-9f1635df2afe` 已证明两组实际使用 full decode CUDA Graph、没有 eager 回退，并各完成1200秒：Native 1894.69 token/s，Weave 247.69 token/s。Weave每rank9294次重放，其中9250次B32；全部43层设备计数一致。新诊断用于确定时间花在哪里；现有吞吐本身不能判定是哪一段主导。

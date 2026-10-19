@@ -12,10 +12,16 @@ def validate_decode_configuration(*, decode_implementation, kernel, hot_cache,
                                   allow_decode_graph, fixed_plan, profile_path=None,
                                   execution_profile=None, replay_capture=False,
                                   forward_profile=False, graph_c32=False):
-    if graph_c32 and (decode_implementation != 'hopper_fp8' or not allow_decode_graph):
+    if graph_c32 and (decode_implementation not in ('hopper_fp8', 'hopper_persistent') or not allow_decode_graph):
         raise ValueError('graph C32 requires hopper_fp8 full decode')
-    if decode_implementation not in ('persistent', 'staged_direct', 'hopper_fp8'):
+    if decode_implementation not in ('persistent', 'staged_direct', 'hopper_fp8', 'hopper_persistent'):
         raise ValueError('decode implementation must be persistent, staged_direct or hopper_fp8')
+    if decode_implementation == 'hopper_persistent' and (
+            kernel != 'tiled' or not hot_cache or not profile_path
+            or (allow_decode_graph and not graph_c32) or tuple(fixed_plan) != (1, 1, 0)
+            or execution_profile is not None or replay_capture or forward_profile):
+        raise ValueError('hopper_persistent requires tiled hot-cache, a measured paper profile, '
+                         'eager or full C32 graph, and no legacy instrumentation')
     if decode_implementation in ('staged_direct', 'hopper_fp8') and (
             kernel != 'tiled' or not hot_cache or (allow_decode_graph and not graph_c32)
             or tuple(fixed_plan) != (1, 1, 0) or profile_path is not None
@@ -29,10 +35,13 @@ def validate_prefill_configuration(*, prefill_implementation='persistent',
                                    allow_decode_graph, fixed_plan, profile_path=None,
                                    execution_profile=None, replay_capture=False,
                                    forward_profile=False, graph_c32=False):
-    if prefill_implementation not in ('persistent', 'hopper_fp8'):
+    if ('hopper_persistent' in (prefill_implementation, decode_implementation)
+            and prefill_implementation != decode_implementation):
+        raise ValueError('hopper_persistent requires both prefill and decode')
+    if prefill_implementation not in ('persistent', 'hopper_fp8', 'hopper_persistent'):
         raise ValueError('prefill implementation must be persistent or hopper_fp8')
-    if prefill_implementation == 'hopper_fp8':
-        if decode_implementation != 'hopper_fp8':
+    if prefill_implementation in ('hopper_fp8', 'hopper_persistent'):
+        if decode_implementation != prefill_implementation:
             raise ValueError('hopper_fp8 prefill requires hopper_fp8 decode')
         validate_decode_configuration(decode_implementation=decode_implementation,
             kernel=kernel, hot_cache=hot_cache, allow_decode_graph=allow_decode_graph,

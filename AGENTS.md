@@ -18,3 +18,11 @@ The user explicitly removed the Hopper numerical-error gates on 2026-10-17 and i
 - Retain checks for nonfinite output, invalid memory access, compilation/runtime failure, malformed tensors/routing, source identity, complete case coverage and cleanup. Deterministic algorithm unit tests remain applicable.
 - Preserve historical reports and their original status/source identity. Do not rewrite an old threshold-failed run as a completed run; rerun under the new policy and evidence schema.
 - In the Hopper C32 serving suite, generated-token agreement is also record-only: publish matched/mismatched counts and digests without stopping the throughput comparison for differing token contents. Continue requiring complete valid responses, request identity, expected token counts, finite output, and source/runtime/coverage evidence. Historical strict suites retain their recorded semantics.
+
+# Paper-method identity
+
+The user explicitly restored the paper-reproduction objective on 2026-10-18.
+- `hopper_fp8` is an operator candidate; its standalone compute + NCCL slot SUM is not the Weave paper scheduler. Do not present its results as complete Weave.
+- `hopper_persistent_paper_v1` contains the paper-mechanism integration, but source/CPU checks do not prove GPU execution or full reproduction. Report source implementation, kernel mechanism evidence, actual 43-layer service evidence and paper experiment coverage separately.
+- Require actual routing-driven c/K decisions, resident SM evidence, chunk overlap and stealing evidence at their stated scopes. Preserve failures and observed-zero mechanisms; do not replace missing evidence with enabled flags or fabricated profiles.
+- Keep historical reports unchanged. Numerical differences remain record-only under the policy above.
