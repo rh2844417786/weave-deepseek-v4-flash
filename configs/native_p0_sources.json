@@ -1,0 +1,30 @@
+{
+  "version": "0.5.17",
+  "commit": "29481685462732237d80d86076d6563e1f658102",
+  "source": "https://github.com/sgl-project/sglang/tree/29481685462732237d80d86076d6563e1f658102",
+  "sha256": {
+    "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+    "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+    "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+    "srt/layers/moe/fused_moe_triton/__init__.py": "be2cc3fbe561df1d6eef6eaac65238eeecece81c00f85dc8b5cd1cb504c7d1fc",
+    "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+    "srt/layers/moe/moe_runner/triton_utils/moe_align_block_size.py": "652dc416dc461b6f5b04cb9182dfba8fec439a30548a6cc1da8e38037bd2c0aa",
+    "kernels/ops/moe/moe_wna16_marlin.py": "0f99349d7b7efd56f3a6fce990c6792246e83b1696a409798514ad5e0c309e6a",
+    "kernels/ops/moe/moe_topk_sum.py": "1847f8d4eb524e3b2e11969496f6bac485c1e275a5da58d3737002048c5c8e37",
+    "kernels/ops/activation/activation.py": "3a04cda0890c5d5e28229ccec21399b7fe1570caf6d925e54a62f1bae8458216",
+    "srt/layers/quantization/mxfp4_flashinfer_trtllm_moe.py": "7dd81a07f3c0c0bd15077cc04471d9c04a66a758221b9e8aa4e7f8c7bdee2b71",
+    "srt/layers/moe/fused_moe_triton/layer.py": "cff42af91c4d032ea46ae50f330c346ce70c40e5cc29259523407488a264b402",
+    "srt/layers/moe/topk.py": "9cec2814a7295d39b19d5d15911a1b9b122288cb9d22851d9f6753e6aafc6ac3",
+    "srt/layers/moe/hash_topk.py": "46e637193155824260574ddb085eedb9981298cb1a050ebac62507e6e999f3d2",
+    "srt/layers/moe/moe_runner/triton_utils/__init__.py": "17001b79d53924601d242d37aa2ba0b144002f02a5b6f1a75e168d97e508829d",
+    "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+    "srt/layers/linear.py": "1e7a5effedc55040551452eb01816ef32337df5d648d4a4ae25d911a9d5535a4",
+    "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1",
+    "srt/layers/utils/__init__.py": "84656e89a69b5cadd2cc02cbcc148e6217d0a3fcbb27d9358c73e343e0fcb6a6",
+    "srt/layers/utils/multi_platform.py": "38d008c0db89f21ff48dd6b989f8f1bcbc4ab169dc1f4c6a9e501cf8e3fabfaf",
+    "srt/utils/custom_op.py": "ffe4447fe63be8cc9abb47d8e277ba128e7d3d2368b05378529845caccb8f135",
+    "srt/distributed/__init__.py": "8c539ccadfb01403cc05401ff739196a535096dfb8aea993ea908a073d44e2aa",
+    "srt/distributed/communication_op.py": "cd887fe137e5af7a7d52a8c6005abf82ce374717445259996306ca9b8a5eb0c4",
+    "kernels/jit/csrc/gemm/marlin_moe/moe_wna16_marlin.cuh": "c7a47cfcfc926b2de930be7299b4c86c628b1d94ddc9a46e38c147a68b66a277"
+  }
+}

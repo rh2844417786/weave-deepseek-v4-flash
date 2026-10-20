@@ -1,12 +1,18 @@
 # Weave / DeepSeek-V4-Flash 实验项目
 
-## 当前方法身份与状态
+## 当前目标：提高原生 SGLang 吞吐
+
+2026-10-20 起，主线改为优化原生 SGLang 的 DeepSeek-V4-Flash 吞吐。32并发用于首轮控制变量，后续可调整实际batch和并发。先执行原生 P0，记录真实 MoE 分支、routed/shared 时间区间、Marlin 启动资源和四rank差异，再决定第一项优化。
+
+入口：[原生 P0 说明](docs/NATIVE_P0.md) · [服务器执行 Prompt](docs/SERVER_PROMPT_NATIVE_P0.md)。当前交付为代码与本地 CPU 验证；真实 H100 采样和吞吐改善尚待服务器证据。P0 不修改 CTA 配额，不输出正式加速比。
+
+## 历史方法身份与状态
 
 - **`hopper_fp8`：Hopper 算子候选**。独立专家计算 + NCCL slot SUM + finalizer；未执行论文persistent调度。已回传的1894.69 vs247.69 token/s及约80%专家处理占比属于这条候选路径，不能作为论文Weave性能结论。
-- **`hopper_persistent`：论文机制集成的新路径**，标识`hopper_persistent_paper_v1`。在同一persistent grid内实现Hopper设备tile、路由驱动c/K选择、chunk流水和bubble stealing。当前为代码/CPU验证交付，CUDA编译与GPU机制/服务验证待服务器执行。
+- **`hopper_persistent`：论文机制集成的新路径**，标识`hopper_persistent_paper_v1`。在同一persistent grid内实现Hopper设备tile、路由驱动c/K选择、chunk流水和bubble stealing。服务器提交 `a848782` 已回传机制检查与实际 C32 graph 服务报告（`paper-reproduction-144dd5f6c7ca`、`gpqa-c32-833ac7472986`）。报告标记服务执行已验证；机制范围及完整论文复现仍应分别审阅，不由路径名推定。
 - 不因路径名或开关宣称“完整Weave”。必须区分源码实现、kernel机制证据、43层服务证据与完整论文实验复现。历史报告不改写。
 
-优先入口：[论文机制实现说明](docs/PAPER_REPRODUCTION.md) · [服务器执行Prompt](docs/SERVER_PROMPT_PAPER_REPRODUCTION.md)
+历史入口：[论文机制实现说明](docs/PAPER_REPRODUCTION.md) · [服务器执行Prompt](docs/SERVER_PROMPT_PAPER_REPRODUCTION.md)
 
 ## 历史阶段记录
 

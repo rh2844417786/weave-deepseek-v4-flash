@@ -18,6 +18,8 @@ def graph_observer_source_sha256():
     digest = hashlib.sha256()
     for name in ('src/weave/graph_observer.py', 'src/weave/graph_hooks.py',
                  'src/weave/graph_stage_profile.py',
+                 'src/weave/native_p0.py', 'src/weave/native_p0_hooks.py',
+                 'src/weave/native_p0_trace.py', 'configs/native_p0_sources.json',
                  'timing_hooks/sitecustomize.py', 'configs/sglang_graph_sources.json'):
         digest.update((ROOT / name).read_bytes())
     return digest.hexdigest()
@@ -153,18 +155,25 @@ def setup_runner(runner):
     if hasattr(model, 'weave_graph_observer'):
         raise ValueError('multiple full graph backends for one model are unsupported')
     rank = runner.model_runner.tp_group.rank
-    options = graph_stage_options()
+    from .native_p0_hooks import native_p0_options, install_native_p0, verify_native_p0_sources
+    p0_options = native_p0_options()
     profiler = None
-    if options is not None:
-        from .graph_stage_profile import GraphStageProfiler
-        kind = ('weave' if os.environ.get('SGLANG_EXTERNAL_MODEL_PACKAGE') == 'weave.sglang_ext.models'
-                else 'native')
-        profiler = GraphStageProfiler(torch, rank, kind, **options)
-        model.weave_graph_stage_profiler = profiler
+    if p0_options is not None:
+        profiler = install_native_p0(model, torch, rank, package_root=package_root, **p0_options)
+    else:
+        options = graph_stage_options()
+        if options is not None:
+            from .graph_stage_profile import GraphStageProfiler
+            kind = ('weave' if os.environ.get('SGLANG_EXTERNAL_MODEL_PACKAGE') == 'weave.sglang_ext.models'
+                    else 'native')
+            profiler = GraphStageProfiler(torch, rank, kind, **options)
+            model.weave_graph_stage_profiler = profiler
     observer = GraphObserver(rank, pins, graph_observer_source_sha256(), stage_profiler=profiler)
     wrap_model(model, observer, torch.cuda.is_current_stream_capturing)
     def verify():
         verify_graph_sources(package_root)
+        if p0_options is not None:
+            verify_native_p0_sources(package_root)
         if observer.observer_source != graph_observer_source_sha256():
             raise RuntimeError('graph observer source changed')
     model.weave_graph_server = start_endpoint(observer, verify)

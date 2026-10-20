@@ -130,7 +130,8 @@ def export_public(run,destination,*,proof_source=None,proof=None,paper_source=No
     if destination.exists():raise FileExistsError('fresh_public_destination_required')
     names=['experiment.json','comparison.json','source-manifest.json','serving-source-manifest.json',
            'data-manifest.json','prefill-proof-check.json','graph-proof-check.json','graph-gate/runtime.json',
-           'graph-gate/container-lifecycle.json','paper-proof-check.json']
+           'graph-gate/container-lifecycle.json','paper-proof-check.json','native-checkpoint-proof.json','native-p0-summary.json','native-p0-proof-check.json','native-p0-gate/runtime.json','native-p0-gate/container-lifecycle.json']
+    names += [f'native-p0-gate/{prefix}-rank{rank}.json' for prefix in ('native-p0-event','graph-cleanup') for rank in range(4)]
     names += [f'graph-gate/hopper-graph-rank{rank}.json' for rank in range(4)]
     names += [f'graph-gate/graph-cleanup-rank{rank}.json' for rank in range(4)]
     names += ['stage-event-proof-check.json','stage-event-gate/runtime.json','stage-event-gate/container-lifecycle.json','stage-diagnostic-summary.json']
@@ -172,7 +173,12 @@ def export_public(run,destination,*,proof_source=None,proof=None,paper_source=No
 
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
-    for key in ('work-root','records','prefill-evidence-dir'):parser.add_argument('--'+key,type=Path,required=True)
+    for key in ('work-root','records'):parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--prefill-evidence-dir',type=Path)
+    parser.add_argument('--native-p0',action='store_true')
+    parser.add_argument('--native-p0-stride',type=int,default=128)
+    parser.add_argument('--native-p0-capacity',type=int,default=64)
+    parser.add_argument('--native-baseline-dir',type=Path,default=ROOT/'reports/server/gpqa-c32-9f1635df2afe')
     parser.add_argument('--model-path',type=Path,default=Path('/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash'))
     parser.add_argument('--export-root',type=Path)
     parser.add_argument('--setup-timeout',type=float,default=7200.)
@@ -190,13 +196,17 @@ def main(argv=None):
     parser.add_argument('--graph-stage-capacity',type=int,default=64)
     parser.add_argument('--execute',action='store_true')
     args=parser.parse_args(argv)
+    native_p0=args.native_p0
+    if native_p0 and (args.decode_graph!='full' or args.graph_stage_profile or args.paper_proof_dir or args.prefill_evidence_dir):parser.error('native P0 requires native full graph without candidate proofs/profilers')
+    if not native_p0 and args.prefill_evidence_dir is None:parser.error('--prefill-evidence-dir required outside native P0')
+    if not 1<=args.native_p0_stride<=65536 or not 1<=args.native_p0_capacity<=256:parser.error('invalid native P0 sampling bounds')
     paper_mode=args.paper_proof_dir is not None
     if paper_mode and (args.decode_graph!='full' or args.graph_stage_profile):parser.error('paper verification requires full graph without operator stage profiler')
-    groups=PAPER_GROUPS if paper_mode else GROUPS
+    groups=('native',) if native_p0 else PAPER_GROUPS if paper_mode else GROUPS
     if args.graph_stage_profile and args.decode_graph!='full':parser.error('stage diagnostic requires full graph')
     if not 1<=args.graph_stage_stride<=65536 or not 1<=args.graph_stage_capacity<=256:parser.error('invalid stage sampling bounds')
-    measurement_mode='instrumented_diagnostic' if args.graph_stage_profile else 'uninstrumented_performance'
-    for key in ('work_root','records','prefill_evidence_dir','model_path','export_root','paper_proof_dir'):
+    measurement_mode='instrumented_diagnostic' if (args.graph_stage_profile or native_p0) else 'uninstrumented_performance'
+    for key in ('work_root','records','prefill_evidence_dir','model_path','export_root','paper_proof_dir','native_baseline_dir'):
         path=getattr(args,key)
         if path is not None:
             if not path.is_absolute():parser.error(key+' must be absolute')
@@ -208,6 +218,7 @@ def main(argv=None):
     graph_options={'decode_graph':args.decode_graph,'graph_evidence_port_base':args.graph_evidence_port_base}
     service_options=dict(paper_profile_dir=args.paper_proof_dir/'calibrate') if paper_mode else {}
     if args.graph_stage_profile:graph_options.update(graph_stage_profile=True,graph_stage_stride=args.graph_stage_stride,graph_stage_capacity=args.graph_stage_capacity)
+    if native_p0:graph_options.update(native_p0=True,native_p0_stride=args.native_p0_stride,native_p0_capacity=args.native_p0_capacity)
     ports=[args.port]+list(range(args.evidence_port_base,args.evidence_port_base+4))
     if args.decode_graph=='full':
         ports+=list(range(args.graph_evidence_port_base,args.graph_evidence_port_base+4))
@@ -219,18 +230,18 @@ def main(argv=None):
     if not args.execute:
         print(json.dumps({'status':'preview_not_executed','groups':preview,'seconds':SECONDS,'concurrency':32,
             'max_new_tokens':32768,'ignore_eos':False,'thinking_mode':'thinking','reasoning_effort':'high',
-            'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full' and not paper_mode,
-            'graph_gate_required':args.decode_graph=='full' and not paper_mode,
+            'decode_graph':args.decode_graph,'graph_smoke_required':args.decode_graph=='full' and not paper_mode and not native_p0,
+            'graph_gate_required':args.decode_graph=='full' and not paper_mode and not native_p0,
             'graph_cleanup_timeout':args.graph_cleanup_timeout,
-            'measurement_mode':measurement_mode,'formal_gpqa':not args.graph_stage_profile,
-            'stage_event_gate_required':args.graph_stage_profile,'paper_mode':paper_mode,'complete_weave_claim':False,
-            'numerical_policy':'record_only','rerun_gpu_matrix':False,'prefill_evidence_dir':str(args.prefill_evidence_dir),
+            'measurement_mode':measurement_mode,'formal_gpqa':not (args.graph_stage_profile or native_p0),
+            'native_p0_gate_required':native_p0,'stage_event_gate_required':args.graph_stage_profile,'paper_mode':paper_mode,'complete_weave_claim':False,
+            'numerical_policy':'record_only','rerun_gpu_matrix':False,'prefill_evidence_dir':str(args.prefill_evidence_dir) if args.prefill_evidence_dir else None,'native_baseline_dir':str(args.native_baseline_dir) if native_p0 else None,
             'required_environment':{'WEAVE_MAX_RUNNING_REQUESTS':'32','WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32'},
             'clients':{v:client_command(contract['image'],args.work_root,args.records,f'{name}/{v}',name+'-'+v,args.port) for v in groups}},indent=2));return 0
     from src.weave.gpqa_c32 import load_gpqa_workload, validate_client_summary, compare_groups, validate_prefill_bundle
     allocation=allocated_gpus();out.mkdir(parents=True,exist_ok=False)
     owner,client_owner=OwnedChild(),OwnedChild()
-    report={'schema_version':1,'status':'running','scope':'GPQA_Main_C32_'+args.decode_graph,'formal_gpqa':not args.graph_stage_profile,
+    report={'schema_version':1,'status':'running','scope':'native_sglang_p0_c32_full' if native_p0 else 'GPQA_Main_C32_'+args.decode_graph,'formal_gpqa':not (args.graph_stage_profile or native_p0),
         'measurement_mode':measurement_mode,
         'accuracy_evaluated':False,'numerical_policy':'record_only','generation_comparison_policy':'record_only',
         'started_utc':datetime.now(timezone.utc).isoformat(),'gpuq_job_id':os.environ.get('GPUQ_JOB_ID'),
@@ -246,8 +257,17 @@ def main(argv=None):
         save();workload=load_gpqa_workload(args.records,model_path=args.model_path)
         source=serving_source_manifest();source_digest=digest(source)
         image=subprocess.run(['docker','image','inspect',contract['image'],'--format','{{.Id}}'],check=True,capture_output=True,text=True,timeout=30).stdout.strip()
-        proof=validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)
-        identity={**proof['identity'],**workload.identity,'image_id':image,'serving_source_sha256':source_digest,'decode_graph':args.decode_graph}
+        if native_p0:
+            from src.weave.native_p0_evidence import native_checkpoint_proof, summarize_native_p0, validate_native_p0_smoke
+            from src.weave.native_p0 import native_p0_source_sha256
+            from scripts.run_graph_gate import native_p0_gate_command
+            native_proof=native_checkpoint_proof(args.native_baseline_dir,args.model_path)
+            atomic_json(out/'native-checkpoint-proof.json',native_proof)
+            proof_identity={'source_sha256':digest(kernel_source_manifest()),'checkpoint_content_sha256':native_proof['checkpoint_content_sha256']}
+        else:
+            proof=validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)
+            proof_identity=proof['identity']
+        identity={**proof_identity,**workload.identity,'image_id':image,'serving_source_sha256':source_digest,'decode_graph':args.decode_graph}
         if args.decode_graph=='full':
             from src.weave.hopper_graph import graph_runtime_source_sha256
             from src.weave.graph_hooks import graph_observer_source_sha256
@@ -256,19 +276,20 @@ def main(argv=None):
         if args.graph_stage_profile:
             from src.weave.graph_stage_profile import graph_stage_source_sha256
             identity.update(graph_stage_source_sha256=graph_stage_source_sha256(),graph_stage_stride=args.graph_stage_stride,graph_stage_capacity=args.graph_stage_capacity)
+        if native_p0:identity.update(native_p0_source_sha256=native_p0_source_sha256(),native_p0_stride=args.native_p0_stride,native_p0_capacity=args.native_p0_capacity)
         if paper_mode:
             from src.weave.paper_evidence import validate_paper_bundle
             paper_proof=validate_paper_bundle(args.paper_proof_dir,identity)
             identity.update(paper_source_sha256=paper_proof['paper_source_sha256'],paper_profiles=paper_proof['profile_sha256'])
             report.update(method_status='paper_candidate',complete_weave_claim=False)
             atomic_json(out/'paper-proof-check.json',paper_proof)
-        report.update(identity=identity,core_gate=proof['core_gate']);save()
+        report.update(identity=identity,core_gate=proof['core_gate'] if proof else 'not_applicable_native_only');save()
         atomic_json(out/'data-manifest.json',workload.identity)
         atomic_json(out/'source-manifest.json',kernel_source_manifest());atomic_json(out/'serving-source-manifest.json',source)
-        atomic_json(out/'prefill-proof-check.json',proof)
+        if proof is not None:atomic_json(out/'prefill-proof-check.json',proof)
         env={**os.environ,'CUDA_VISIBLE_DEVICES':allocation.csv,'WEAVE_MAX_RUNNING_REQUESTS':'32',
             'WEAVE_CUDA_GRAPH_MAX_BS_DECODE':'32','IMAGE':image,'RUNTIME_PYTHON':contract['python_executable']}
-        if args.decode_graph=='full' and not paper_mode:
+        if args.decode_graph=='full' and not paper_mode and not native_p0:
             gate_dir=out/'graph-gate';gate_dir.mkdir()
             gate=graph_gate_command(image,args.work_root,args.model_path,name,allocation.csv)
             lifecycle=gate_dir/'container-lifecycle.json'
@@ -296,6 +317,20 @@ def main(argv=None):
             validate_runtime(json.loads((stage_dir/'runtime.json').read_text()),identity,allocation.csv)
             stage_proof=validate_stage_event_smoke(stage_dir,identity)
             atomic_json(out/'stage-event-proof-check.json',stage_proof)
+        if native_p0:
+            gate_dir=out/'native-p0-gate';gate_dir.mkdir()
+            command=native_p0_gate_command(image,args.work_root,args.model_path,name,allocation.csv)
+            lifecycle=gate_dir/'container-lifecycle.json'
+            manager=[sys.executable,str(ROOT/'scripts/manage_container.py'),'--name',command[command.index('--name')+1],
+                     '--evidence',str(lifecycle),'--log',str(gate_dir/'gate-private.log'),'--']+command
+            report.update(stage='native_p0_event_gate');save()
+            child=owner.spawn(manager,lifecycle,env=env,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+            wait_graph_gate(child,gate_dir,gate_timeout=args.graph_gate_timeout,
+                            cleanup_timeout=args.graph_cleanup_timeout,cancel_check=check_cancelled)
+            owner.stop();check_cancelled()
+            validate_runtime(json.loads((gate_dir/'runtime.json').read_text()),identity,allocation.csv)
+            native_smoke=validate_native_p0_smoke(gate_dir,identity)
+            atomic_json(out/'native-p0-proof-check.json',native_smoke)
         for variant in groups:
             check_cancelled();report.update(stage='serving_'+variant);save()
             folder=out/variant;folder.mkdir();run_name='native-ep-'+name+'-'+variant
@@ -362,6 +397,10 @@ def main(argv=None):
                                 stride=args.graph_stage_stride,capacity=args.graph_stage_capacity)
                             atomic_json(folder/'stage-profile-check.json',stages)
                             group['stage_profile']=stages
+                        if native_p0:
+                            native_summary=summarize_native_p0(graph_before,graph_after,profile_source=identity['native_p0_source_sha256'],stride=args.native_p0_stride,capacity=args.native_p0_capacity)
+                            atomic_json(out/'native-p0-summary.json',native_summary)
+                            group['native_p0_summary']=native_summary
                         if variant=='native':batch=graph_check
                         else:
                             after=coverage(args.evidence_port_base);atomic_json(folder/'coverage-after.json',after)
@@ -390,16 +429,24 @@ def main(argv=None):
                 save()
         if load_gpqa_workload(args.records,model_path=args.model_path).identity!=workload.identity:raise ValueError('data_changed_during_run')
         if digest(serving_source_manifest())!=source_digest:raise ValueError('source_changed_during_run')
-        if validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)!=proof:raise ValueError('proof_or_checkpoint_changed_during_run')
-        if args.decode_graph=='full' and not paper_mode and validate_graph_smoke(out/'graph-gate',identity)!=graph_proof:raise ValueError('graph_proof_changed_during_run')
+        if native_p0:
+            from src.weave.checkpoint_identity import checkpoint_stats
+            if checkpoint_stats(args.model_path)!=native_proof['verified_stats']:raise ValueError('checkpoint changed during native P0')
+            if native_p0_source_sha256()!=identity['native_p0_source_sha256']:raise ValueError('native P0 source changed')
+            if validate_native_p0_smoke(out/'native-p0-gate',identity)!=native_smoke:raise ValueError('native P0 smoke changed')
+        elif validate_prefill_bundle(args.prefill_evidence_dir,args.model_path,image)!=proof:raise ValueError('proof_or_checkpoint_changed_during_run')
+        if args.decode_graph=='full' and not paper_mode and not native_p0 and validate_graph_smoke(out/'graph-gate',identity)!=graph_proof:raise ValueError('graph_proof_changed_during_run')
         comparison_groups=report['groups'] if not paper_mode else {'native':report['groups']['native'],'hopper_prefill':report['groups']['paper_persistent']}
-        comparison=dict(compare_groups(comparison_groups),decode_graph=args.decode_graph,measurement_mode=measurement_mode)
+        comparison=({'status':'diagnostic_complete','formal_gpqa':False,'measurement_mode':measurement_mode,
+            'decode_graph':'full','group_labels':{'native':'SGLang native with P0 instrumentation'},
+            'sustained_c32_ratio_available':False,'ratio_suppression_reason':'native_only_instrumented_diagnostic'} if native_p0
+            else dict(compare_groups(comparison_groups),decode_graph=args.decode_graph,measurement_mode=measurement_mode))
         if paper_mode:
             if validate_paper_bundle(args.paper_proof_dir,identity)!=paper_proof:raise ValueError('paper proof changed')
             comparison['decode_tokens_per_second']['paper_persistent']=comparison['decode_tokens_per_second'].pop('hopper_prefill')
             comparison['paper_vs_native_ratio']=comparison.pop('prefill_vs_native_ratio')
             comparison.update(method_identity='hopper_persistent_paper_v1',method_status='paper_service_execution_verified',complete_weave_claim=False)
-        else:comparison['group_labels']={'native':'SGLang native','hopper_prefill':'Hopper operator candidate; paper scheduler not used'}
+        elif not native_p0:comparison['group_labels']={'native':'SGLang native','hopper_prefill':'Hopper operator candidate; paper scheduler not used'}
         if args.graph_stage_profile:
             if validate_stage_event_smoke(out/'stage-event-gate',identity)!=stage_proof:raise ValueError('stage_event_proof_changed')
             comparison.update(formal_gpqa=False,sustained_c32_ratio_available=False,prefill_vs_native_ratio=None,
@@ -410,7 +457,7 @@ def main(argv=None):
                 'groups':{v:report['groups'][v]['stage_profile'] for v in GROUPS},
                 'interpretation':'Use aligned stage times to locate the bottleneck; instrumented throughput is not a formal speedup comparison.'})
         atomic_json(out/'comparison.json',comparison)
-        report.update(status='diagnostic_complete' if args.graph_stage_profile else 'comparison_complete',stage='complete');code=0
+        report.update(status='diagnostic_complete' if (args.graph_stage_profile or native_p0) else 'comparison_complete',stage='complete');code=0
     except BaseException as exc:
         report.update(status='failed',error_type=type(exc).__name__)
         (out/'controller-error-private.log').write_text(str(exc)+'\n')

@@ -19,9 +19,13 @@ The user explicitly removed the Hopper numerical-error gates on 2026-10-17 and i
 - Preserve historical reports and their original status/source identity. Do not rewrite an old threshold-failed run as a completed run; rerun under the new policy and evidence schema.
 - In the Hopper C32 serving suite, generated-token agreement is also record-only: publish matched/mismatched counts and digests without stopping the throughput comparison for differing token contents. Continue requiring complete valid responses, request identity, expected token counts, finite output, and source/runtime/coverage evidence. Historical strict suites retain their recorded semantics.
 
-# Paper-method identity
+# Current objective: native SGLang throughput
 
-The user explicitly restored the paper-reproduction objective on 2026-10-18.
+On 2026-10-20 the user changed the main objective to improving model throughput on native SGLang. Batch 32 is an initial control variable, not a fixed requirement for later optimization. The approved first step is native P0 diagnosis of actual execution paths and routed/shared overlap and contention hypotheses. Preserve native compute semantics in P0; changing CTA budgets requires evidence-driven subsequent work. Use docs/NATIVE_P0.md and docs/SERVER_PROMPT_NATIVE_P0.md for this phase.
+
+# Historical paper-method identity
+
+The 2026-10-18 paper-reproduction work and its evidence remain historical branches of this project. Preserve their method labels:
 - `hopper_fp8` is an operator candidate; its standalone compute + NCCL slot SUM is not the Weave paper scheduler. Do not present its results as complete Weave.
 - `hopper_persistent_paper_v1` contains the paper-mechanism integration, but source/CPU checks do not prove GPU execution or full reproduction. Report source implementation, kernel mechanism evidence, actual 43-layer service evidence and paper experiment coverage separately.
 - Require actual routing-driven c/K decisions, resident SM evidence, chunk overlap and stealing evidence at their stated scopes. Preserve failures and observed-zero mechanisms; do not replace missing evidence with enabled flags or fabricated profiles.

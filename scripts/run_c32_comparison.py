@@ -45,7 +45,7 @@ def serving_source_manifest():
         'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(paths)]}
 
 
-def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210,decode_graph="disabled",graph_evidence_port_base=30310,graph_stage_profile=False,graph_stage_stride=128,graph_stage_capacity=64):
+def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_diagnostic=False,stall_port_base=30210,decode_graph="disabled",graph_evidence_port_base=30310,graph_stage_profile=False,graph_stage_stride=128,graph_stage_capacity=64,native_p0=False,native_p0_stride=128,native_p0_capacity=64):
     if decode_graph not in ("disabled","full"):raise ValueError("unsupported decode graph")
     if variant not in set(VARIANTS)|set(HOPPER_VARIANTS)|set(PREFILL_VARIANTS):raise ValueError('unknown C32 group')
     result = [sys.executable,str(ROOT/'scripts/run_native_ep.py'),'--execute',
@@ -60,6 +60,12 @@ def service_command(variant,work,model,run_name,port,base,checkpoint,*,stall_dia
     if graph_stage_profile:
         if decode_graph!='full':raise ValueError('stage timing requires full graph')
         result += ['--graph-stage-profile','--graph-stage-stride',str(graph_stage_stride),'--graph-stage-capacity',str(graph_stage_capacity)]
+    if native_p0:
+        if variant!='native' or decode_graph!='full' or graph_stage_profile:raise ValueError('native P0 requires native full graph alone')
+        for option in ('--kernel','--fixed-plan','--decode-implementation','--prefill-implementation'):
+            index=result.index(option);del result[index:index+2]
+        result.remove('--hot-cache')
+        result += ['--native-p0','--native-p0-stride',str(native_p0_stride),'--native-p0-capacity',str(native_p0_capacity)]
     if stall_diagnostic:result += ['--stall-diagnostic','--stall-port-base',str(stall_port_base)]
     return result
 

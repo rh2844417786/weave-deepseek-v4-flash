@@ -18,3 +18,12 @@ def stage_event_gate_command(image,work,model,name,allocation):
     for index,value in enumerate(command):
         if value=='--output-dir':command[index+1]=f'/work/{name}/stage-event-gate'
     return command
+
+
+def native_p0_gate_command(image,work,model,name,allocation):
+    command=stage_event_gate_command(image,work,model,name,allocation)
+    command[command.index('--name')+1]='weave-native-p0-gate-'+name
+    command[command.index('/workspace/tests/gpu/check_graph_stage_events.py')]='/workspace/tests/gpu/check_native_p0_events.py'
+    for index,value in enumerate(command):
+        if value=='--output-dir':command[index+1]=f'/work/{name}/native-p0-gate'
+    return command

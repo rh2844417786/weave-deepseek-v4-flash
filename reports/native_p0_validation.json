@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "local_validation_complete_server_execution_pending",
+  "date": "2026-10-20",
+  "objective": "Diagnose native SGLang actual paths and routed/shared timing before throughput optimization",
+  "numerical_policy": "record_only",
+  "native_computation_changed": false,
+  "cta_budget_changed": false,
+  "cpu_tests": {
+    "passed": 88,
+    "failed": 0,
+    "command": ".venv-data/bin/python -m unittest tests.cpu.test_native_p0 tests.cpu.test_native_p0_trace tests.cpu.test_native_p0_hooks tests.cpu.test_native_p0_evidence tests.cpu.test_graph_hooks tests.cpu.test_graph_evidence tests.cpu.test_graph_stage_profile tests.cpu.test_graph_stage_controller tests.cpu.test_graph_stage_integration tests.cpu.test_gpqa_c32_controller tests.cpu.test_graph_cleanup",
+    "independent_review_native_tests_passed": 37
+  },
+  "followup_controller_tests": {
+    "passed": 18,
+    "command": ".venv-data/bin/python -m unittest tests.cpu.test_native_p0_evidence tests.cpu.test_gpqa_c32_controller"
+  },
+  "source_pins_verified": 23,
+  "sglang_commit": "29481685462732237d80d86076d6563e1f658102",
+  "profile_source_sha256": "dd51e6c971e3ab80c96460c190bbc753c7528a04adda9e4a1e41c53afe8bc6fc",
+  "profile_source_manifest": {
+    "src/weave/native_p0.py": "4dcf16105abb6544db48f945f1ed193659f5317c8d765f11c34538afe4737737",
+    "src/weave/native_p0_hooks.py": "262d763c4ec8b2770e6eae41134eb592c998efdcf15cab46b24f1e15e1e359a3",
+    "src/weave/native_p0_trace.py": "08792f0ee35e739db57c696768660f54502ec57d16219d890155634017bb849b",
+    "configs/native_p0_sources.json": "d8284770d336cdb3011825ed5666143b3ba2b5e82fa20021f7ddd79bdb4c87d8"
+  },
+  "serving_source_sha256": "deffc768c8e8c68296dbb388b4bbb1e7eb62ead0c472327023d88e25dc138210",
+  "syntax_check": "passed",
+  "controller_preview": "passed",
+  "native_launcher_preview": "passed",
+  "independent_review": {
+    "status": "completed",
+    "unresolved_blockers": 0,
+    "fixed": [
+      "Require actual Marlin launch resources and native call compatibility",
+      "Publish per-layer offsets and exposed tails"
+    ]
+  },
+  "gpu_smoke": "not_run_locally",
+  "real_43_layer_native_p0": "not_run_locally",
+  "throughput_improvement": "not_measured",
+  "server_entry": "scripts/run_native_p0.py",
+  "server_prompt": "docs/SERVER_PROMPT_NATIVE_P0.md",
+  "latest_remote_preserved": "a848782",
+  "historical_report_files_hash_verified": 209
+}

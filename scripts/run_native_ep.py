@@ -67,6 +67,11 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         docker += ['-e', 'WEAVE_GRAPH_STAGE_PROFILE=1',
                    '-e', f'WEAVE_GRAPH_STAGE_STRIDE={args.graph_stage_stride}',
                    '-e', f'WEAVE_GRAPH_STAGE_CAPACITY={args.graph_stage_capacity}']
+    if getattr(args, 'native_p0', False):
+        docker += ['-e', 'WEAVE_NATIVE_P0=1',
+                   '-e', f'WEAVE_NATIVE_P0_STRIDE={args.native_p0_stride}',
+                   '-e', f'WEAVE_NATIVE_P0_CAPACITY={args.native_p0_capacity}',
+                   '-e', f'WEAVE_NATIVE_P0_PRIVATE_DIR=/work/{run_name}/native-p0-private']
     functional = args.backend == 'weave_functional'
     if args.checkpoint_content_sha256:
         docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
@@ -148,6 +153,10 @@ def main() -> int:
                         help='instrument full C32 graph replay; diagnostic timing only')
     parser.add_argument('--graph-stage-stride', type=int, default=128)
     parser.add_argument('--graph-stage-capacity', type=int, default=64)
+    parser.add_argument('--native-p0', action='store_true',
+                        help='native Marlin branch and launch diagnosis; instrumented timing only')
+    parser.add_argument('--native-p0-stride', type=int, default=128)
+    parser.add_argument('--native-p0-capacity', type=int, default=64)
     parser.add_argument('--graph-evidence-port-base', type=int, default=30310)
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
     parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8','hopper_persistent'],
@@ -174,6 +183,17 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if not 1 <= args.native_p0_stride <= 65536 or not 1 <= args.native_p0_capacity <= 256:
+        parser.error('native P0 stride must be in 1..65536 and capacity in 1..256')
+    if args.native_p0:
+        if (args.backend != 'native' or not args.graph_c32 or args.decode_graph != 'full'
+                or not args.request_timing or args.graph_stage_profile
+                or args.profile or args.execution_profile or args.execution_profile_fixed_plan
+                or args.stall_diagnostic or args.replay_capture_dir
+                or args.decode_implementation != 'persistent' or args.prefill_implementation != 'persistent'):
+            parser.error('native P0 requires native full graph C32 request timing without other profiles/custom implementations')
+    elif args.native_p0_stride != 128 or args.native_p0_capacity != 64:
+        parser.error('native P0 stride/capacity require --native-p0')
     if not 1 <= args.graph_stage_stride <= 65536 or not 1 <= args.graph_stage_capacity <= 256:
         parser.error('graph stage stride must be in 1..65536 and capacity in 1..256')
     if args.graph_stage_profile and args.decode_implementation == 'hopper_persistent':
@@ -302,6 +322,9 @@ def main() -> int:
         'graph_mode': 'full' if args.graph_c32 else args.decode_graph,
         'graph_c32': args.graph_c32,
         'graph_stage_profile': args.graph_stage_profile,
+        'native_p0': args.native_p0,
+        'native_p0_configuration': ({'stride': args.native_p0_stride, 'capacity': args.native_p0_capacity}
+                                    if args.native_p0 else None),
         'graph_stage_configuration': ({'stride': args.graph_stage_stride, 'capacity': args.graph_stage_capacity}
                                       if args.graph_stage_profile else None),
         'hot_cache':args.hot_cache,
@@ -313,9 +336,9 @@ def main() -> int:
         'ep_correctness_status': 'not_verified', 'performance_status': 'not_run',
         'exit_code': None,
     }
-    if args.stall_diagnostic or args.graph_stage_profile:
+    if args.stall_diagnostic or args.graph_stage_profile or args.native_p0:
         report.update(instrumented_diagnostic=True,used_for_formal_performance=False)
-    if args.graph_stage_profile:
+    if args.graph_stage_profile or args.native_p0:
         report.update(measurement_mode='instrumented_diagnostic', formal_gpqa=False,
                       numerical_policy='record_only')
     report_path = run_dir / 'launch.json'
