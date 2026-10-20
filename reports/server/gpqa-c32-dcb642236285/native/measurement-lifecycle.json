@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-gpqa-c32-dcb642236285-native",
+  "started_utc": "2026-10-20T12:19:43.017403+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-20T12:39:46.336759+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-p0-gate-gpqa-c32-dcb642236285",
+  "started_utc": "2026-10-20T12:03:41.606584+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-20T12:04:07.426065+00:00"
+}
