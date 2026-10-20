@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-p0-pair-db5441221dd4-client-p0",
+  "started_utc": "2026-10-20T13:58:35.694152+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-20T14:05:11.696018+00:00"
+}
