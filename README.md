@@ -4,7 +4,9 @@
 
 2026-10-20 起，主线改为优化原生 SGLang 的 DeepSeek-V4-Flash 吞吐。32并发用于首轮控制变量，后续可调整实际batch和并发。先执行原生 P0，记录真实 MoE 分支、routed/shared 时间区间、Marlin 启动资源和四rank差异，再决定第一项优化。
 
-入口：[原生 P0 说明](docs/NATIVE_P0.md) · [服务器执行 Prompt](docs/SERVER_PROMPT_NATIVE_P0.md)。当前交付为代码与本地 CPU 验证；真实 H100 采样和吞吐改善尚待服务器证据。P0 不修改 CTA 配额，不输出正式加速比。
+入口：[原生 P0 说明](docs/NATIVE_P0.md) · [服务器执行 Prompt](docs/SERVER_PROMPT_NATIVE_P0.md)。原生 P0 已回传 H100 采样证据；当前新增配对检查完成本地验证，实际配对GPU执行待回传。P0 不修改 CTA 配额，不输出正式加速比。
+
+最新诊断：服务器 `172bd60` 已回传原生 P0 图与分阶段证据，但同题输出长度明显变短。下一步使用[同32题配对检查](docs/NATIVE_P0_PAIR.md)及[服务器执行 Prompt](docs/SERVER_PROMPT_NATIVE_P0_PAIR.md)，分别核对未采样与P0采样的生成行为。差异只记录，根因尚未确定。
 
 ## 历史方法身份与状态
 

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "local_validation_complete_server_pair_pending",
+  "date": "2026-10-20",
+  "numerical_policy": "record_only",
+  "generation_comparison_policy": "record_only",
+  "formal_performance": false,
+  "request_count_per_arm": 32,
+  "arms": [
+    "native",
+    "p0"
+  ],
+  "completion_policy": "natural_EOS_or_32768_tokens",
+  "request_timeout_seconds": 3600,
+  "selection_sha256": "a5748d54c4605d57042784ad3e2de569ae017796411239a360f90aaabc9b3018",
+  "cpu_tests": {
+    "passed": 79,
+    "failed": 0,
+    "skipped": 0,
+    "new_pair_tests": 21,
+    "command": ".venv-data/bin/python -m unittest tests.cpu.test_native_p0_pair tests.cpu.test_native_p0_pair_controller tests.cpu.test_native_p0_pair_client tests.cpu.test_gpqa_c32_client tests.cpu.test_gpqa_c32_controller tests.cpu.test_native_p0_evidence tests.cpu.test_native_p0 tests.cpu.test_graph_evidence"
+  },
+  "preview_checks": [
+    "pinned prepared corpus selection",
+    "real native launcher without execute",
+    "real P0 launcher without execute",
+    "normalized actual Docker launches equal except allowed differences"
+  ],
+  "prior_p0_smoke_revalidation": "passed_4_ranks_10_manifest_files",
+  "p0_profile_source_sha256": "dd51e6c971e3ab80c96460c190bbc753c7528a04adda9e4a1e41c53afe8bc6fc",
+  "p0_implementation_changed": false,
+  "serving_source_sha256": "be01401688e729c15a0744d22ab59d74bf9670ae890fd0470653487e6eeb3ca6",
+  "independent_review": {
+    "status": "completed",
+    "blocking_findings": 0,
+    "metadata_note_addressed": true
+  },
+  "regressions_verified": [
+    "empty decoded output with valid counts remains record-only",
+    "all32 output mismatches complete successfully",
+    "very short cohort finishing between polls retains start marker",
+    "native-ep service name requirement"
+  ],
+  "root_cause_status": "not_established_source_audit_no_direct_mutation_found",
+  "runtime_pair_status": "not_run_locally_no_H100",
+  "server_entry": "scripts/run_native_p0_pair.py",
+  "server_prompt": "docs/SERVER_PROMPT_NATIVE_P0_PAIR.md"
+}
