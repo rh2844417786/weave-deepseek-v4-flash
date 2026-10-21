@@ -6,6 +6,14 @@
 
 本轮控制同一批输入token、生成前缀、batch32、序列长度和KV逻辑位置，记录强制选词之前的原始logits。原生重复作为波动参照；P0事件和缓冲保留独立开关。未宣称已找到P0短输出的根因，也不以数值或top1差异作为门限。
 
+## 2026-10-21 prefill预算修复
+
+服务器记录 `ea560a2` 的旧入口在seed阶段被拆成27＋5条：6059是原始token总数，DeepSeek V4 CUDA按256-token页逐请求扣减prefill预算后，32条实际需要9472；前27条恰好耗尽旧8192预算。
+
+固定前缀模式现在对五组统一显式设置 `--chunked-prefill-size 16384 --max-prefill-tokens 16384`。启动前导出计算预算，服务就绪后及每个阶段前读取 `/server_info`，核对页大小、生效token预算、配置请求上限及scheduler实际的 `effective_max_running_requests_per_dp`。公开保存白名单字段到 `prefill-budget.json`，包括失败时的实际值。
+
+预算检查不能代替实际forward覆盖；处理器仍要求完整32行，仍检查7次B32 decode。实际输入控制核验保留，所有有限数值和原始top-1差异继续只记录。旧失败报告保留；重跑时入口自动生成全新的工作、服务和公开目录。
+
 ## 检查安排
 
 使用原有prepared文件前32题，输入共6059token，最长343，仍保留自然题长。每次请求使用原生批量input_ids接口，一批32题，固定8个预测位置（prefill后第1个预测，加7步decode）。仅此计算诊断使用ignore_eos=true，确保同一固定轨迹；正式GPQA自然EOS规则未改变。

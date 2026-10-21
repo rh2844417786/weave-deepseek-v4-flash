@@ -4,6 +4,8 @@
 
 目标是比较相同输入token、batch32、前缀与KV逻辑位置下的原始logits，定位P0短输出的来源。本次不测正式吞吐，不把有限误差或top1差异变成门限。
 
+本次重跑包含prefill页预算修复：五组统一chunked-prefill-size=16384、max-prefill-tokens=16384，32题按256-token页对齐后需要9472。入口已设置，不要手动回退到8192。核对每组及每阶段的prefill-budget.json：页大小256、实际预算足够、scheduler实际请求上限至少32。此前fixed-prefix-d21fe5a23861失败记录保留，使用脚本自动生成的新目录重跑。
+
 使用已有 lmsysorg/sglang:v0.5.17、Torch2.11/CUDA13/Python3.12 和只读模型 /mnt/public_data/deepseek-ai/DeepSeek-V4-Flash。保留缓存；不在线pip/apt/HF下载，不拉镜像或模型。缺依赖或源文件身份不匹配就保留具体失败，不换版本或改hash绕过。
 
 GPUQ申请4张H100，沿用CUDA_VISIBLE_DEVICES分配，不硬编码物理卡号。五组顺序使用同一分配，总运行预算建议8小时，可按需要延长。WORK_ROOT需可写，并留出数GiB保存私有logits。

@@ -34,6 +34,7 @@ from src.weave.native_p0_evidence import native_checkpoint_proof,validate_native
 from src.weave.fixed_prefix_data import prepare_config,validate_pinned_selection,load_teacher,digest
 from src.weave.fixed_prefix_evidence import ARMS,normalize_fixed_launch,validate_fixed_graph,validate_phase_proofs
 from src.weave.fixed_prefix_runtime import fixed_prefix_source_sha256
+from src.weave.fixed_prefix_budget import FIXED_PAGE_SIZE,FIXED_PREFILL_TOKENS,admission_budget,validate_effective_budget,SERVER_FIELDS,effective_request_limits
 
 
 def service_command(arm,work,model,name,port,base,checkpoint,private,teacher):
@@ -78,6 +79,30 @@ def warmup(url,workload,timeout):
     return {'status':'passed','requests_completed':32,'output_tokens':256,'included_in_measurement':False}
 
 
+def check_prefill_budget(url,config,output):
+    # The pinned /server_info response exposes resolved arguments at the top
+    # level. Only the allowlisted budget fields are retained from that response.
+    current=http_json(url+'/server_info',timeout=30)
+    try:
+        proof=validate_effective_budget([r['input_tokens'] for r in config['requests']],current)
+    except ValueError:
+        effective={}
+        if isinstance(current,dict):
+            for key in SERVER_FIELDS:
+                if key in current:
+                    value=current[key]
+                    effective[key]=value if value is None or type(value)is int else {'invalid_type':type(value).__name__}
+        try:worker_limits=effective_request_limits(current)
+        except ValueError:worker_limits=None
+        atomic_json(output,dict(status='failed',configuration_source='live_server_info',
+            effective_max_running_requests_per_dp=worker_limits,
+            error_code='effective_prefill_budget_invalid',effective_limits=effective,
+            missing_fields=[key for key in SERVER_FIELDS if key not in effective]))
+        raise
+    atomic_json(output,proof)
+    return proof
+
+
 def public_scalars(value):
     # Fixed-prefix proofs call their scalar/hash step list "records". That name
     # is permitted here; raw benchmark fields remain forbidden at every depth.
@@ -110,13 +135,13 @@ def export_public(run,destination):
     run,destination=Path(run),Path(destination)
     if destination.exists():raise FileExistsError('fresh public fixed-prefix destination required')
     names=['experiment.json','comparison.json','config.json','teacher-manifest.json','source-manifest.json',
-        'checkpoint-proof.json','smoke-proof.json','launch-comparison.json','comparison-lifecycle.json',
+        'checkpoint-proof.json','smoke-proof.json','launch-comparison.json','comparison-lifecycle.json','prefill-budget.json',
         'native-p0-gate/runtime.json','native-p0-gate/container-lifecycle.json']
     names += [f'native-p0-gate/{prefix}-rank{rank}.json' for prefix in ('native-p0-event','graph-cleanup') for rank in range(4)]
     for arm in ARMS:
-        names += [f'{arm}/{name}' for name in ('group.json','launch.json','runtime.json','server-lifecycle.json','warmup.json')]
+        names += [f'{arm}/{name}' for name in ('group.json','launch.json','runtime.json','server-lifecycle.json','warmup.json','prefill-budget.json')]
         for phase in (('seed','measure','trace') if arm=='native_a' else ('measure',)):
-            names += [f'{arm}/{phase}/{name}' for name in ('fixed-prefix-client-summary.json','client-lifecycle.json','graph-before.json','graph-after.json','graph-check.json')]
+            names += [f'{arm}/{phase}/{name}' for name in ('fixed-prefix-client-summary.json','client-lifecycle.json','graph-before.json','graph-after.json','graph-check.json','prefill-budget.json')]
             names += [f'{arm}/{phase}-rank{rank}.json' for rank in range(4)]
     files={}
     for name in names:
@@ -156,7 +181,7 @@ def main(argv=None):
     if not args.execute:
         print(json.dumps(dict(status='preview_not_executed',arms=list(ARMS),steps=8,decode_steps=7,batch_size=32,numerical_policy='record_only',
             formal_performance=False,teacher_forcing=True,disable_overlap_schedule=True,services={arm:launch(arm,'0'*64) for arm in ARMS},
-            native_trace_steps=2,raw_logits_private=True),indent=2));return 0
+            native_trace_steps=2,raw_logits_private=True,prefill_limits=dict(page_size=FIXED_PAGE_SIZE,chunked_prefill_size=FIXED_PREFILL_TOKENS,max_prefill_tokens=FIXED_PREFILL_TOKENS)),indent=2));return 0
     from src.weave.gpqa_c32 import load_gpqa_workload
     from src.weave.checkpoint_identity import checkpoint_stats
     allocation=allocated_gpus();out.mkdir(parents=True,exist_ok=False);teacher_path.parent.mkdir(mode=0o770)
@@ -190,6 +215,9 @@ def main(argv=None):
     try:
         save();workload=load_gpqa_workload(args.records,model_path=args.model_path);validate_pinned_selection(workload)
         config=prepare_config(workload,steps=8,vocab_size=_read(args.model_path/'config.json')['vocab_size']);atomic_json(out/'config.json',config)
+        planned_budget=admission_budget([r['input_tokens'] for r in config['requests']],page_size=FIXED_PAGE_SIZE,chunked_prefill_size=FIXED_PREFILL_TOKENS,max_prefill_tokens=FIXED_PREFILL_TOKENS)
+        if not planned_budget['whole_cohort_fits_token_budget']:raise ValueError('planned fixed-prefix prefill budget cannot admit whole cohort')
+        atomic_json(out/'prefill-budget.json',dict(planned_budget,configuration_source='planned_fixed_prefix_limits'))
         image=subprocess.run(['docker','image','inspect',contract['image'],'--format','{{.Id}}'],check=True,capture_output=True,text=True,timeout=30).stdout.strip()
         source=serving_source_manifest();source_digest=digest(source);atomic_json(out/'source-manifest.json',source)
         checkpoint=native_checkpoint_proof(args.native_baseline_dir,args.model_path);atomic_json(out/'checkpoint-proof.json',checkpoint)
@@ -223,11 +251,13 @@ def main(argv=None):
                     elif current!=normalized:raise ValueError('fixed-prefix launch differs beyond declared arm intervention')
                     atomic_json(out/'launch-comparison.json',dict(status='matched_so_far',checked_arms=list(report['arms']),normalized_sha256=digest(current)))
                     flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
+                    check_prefill_budget(url,config,folder/'prefill-budget.json')
                     atomic_json(folder/'warmup.json',warmup(url,workload,args.warmup_timeout))
                     phases=('seed','measure','trace') if arm=='native_a' else ('measure',)
                     for phase in phases:
                         report['stage']=arm+'_'+phase;save();stage=folder/phase;stage.mkdir();steps=2 if phase=='trace' else 8
                         flush_cache_when_idle(url,deadline=time.monotonic()+args.drain_timeout,max_wait=args.drain_timeout)
+                        check_prefill_budget(url,config,stage/'prefill-budget.json')
                         before=baseline_coverage(args.graph_evidence_port_base,deadline=time.monotonic()+30.,endpoint='graph-coverage');atomic_json(stage/'graph-before.json',before)
                         command=phase_command(image,args.work_root,args.records,f'{name}/{arm}/{phase}',f'{name}/private/teacher.json',name+'-'+arm+'-'+phase,phase,args.port,args.phase_timeout)
                         try:

@@ -146,7 +146,12 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     if args.request_timing:
         command += ['--stream-interval','1','--incremental-streaming-output']
     if getattr(args, 'fixed_prefix_dir', None):
-        command += ['--enable-custom-logit-processor', '--disable-overlap-schedule']
+        from src.weave.fixed_prefix_budget import FIXED_PREFILL_TOKENS
+        # DSV4 admission rounds each input to 256-token pages. The pinned
+        # 6059-token cohort consumes 9472 tokens of this scheduler budget.
+        command[command.index('--chunked-prefill-size') + 1] = str(FIXED_PREFILL_TOKENS)
+        command += ['--max-prefill-tokens', str(FIXED_PREFILL_TOKENS),
+                    '--enable-custom-logit-processor', '--disable-overlap-schedule']
     return command
 
 

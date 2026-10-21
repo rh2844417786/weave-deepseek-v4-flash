@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-21",
+  "status": "local_validation_complete_server_rerun_pending",
+  "numerical_policy": "record_only",
+  "failed_run": "reports/server/fixed-prefix-d21fe5a23861",
+  "raw_input_tokens": 6059,
+  "page_size": 256,
+  "page_rounded_input_tokens": 9472,
+  "old_chunked_prefill_size": 8192,
+  "old_rows_within_budget": 27,
+  "new_chunked_prefill_size": 16384,
+  "new_max_prefill_tokens": 16384,
+  "runtime_checks": [
+    "resolved server page and token limits",
+    "actual scheduler effective_max_running_requests_per_dp",
+    "preserved exact B32 input and replay coverage"
+  ],
+  "cpu_tests": {
+    "passed": 110,
+    "failed": 0,
+    "skipped": 0,
+    "command": "python3 -m unittest tests.cpu.test_fixed_prefix_budget tests.cpu.test_fixed_prefix_data tests.cpu.test_fixed_prefix_runtime tests.cpu.test_fixed_prefix_evidence tests.cpu.test_fixed_prefix_controller tests.cpu.test_p0_interventions tests.cpu.test_native_p0 tests.cpu.test_native_p0_hooks tests.cpu.test_native_p0_evidence tests.cpu.test_native_p0_pair tests.cpu.test_native_p0_pair_controller tests.cpu.test_native_p0_pair_client tests.cpu.test_graph_hooks tests.cpu.test_graph_evidence -q"
+  },
+  "preview_checks": {
+    "fixed_prefix_arms": 5,
+    "all_explicit_prefill_limits": 16384,
+    "ordinary_native_chunked_prefill": 8192
+  },
+  "pinned_native_source_hashes_verified": 12,
+  "independent_review": {
+    "status": "completed",
+    "unresolved_findings": 0,
+    "corrected": "validate worker effective capacity in addition to configured request cap"
+  },
+  "serving_source_sha256": "494b8a963108e9d069d003800a55b62274a44d0537b3d1c4d2290ac9c404ed3e",
+  "fixed_prefix_source_sha256": "e9661d46f2059c3871d057f04d2ac1294b5550e3554f4c498dcdb5708ac4381b",
+  "gpu_rerun": "not_run_locally",
+  "server_entry": "scripts/run_fixed_prefix.py",
+  "server_prompt": "docs/SERVER_PROMPT_FIXED_PREFIX_P0.md"
+}

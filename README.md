@@ -8,6 +8,8 @@
 
 最新诊断：服务器 `172bd60` 已回传原生 P0 图与分阶段证据，但同题输出长度明显变短。下一步使用[同32题配对检查](docs/NATIVE_P0_PAIR.md)及[服务器执行 Prompt](docs/SERVER_PROMPT_NATIVE_P0_PAIR.md)，分别核对未采样与P0采样的生成行为。差异只记录，根因尚未确定。
 
+固定前缀入口已修正prefill页预算：6059个原始token按256页对齐后需要9472，五组统一使用16384预算，并在请求前核对服务实际限制。旧27＋5拆批失败记录保留，新GPU重跑待回传。
+
 当前跟进：[固定前缀诊断](docs/FIXED_PREFIX_P0.md) · [服务器执行 Prompt](docs/SERVER_PROMPT_FIXED_PREFIX_P0.md)。使用短的相同前缀对照、原生重复和P0事件/缓冲拆分，并补原生kernel trace。根因仍待服务器证据，有限数值差异只记录。
 
 ## 历史方法身份与状态
