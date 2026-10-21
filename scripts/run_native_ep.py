@@ -64,9 +64,17 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     if getattr(args, 'graph_c32', False):
         docker += ['-e', 'WEAVE_GRAPH_C32=1', '-e', f'WEAVE_GRAPH_EVIDENCE_PORT_BASE={args.graph_evidence_port_base}']
     if getattr(args, 'native_budget', 'off') != 'off':
-        docker += ['-e', f'WEAVE_NATIVE_BUDGET={args.native_budget}',
-                   '-e', f'WEAVE_NATIVE_BUDGET_TARGET_PERCENT={args.native_budget_target_percent}',
-                   '-e', f'WEAVE_NATIVE_BUDGET_DIR=/work/{run_name}/native-budget']
+        mode = 'adaptive' if args.native_budget == 'heuristic' else args.native_budget
+        docker += ['-e', f'WEAVE_NATIVE_BUDGET={mode}']
+        if mode == 'cost':
+            for key in ('native_cost_table_dir', 'native_cost_calibrate_dir'):
+                directory = getattr(args, key, None)
+                if directory is not None:
+                    docker += ['-e', f'WEAVE_{key.upper()}=/work/{directory.relative_to(args.work_root)}']
+            docker += ['-e', f'WEAVE_NATIVE_COST_REPEATS={args.native_cost_repeats}']
+        else:
+            docker += ['-e', f'WEAVE_NATIVE_BUDGET_TARGET_PERCENT={args.native_budget_target_percent}',
+                       '-e', f'WEAVE_NATIVE_BUDGET_DIR=/work/{run_name}/native-budget']
     if getattr(args, 'graph_stage_profile', False):
         docker += ['-e', 'WEAVE_GRAPH_STAGE_PROFILE=1',
                    '-e', f'WEAVE_GRAPH_STAGE_STRIDE={args.graph_stage_stride}',
@@ -136,7 +144,7 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         '--context-length', '131072', '--mem-fraction-static', '0.80',
         '--chunked-prefill-size', '8192', '--max-running-requests', _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS'),
         '--cuda-graph-backend-decode', args.decode_graph, '--cuda-graph-max-bs-decode', _concurrency_env('WEAVE_CUDA_GRAPH_MAX_BS_DECODE'),
-        '--watchdog-timeout', '1800', '--disable-custom-all-reduce',
+        '--watchdog-timeout', str(args.native_cost_calibration_timeout if getattr(args, 'native_cost_calibrate_dir', None) else 1800), '--disable-custom-all-reduce',
         '--disable-shared-experts-fusion', '--reasoning-parser', 'deepseek-v4',
         '--decode-log-interval', '10', '--enable-metrics',
     ]
@@ -169,9 +177,17 @@ def main() -> int:
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
     parser.add_argument('--graph-c32', action='store_true')
-    parser.add_argument('--native-budget', choices=('off', 'adaptive', 'full'), default='off',
-                        help='native Marlin decode CTA policy; full is a patched control, off is original')
+    parser.add_argument('--native-budget', choices=('off', 'cost', 'heuristic', 'adaptive', 'full'), default='off',
+                        help='cost is measured MoE argmin; heuristic/adaptive retain v1; off is original')
     parser.add_argument('--native-budget-target-percent', type=int, default=75)
+    cost_paths = parser.add_mutually_exclusive_group()
+    cost_paths.add_argument('--native-cost-table-dir', type=Path,
+                           help='complete measured rank profiles under WORK_ROOT')
+    cost_paths.add_argument('--native-cost-calibrate-dir', type=Path,
+                           help='fresh calibration output directory under WORK_ROOT')
+    parser.add_argument('--native-cost-repeats', type=int, default=7)
+    parser.add_argument('--native-cost-calibration-timeout', type=int, default=43200,
+                        help='calibration-only worker watchdog in seconds; formal serving stays at 1800')
     parser.add_argument('--graph-stage-profile', action='store_true',
                         help='instrument full C32 graph replay; diagnostic timing only')
     parser.add_argument('--graph-stage-stride', type=int, default=128)
@@ -214,6 +230,20 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if args.native_budget == 'cost':
+        if not (args.native_cost_table_dir or args.native_cost_calibrate_dir):
+            parser.error('native cost requires measured tables or calibration output; generate with '
+                         'python3 scripts/run_native_cost.py --work-root WORK_ROOT --records PREPARED_MAIN --execute')
+        if args.native_budget_target_percent != 75:
+            parser.error('native cost has no heuristic target percent')
+    elif args.native_cost_table_dir or args.native_cost_calibrate_dir or args.native_cost_repeats != 7:
+        parser.error('native cost paths/repeats require --native-budget cost')
+    if args.native_cost_repeats < 2:
+        parser.error('native cost requires at least 2 repeats')
+    if args.native_cost_calibration_timeout < 1:
+        parser.error('native cost calibration timeout must be positive')
+    if args.native_cost_calibration_timeout != 43200 and not args.native_cost_calibrate_dir:
+        parser.error('native cost calibration timeout requires --native-cost-calibrate-dir')
     if not 1 <= args.native_budget_target_percent <= 100:
         parser.error('native budget target percent must be in 1..100')
     if args.native_budget != 'off':
@@ -332,6 +362,27 @@ def main() -> int:
     if not args.model_path.is_absolute() or not args.work_root.is_absolute():
         parser.error('model-path and work-root must be absolute paths')
     args.work_root = args.work_root.resolve()
+    for key in ('native_cost_table_dir', 'native_cost_calibrate_dir'):
+        path = getattr(args, key)
+        if path is None:
+            continue
+        if not path.is_absolute() or '..' in path.parts:
+            parser.error('native cost directories must be absolute under WORK_ROOT')
+        path = path.resolve()
+        try:
+            path.relative_to(args.work_root)
+        except ValueError:
+            parser.error('native cost directories must be under WORK_ROOT')
+        setattr(args, key, path)
+        if args.execute and key == 'native_cost_calibrate_dir' and any(path.glob('native-cost-rank*.json')):
+            parser.error('native cost calibration requires a fresh output directory; preserve existing rank profiles')
+        if args.execute and key == 'native_cost_table_dir':
+            missing = [rank for rank in range(4) if not (path / f'native-cost-rank{rank}.json').is_file()]
+            if missing:
+                parser.error('native cost tables missing; generate with python3 scripts/run_native_cost.py '
+                             '--work-root WORK_ROOT --records PREPARED_MAIN --execute')
+    if args.execute and args.native_budget == 'cost' and not args.checkpoint_content_sha256:
+        parser.error('native cost execution requires verified --checkpoint-content-sha256')
     for name in ('fixed_prefix_dir', 'fixed_prefix_teacher'):
         path = getattr(args, name)
         if path is None:
@@ -395,7 +446,13 @@ def main() -> int:
         'native_budget_configuration': ({'mode': args.native_budget,
                                          'target_percent': args.native_budget_target_percent,
                                          'ep_size': 4, 'min_percent': 25, 'buckets': 8}
-                                        if args.native_budget != 'off' else None),
+                                        if args.native_budget in ('heuristic', 'adaptive', 'full') else None),
+        'native_cost_configuration': ({'table_dir': str(args.native_cost_table_dir) if args.native_cost_table_dir else None,
+                                       'calibrate_dir': str(args.native_cost_calibrate_dir) if args.native_cost_calibrate_dir else None,
+                                       'repeats': args.native_cost_repeats,
+                                       'policy_version': 'measured_moe_surface_v1',
+                                       'mode': 'calibration' if args.native_cost_calibrate_dir else 'cost',
+                                       'objective': 'measured_full_moe'} if args.native_budget == 'cost' else None),
         'native_p0_configuration': ({'stride': args.native_p0_stride, 'capacity': args.native_p0_capacity}
                                     if args.native_p0 else None),
         'native_p0_intervention': ({'mode': args.native_p0_mode,
@@ -422,7 +479,11 @@ def main() -> int:
     if args.graph_stage_profile or args.native_p0 or args.fixed_prefix_dir:
         report.update(measurement_mode='instrumented_diagnostic', formal_gpqa=False,
                       numerical_policy='record_only')
-    if args.native_budget != 'off':
+    if args.native_budget == 'cost':
+        report.update(method='native_marlin_measured_cta_v2', numerical_policy='record_only',
+                      measurement_mode=('native_cost_calibration' if args.native_cost_calibrate_dir
+                                        else 'native_cost_performance'), complete_weave_claim=False)
+    elif args.native_budget != 'off':
         report.update(method='native_marlin_dynamic_cta_v1', numerical_policy='record_only',
                       measurement_mode='native_dynamic_budget_performance', complete_weave_claim=False)
     report_path = run_dir / 'launch.json'

@@ -1,5 +1,7 @@
 # 原生 SGLang：动态 CTA 预算
 
+后续实测成本模型使用独立入口与方法标识，见 [NATIVE_COST_MODEL.md](NATIVE_COST_MODEL.md)。本页保留首版启发式的执行方法与证据语义。
+
 本轮实现 `native_marlin_dynamic_cta_v1`，目标是提高原生 SGLang 的模型吞吐。2026-10-21 用户批准从 P0 诊断进入实现和服务器对照。它借鉴 Weave 的资源调度思路，控制 Marlin 内参与工作的 CTA 数量；它不具备论文 persistent 通信调度器的完整机制，不能标作完整 Weave 复现。
 
 ## 方法与适用范围

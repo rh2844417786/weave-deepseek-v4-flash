@@ -23,6 +23,12 @@ The user explicitly removed the Hopper numerical-error gates on 2026-10-17 and i
 
 On 2026-10-20 the user changed the main objective to improving model throughput on native SGLang. Batch 32 is an initial control variable, not a fixed requirement for later optimization. On 2026-10-21 the user ended the diagnostic-first phase and approved native Marlin dynamic CTA budgeting. Use docs/NATIVE_DYNAMIC_BUDGET.md and docs/SERVER_PROMPT_NATIVE_DYNAMIC_BUDGET.md for this phase. Preserve native expert arithmetic, prefill and shared/collective paths; keep the native register-aware launch-selection algorithm. The first implementation uses GPU routing-dependent active CTA budgets inside a fixed captured grid. This is soft resource control, not exact physical SM ownership or the full paper scheduler. Do not require another P0 campaign before this implementation or its throughput comparison. Numerical differences remain record-only.
 
+# Measured-cost phase (2026-10-21)
+
+The user approved upgrading the initial 75-percent heuristic to measured full-MoE cost surfaces and GPU candidate search. Use `docs/NATIVE_COST_MODEL.md` and `docs/SERVER_PROMPT_NATIVE_COST_MODEL.md`. The unified entry is `scripts/run_native_cost.py`: real native MLP calibration and held-out validation, actual cost-kernel validity checks, then original native versus cost full-graph throughput. Missing or mismatched measured tables must fail with a generation command; never silently use the heuristic or fabricated timings. Search gate/up and down active-CTA budget pairs, not fictitious communication SM or chunk variables. Calibration must run only inside the native distributed `capture_one` warmup context, after PyNccl graph state is enabled. Keep prediction errors and throughput regressions record-only; validate arithmetic and evidence consistency separately.
+
+The earlier heuristic and its reports remain available under their original method identity.
+
 # Historical paper-method identity
 
 The 2026-10-18 paper-reproduction work and its evidence remain historical branches of this project. Preserve their method labels:

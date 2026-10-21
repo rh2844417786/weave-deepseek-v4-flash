@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "method": "native_marlin_measured_cta_v2",
+  "policy_version": "measured_moe_surface_v1",
+  "status": "cpu_validation_passed",
+  "numerical_policy": "record_only",
+  "created_utc": "2026-10-21T11:14:22.418706+00:00",
+  "cpu_tests": 165,
+  "local_python": "3.12.14",
+  "native_cost_source_sha256": "ce0b01a919cef2122c46faedf984d822a8d774e76058cc3c3cedfff48daf0195",
+  "candidate_pairs": [
+    [
+      8,
+      8
+    ],
+    [
+      8,
+      4
+    ],
+    [
+      8,
+      2
+    ],
+    [
+      4,
+      8
+    ],
+    [
+      4,
+      4
+    ],
+    [
+      4,
+      2
+    ],
+    [
+      2,
+      8
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      2
+    ]
+  ],
+  "prior_path_evidence": {
+    "path": "reports/server/fixed-prefix-6e89ff3a9198/p0_full/measure/graph-after.json",
+    "sha256": "cb5c0bd8156561d092f9c5fa70ff38415fdf778e64b803b9e15c71b3b68fe48e",
+    "ranks": [
+      {
+        "rank": 0,
+        "layers": 43,
+        "paths": {
+          "forward_normal_dual_stream": 43
+        },
+        "shared_tp1": {
+          "False": 43
+        },
+        "topk": {
+          "HashTopK": 3,
+          "TopK": 40
+        }
+      },
+      {
+        "rank": 1,
+        "layers": 43,
+        "paths": {
+          "forward_normal_dual_stream": 43
+        },
+        "shared_tp1": {
+          "False": 43
+        },
+        "topk": {
+          "HashTopK": 3,
+          "TopK": 40
+        }
+      },
+      {
+        "rank": 2,
+        "layers": 43,
+        "paths": {
+          "forward_normal_dual_stream": 43
+        },
+        "shared_tp1": {
+          "False": 43
+        },
+        "topk": {
+          "HashTopK": 3,
+          "TopK": 40
+        }
+      },
+      {
+        "rank": 3,
+        "layers": 43,
+        "paths": {
+          "forward_normal_dual_stream": 43
+        },
+        "shared_tp1": {
+          "False": 43
+        },
+        "topk": {
+          "HashTopK": 3,
+          "TopK": 40
+        }
+      }
+    ],
+    "scope": "entry/layout metadata only; prior instrumented timings are not used as calibration curves"
+  },
+  "checks": [
+    "complete pipeline offline preview",
+    "canonical FP32-table CPU/device decision specification",
+    "128-thread host execution of actual planner",
+    "empty/heavy/changed grouping and invalid prefix padding",
+    "original Marlin function-pointer/FFI signature compatibility",
+    "source-pinned overlay closure",
+    "profile raw-sample and derived-evidence consistency with large finite errors accepted",
+    "native prefill and cost decode dispatch",
+    "distributed capture-one warmup boundary",
+    "class/batch identity and complete profile coverage",
+    "idle counter reads, privacy export and owned cleanup"
+  ],
+  "review": "two independent reviews; confirmed findings repaired and scoped re-review accepted",
+  "cuda_compilation": "not_run_local_no_CUDA",
+  "gpu_execution": "not_run",
+  "measured_calibration": "not_generated_locally",
+  "throughput": "not_measured",
+  "full_weave_scheduler": false
+}

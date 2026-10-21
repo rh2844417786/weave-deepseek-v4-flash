@@ -23,7 +23,10 @@ def graph_observer_source_sha256():
                  'timing_hooks/sitecustomize.py', 'configs/sglang_graph_sources.json',
                  'src/weave/native_budget.py', 'src/weave/native_budget_patch.py',
                  'src/weave/native_budget_runtime.py', 'csrc/native_budget.h',
-                 'configs/native_budget_sources.json'):
+                 'configs/native_budget_sources.json',
+                 'src/weave/native_cost.py', 'src/weave/native_cost_patch.py',
+                 'src/weave/native_cost_runtime.py', 'src/weave/native_cost_calibration.py',
+                 'csrc/native_cost.h'):
         digest.update((ROOT / name).read_bytes())
     return digest.hexdigest()
 
@@ -152,6 +155,16 @@ def patch_backend(cls, setup):
     cls._weave_graph_hook = True
 
 
+def setup_budget(model, torch, rank, package_root):
+    from .native_cost_runtime import cost_options, install_native_cost
+    options = cost_options()
+    if options is not None:
+        return install_native_cost(model, torch, rank, package_root, **options)
+    from .native_budget_runtime import budget_options, install_native_budget
+    options = budget_options()
+    return install_native_budget(model, torch, rank, package_root, **options) if options is not None else None
+
+
 def setup_runner(runner):
     import sglang
     import torch
@@ -167,10 +180,7 @@ def setup_runner(runner):
     rank = runner.model_runner.tp_group.rank
     from .native_p0_hooks import native_p0_options, install_native_p0, verify_native_p0_sources
     p0_options = native_p0_options()
-    from .native_budget_runtime import budget_options, install_native_budget
-    budget_config = budget_options()
-    budget = (install_native_budget(model, torch, rank, package_root, **budget_config)
-              if budget_config is not None else None)
+    budget = setup_budget(model, torch, rank, package_root)
     profiler = None
     if p0_options is not None:
         profiler = install_native_p0(model, torch, rank, package_root=package_root, **p0_options)
