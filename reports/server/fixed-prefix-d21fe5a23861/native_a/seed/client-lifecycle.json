@@ -1,0 +1,45 @@
+{
+  "container_name": "weave-fixed-prefix-d21fe5a23861-native_a-seed",
+  "started_utc": "2026-10-21T06:08:27.114748+00:00",
+  "termination_signal": null,
+  "exit_code": 1,
+  "cleanup_status": "absent",
+  "cleanup_attempts": [
+    {
+      "command": [
+        "docker",
+        "stop",
+        "--timeout",
+        "2",
+        "weave-fixed-prefix-d21fe5a23861-native_a-seed"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such container: weave-fixed-prefix-d21fe5a23861-native_a-seed\n"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "--force",
+        "weave-fixed-prefix-d21fe5a23861-native_a-seed"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such container: weave-fixed-prefix-d21fe5a23861-native_a-seed\n"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{{.State.Running}}",
+        "weave-fixed-prefix-d21fe5a23861-native_a-seed"
+      ],
+      "returncode": 1,
+      "stdout": "\n",
+      "stderr": "error: no such object: weave-fixed-prefix-d21fe5a23861-native_a-seed\n"
+    }
+  ],
+  "finished_utc": "2026-10-21T06:08:33.866419+00:00"
+}
