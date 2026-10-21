@@ -63,6 +63,10 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     ]
     if getattr(args, 'graph_c32', False):
         docker += ['-e', 'WEAVE_GRAPH_C32=1', '-e', f'WEAVE_GRAPH_EVIDENCE_PORT_BASE={args.graph_evidence_port_base}']
+    if getattr(args, 'native_budget', 'off') != 'off':
+        docker += ['-e', f'WEAVE_NATIVE_BUDGET={args.native_budget}',
+                   '-e', f'WEAVE_NATIVE_BUDGET_TARGET_PERCENT={args.native_budget_target_percent}',
+                   '-e', f'WEAVE_NATIVE_BUDGET_DIR=/work/{run_name}/native-budget']
     if getattr(args, 'graph_stage_profile', False):
         docker += ['-e', 'WEAVE_GRAPH_STAGE_PROFILE=1',
                    '-e', f'WEAVE_GRAPH_STAGE_STRIDE={args.graph_stage_stride}',
@@ -165,6 +169,9 @@ def main() -> int:
     parser.add_argument('--backend', choices=['native', 'weave_functional'], default='native')
     parser.add_argument('--kernel', choices=['scalar', 'wmma', 'tiled'], default='scalar')
     parser.add_argument('--graph-c32', action='store_true')
+    parser.add_argument('--native-budget', choices=('off', 'adaptive', 'full'), default='off',
+                        help='native Marlin decode CTA policy; full is a patched control, off is original')
+    parser.add_argument('--native-budget-target-percent', type=int, default=75)
     parser.add_argument('--graph-stage-profile', action='store_true',
                         help='instrument full C32 graph replay; diagnostic timing only')
     parser.add_argument('--graph-stage-stride', type=int, default=128)
@@ -207,6 +214,18 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if not 1 <= args.native_budget_target_percent <= 100:
+        parser.error('native budget target percent must be in 1..100')
+    if args.native_budget != 'off':
+        if (args.backend != 'native' or not args.graph_c32 or args.decode_graph != 'full'
+                or not args.request_timing or args.native_p0 or args.graph_stage_profile
+                or args.profile or args.execution_profile or args.execution_profile_fixed_plan
+                or args.stall_diagnostic or args.replay_capture_dir or args.fixed_prefix_dir
+                or args.fixed_prefix_teacher or args.decode_implementation != 'persistent'
+                or args.prefill_implementation != 'persistent'):
+            parser.error('native budget requires native full graph C32 request timing without diagnostics/profiles/custom implementations')
+    elif args.native_budget_target_percent != 75:
+        parser.error('native budget target percent requires --native-budget adaptive or full')
     if not 1 <= args.native_p0_stride <= 65536 or not 1 <= args.native_p0_capacity <= 256:
         parser.error('native P0 stride must be in 1..65536 and capacity in 1..256')
     if args.native_p0:
@@ -372,6 +391,11 @@ def main() -> int:
         'graph_c32': args.graph_c32,
         'graph_stage_profile': args.graph_stage_profile,
         'native_p0': args.native_p0,
+        'native_budget': args.native_budget,
+        'native_budget_configuration': ({'mode': args.native_budget,
+                                         'target_percent': args.native_budget_target_percent,
+                                         'ep_size': 4, 'min_percent': 25, 'buckets': 8}
+                                        if args.native_budget != 'off' else None),
         'native_p0_configuration': ({'stride': args.native_p0_stride, 'capacity': args.native_p0_capacity}
                                     if args.native_p0 else None),
         'native_p0_intervention': ({'mode': args.native_p0_mode,
@@ -398,6 +422,9 @@ def main() -> int:
     if args.graph_stage_profile or args.native_p0 or args.fixed_prefix_dir:
         report.update(measurement_mode='instrumented_diagnostic', formal_gpqa=False,
                       numerical_policy='record_only')
+    if args.native_budget != 'off':
+        report.update(method='native_marlin_dynamic_cta_v1', numerical_policy='record_only',
+                      measurement_mode='native_dynamic_budget_performance', complete_weave_claim=False)
     report_path = run_dir / 'launch.json'
     report_path.write_text(json.dumps(report, indent=2) + '\n')
     print(f'{args.backend} EP4 candidate; log: {run_dir / "server.log"}', flush=True)

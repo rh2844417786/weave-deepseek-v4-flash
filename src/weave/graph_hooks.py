@@ -20,7 +20,10 @@ def graph_observer_source_sha256():
                  'src/weave/graph_stage_profile.py',
                  'src/weave/native_p0.py', 'src/weave/native_p0_hooks.py',
                  'src/weave/native_p0_trace.py', 'configs/native_p0_sources.json',
-                 'timing_hooks/sitecustomize.py', 'configs/sglang_graph_sources.json'):
+                 'timing_hooks/sitecustomize.py', 'configs/sglang_graph_sources.json',
+                 'src/weave/native_budget.py', 'src/weave/native_budget_patch.py',
+                 'src/weave/native_budget_runtime.py', 'csrc/native_budget.h',
+                 'configs/native_budget_sources.json'):
         digest.update((ROOT / name).read_bytes())
     return digest.hexdigest()
 
@@ -34,16 +37,23 @@ def verify_graph_sources(package_root):
     return pins
 
 
-def start_endpoint(observer, verify):
+def start_endpoint(observer, verify, budget=None):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass
         def do_GET(self):
             try:
-                if self.path != '/graph-coverage':
+                if self.path == '/budget-coverage' and budget is not None:
+                    with observer.lock:
+                        if observer.active:
+                            raise ValueError('budget snapshot requires an idle graph service')
+                        verify()
+                        result, code = budget.snapshot(), 200
+                elif self.path == '/graph-coverage':
+                    verify()
+                    result, code = observer.snapshot(), 200
+                else:
                     raise ValueError('unsupported graph endpoint')
-                verify()
-                result, code = observer.snapshot(), 200
             except Exception as error:
                 result, code = {'error': type(error).__name__, 'reason': str(error)}, 409
             data = json.dumps(result, allow_nan=False).encode()
@@ -157,6 +167,10 @@ def setup_runner(runner):
     rank = runner.model_runner.tp_group.rank
     from .native_p0_hooks import native_p0_options, install_native_p0, verify_native_p0_sources
     p0_options = native_p0_options()
+    from .native_budget_runtime import budget_options, install_native_budget
+    budget_config = budget_options()
+    budget = (install_native_budget(model, torch, rank, package_root, **budget_config)
+              if budget_config is not None else None)
     profiler = None
     if p0_options is not None:
         profiler = install_native_p0(model, torch, rank, package_root=package_root, **p0_options)
@@ -176,7 +190,7 @@ def setup_runner(runner):
             verify_native_p0_sources(package_root)
         if observer.observer_source != graph_observer_source_sha256():
             raise RuntimeError('graph observer source changed')
-    model.weave_graph_server = start_endpoint(observer, verify)
+    model.weave_graph_server = start_endpoint(observer, verify, budget)
     return observer
 
 

@@ -21,7 +21,7 @@ The user explicitly removed the Hopper numerical-error gates on 2026-10-17 and i
 
 # Current objective: native SGLang throughput
 
-On 2026-10-20 the user changed the main objective to improving model throughput on native SGLang. Batch 32 is an initial control variable, not a fixed requirement for later optimization. The approved first step is native P0 diagnosis of actual execution paths and routed/shared overlap and contention hypotheses. Preserve native compute semantics in P0; changing CTA budgets requires evidence-driven subsequent work. Use docs/NATIVE_P0.md and docs/SERVER_PROMPT_NATIVE_P0.md for this phase.
+On 2026-10-20 the user changed the main objective to improving model throughput on native SGLang. Batch 32 is an initial control variable, not a fixed requirement for later optimization. On 2026-10-21 the user ended the diagnostic-first phase and approved native Marlin dynamic CTA budgeting. Use docs/NATIVE_DYNAMIC_BUDGET.md and docs/SERVER_PROMPT_NATIVE_DYNAMIC_BUDGET.md for this phase. Preserve native expert arithmetic, prefill and shared/collective paths; keep the native register-aware launch-selection algorithm. The first implementation uses GPU routing-dependent active CTA budgets inside a fixed captured grid. This is soft resource control, not exact physical SM ownership or the full paper scheduler. Do not require another P0 campaign before this implementation or its throughput comparison. Numerical differences remain record-only.
 
 # Historical paper-method identity
 

@@ -1,0 +1,27 @@
+{
+  "version": "0.5.17",
+  "commit": "29481685462732237d80d86076d6563e1f658102",
+  "source": "https://github.com/sgl-project/sglang/tree/29481685462732237d80d86076d6563e1f658102",
+  "sha256": {
+    "kernels/jit/csrc/gemm/marlin_moe/kernel.h": "727ed9c487e2951773420b6d67614dcd690085e95be5cb45444d3c81009a2201",
+    "kernels/jit/csrc/gemm/marlin_moe/marlin_template.h": "7867e4ce291bc83d88ef33e83315874c5f47164588dadd1f51f3bb3ab87833e1",
+    "kernels/jit/csrc/gemm/marlin_moe/moe_wna16_marlin.cuh": "c7a47cfcfc926b2de930be7299b4c86c628b1d94ddc9a46e38c147a68b66a277",
+    "kernels/ops/moe/moe_wna16_marlin.py": "0f99349d7b7efd56f3a6fce990c6792246e83b1696a409798514ad5e0c309e6a",
+    "kernels/jit/utils/compile.py": "eb29b3e2f63ec6815331693fc672c8990e3c215b668b97f6ba64add9228261ab",
+    "kernels/jit/include/sgl_kernel/scalar_type.hpp": "5e5e8fac25b17a5cf12f315631b243d48ee216e022dabb8e92cb9c34165f4d45",
+    "kernels/jit/include/sgl_kernel/tensor.h": "762d390305b0494dd2cf2fd4fdaf7795bd41d4ed240fdd1d912fce75ce8976bb",
+    "kernels/jit/include/sgl_kernel/utils.cuh": "945b680ea8a4adfc7aad7fc6dfd3b84e6a33864686d1e2ee0cfc32e07050bbc8",
+    "kernels/jit/include/sgl_kernel/utils.h": "188d2e6a6d16ddb9cbe5672d742ae79212abbe35e9ba260084c966b84cda87f3",
+    "kernels/jit/include/sgl_kernel/source_location.h": "cd43da52aa20deafdffb0973bed1b101f634c728362aeef06959f0f5700f4973",
+    "kernels/jit/include/sgl_kernel/ffi.h": "f8345055d9c1c2a8b5e75a68185508bc47bfbc4a54a22c4c423ebc7278a53b78",
+    "kernels/jit/csrc/gemm/marlin/marlin_dtypes.cuh": "a5f3f9cd4b8a7196e7d92a6c1bd47075e9624179674edcabf9138e02f048019d",
+    "kernels/jit/csrc/gemm/marlin/marlin.cuh": "267bf4b6ff979ac35b47a9849e8c81bcb58c7e78441b9feae2d58c23602179f7",
+    "kernels/jit/csrc/gemm/marlin/dequant.h": "f5d3e4308c3c856cce2eb2405d6b8075d006258cc88bbf85c726383304791b79",
+    "srt/models/deepseek_v4.py": "d13c8434b7ddb6f8d502c6c59d613b0425f9d3781eef5ab4f6936dd8ad831881",
+    "srt/models/deepseek_v2.py": "e73c033416e8746bb435dd4e7d39ead521039c511182b5f8b536a40a3308d08a",
+    "srt/layers/moe/fused_moe_triton/fused_marlin_moe.py": "fab293ee5aaa0d285d161c3bbf23606d2908fe3273eae5f32eb5b49db52f81e4",
+    "srt/layers/moe/moe_runner/marlin.py": "e1db2b78559fd7ed482710f0b95104339ebcd41721a3cb85e17fbc63ab683734",
+    "srt/layers/quantization/mxfp4_marlin_moe.py": "11c3247b6faf8f1659a4b9e9415e370aef3acd70e18fb77261a575f90633b546",
+    "srt/layers/moe/moe_runner/triton_utils/moe_align_block_size.py": "652dc416dc461b6f5b04cb9182dfba8fec439a30548a6cc1da8e38037bd2c0aa"
+  }
+}

@@ -50,15 +50,19 @@ class SummaryTests(unittest.TestCase):
 
 class ProofTests(unittest.TestCase):
     def test_real_compute_bundle_valid_with_live_checkpoint_gate(self):
-        # CPU host has no 230GB checkpoint; replace only its live filesystem gate.
+        # Validate this immutable archived bundle in its own source context.
+        # New independent CUDA headers legitimately change the current digest.
         from unittest.mock import patch
         from src.weave.gpqa_c32 import validate_prefill_bundle
         root=ROOT/'reports/server/c32-prefill-63dac24bf44a'
         report=json.loads((root/'experiment.json').read_text())
         identity=report['identity'];gate=report['core_gate']
-        with patch('scripts.calibrate_weave.validate_core_evidence',return_value=(gate,{})), patch('src.weave.replay_trace.tokenizer_manifest_sha256',return_value=identity['tokenizer_manifest_sha256']):
+        with patch('scripts.calibrate_weave.validate_core_evidence',return_value=(gate,{})), patch('src.weave.replay_trace.tokenizer_manifest_sha256',return_value=identity['tokenizer_manifest_sha256']), patch('src.weave.ops.kernel_source_sha256',return_value=identity['source_sha256']):
             result=validate_prefill_bundle(root,Path('/missing-on-cpu'),identity['image_id'])
         self.assertEqual(result['manifest_file_count'],98)
+        with patch('scripts.calibrate_weave.validate_core_evidence',return_value=(gate,{})), patch('src.weave.replay_trace.tokenizer_manifest_sha256',return_value=identity['tokenizer_manifest_sha256']), patch('src.weave.ops.kernel_source_sha256',return_value='0'*64):
+            with self.assertRaisesRegex(ValueError,'identity differs'):
+                validate_prefill_bundle(root,Path('/missing-on-cpu'),identity['image_id'])
     def test_mutated_records_rehashed_manifest_still_rejected(self):
         import hashlib
         with tempfile.TemporaryDirectory() as folder:

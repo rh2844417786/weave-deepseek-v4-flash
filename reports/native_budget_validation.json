@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "cpu_validation_passed",
+  "method": "native_marlin_dynamic_cta_v1",
+  "numerical_policy": "record_only",
+  "created_utc": "2026-10-21T09:42:06.928081+00:00",
+  "cpu_tests": 115,
+  "python_runtime": "3.12.14",
+  "cpp_python_policy_cases": 504,
+  "upstream_pinned_files": 20,
+  "native_budget_source_sha256": "677ed9f662896b33829f34d4d513a6de248a79a756541651167ffa86d28e767f",
+  "checks": [
+    "native policy route changes and empty rank",
+    "C++ host/Python policy parity",
+    "virtual stripe task coverage",
+    "source-pinned FFI/kernel patch and drift rejection",
+    "prefill original versus decode candidate context dispatch",
+    "C32 full graph launcher/controller and idle evidence",
+    "public export and process cleanup",
+    "existing graph/P0/GPQA compatibility"
+  ],
+  "review": "independent source review complete; no remaining confirmed implementation defect",
+  "cuda_compilation": "not_run_local_macOS_no_CUDA",
+  "gpu_execution": "not_run",
+  "model_serving": "not_run",
+  "throughput_improvement": "unmeasured",
+  "complete_weave_reproduction": false
+}

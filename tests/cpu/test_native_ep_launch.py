@@ -114,5 +114,53 @@ class NativeEPLaunchTest(unittest.TestCase):
             self.assertEqual(report['generation_status'], 'not_verified')
 
 
+class NativeBudgetLaunchTest(unittest.TestCase):
+    def launch(self, *extra):
+        env = {**os.environ, 'CUDA_VISIBLE_DEVICES': '4,5,6,7',
+               'WEAVE_MAX_RUNNING_REQUESTS': '32', 'WEAVE_CUDA_GRAPH_MAX_BS_DECODE': '32'}
+        return subprocess.run([sys.executable, 'scripts/run_native_ep.py', '--work-root', '/tmp/weave-work',
+            '--backend', 'native', '--decode-graph', 'full', '--graph-c32', '--request-timing', *extra],
+            cwd=ROOT, env=env, capture_output=True, text=True)
+
+    def test_adaptive_budget_uses_private_overlay_and_preserves_native_prefill(self):
+        result = self.launch('--native-budget', 'adaptive')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        command = json.loads(result.stdout)['docker_argv']
+        for setting in ('WEAVE_NATIVE_BUDGET=adaptive', 'WEAVE_NATIVE_BUDGET_TARGET_PERCENT=75',
+                        'WEAVE_NATIVE_BUDGET_DIR=/work/preview/native-budget',
+                        'HF_HUB_OFFLINE=1', 'XDG_CACHE_HOME=/work/cache'):
+            self.assertIn(setting, command)
+        self.assertIn('--pull=never', command)
+        self.assertIn('/mnt/public_data/deepseek-ai/DeepSeek-V4-Flash:/model:ro', command)
+        self.assertFalse(any('WEAVE_PREFILL_IMPLEMENTATION=' in arg for arg in command))
+
+    def test_off_is_unmodified_and_full_is_explicit_control(self):
+        for mode in ('off', 'full'):
+            result = self.launch('--native-budget', mode)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            command = json.loads(result.stdout)['docker_argv']
+            self.assertEqual(any(arg.startswith('WEAVE_NATIVE_BUDGET=') for arg in command), mode == 'full')
+
+    def test_budget_rejects_diagnostic_custom_and_non_graph_combinations(self):
+        cases = [('--native-p0',), ('--graph-stage-profile',), ('--execution-profile',),
+                 ('--stall-diagnostic',), ('--fixed-prefix-dir', '/tmp/weave-work/prefix'),
+                 ('--backend', 'weave_functional'), ('--decode-graph', 'disabled'),
+                 ('--prefill-implementation', 'hopper_fp8'), ('--profile', '/tmp/weave-work/profile')]
+        for args in cases:
+            with self.subTest(args=args):
+                result = self.launch('--native-budget', 'adaptive', *args)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('native budget', result.stderr)
+
+    def test_target_is_bounded_and_requires_budget(self):
+        for args in (('--native-budget', 'adaptive', '--native-budget-target-percent', '0'),
+                     ('--native-budget', 'adaptive', '--native-budget-target-percent', '101'),
+                     ('--native-budget-target-percent', '50')):
+            with self.subTest(args=args):
+                result = self.launch(*args)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('native budget', result.stderr)
+
+
 if __name__ == '__main__':
     unittest.main()
