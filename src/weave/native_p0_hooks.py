@@ -28,7 +28,8 @@ def native_p0_options(environ=None):
         raise ValueError("WEAVE_NATIVE_P0 must be 0 or 1")
     if enabled == "0":
         if any(key in env for key in ("WEAVE_NATIVE_P0_STRIDE", "WEAVE_NATIVE_P0_CAPACITY",
-                                      "WEAVE_NATIVE_P0_PRIVATE_DIR")):
+                                      "WEAVE_NATIVE_P0_PRIVATE_DIR", "WEAVE_NATIVE_P0_MODE",
+                                      "WEAVE_NATIVE_P0_READBACK")):
             raise ValueError("native P0 settings require WEAVE_NATIVE_P0=1")
         return None
     if (env.get("WEAVE_GRAPH_C32") != "1" or env.get("WEAVE_REQUEST_TIMING") != "1"
@@ -42,10 +43,23 @@ def native_p0_options(environ=None):
     capacity = int(env.get("WEAVE_NATIVE_P0_CAPACITY", "64"))
     if not 1 <= stride <= 65536 or not 1 <= capacity <= 256:
         raise ValueError("native P0 stride must be in 1..65536 and capacity in 1..256")
+    mode = env.get("WEAVE_NATIVE_P0_MODE", "full")
+    readback = env.get("WEAVE_NATIVE_P0_READBACK", "1")
+    if mode not in ("full", "events", "buffers"):
+        raise ValueError("native P0 mode must be full, events, or buffers")
+    if readback not in ("0", "1"):
+        raise ValueError("WEAVE_NATIVE_P0_READBACK must be 0 or 1")
+    if mode != "full" and readback == "1":
+        raise ValueError("native P0 events/buffers modes require no readback")
+    if env.get("WEAVE_FIXED_PREFIX") == "1" and readback == "1":
+        raise ValueError("fixed-prefix native P0 requires readback disabled")
     directory = env.get("WEAVE_NATIVE_P0_PRIVATE_DIR", "")
     if not directory or not Path(directory).is_absolute() or ".." in Path(directory).parts:
         raise ValueError("native P0 requires an absolute private trace directory")
-    return dict(stride=stride, capacity=capacity, private_dir=directory)
+    options = dict(stride=stride, capacity=capacity, private_dir=directory)
+    if "WEAVE_NATIVE_P0_MODE" in env or "WEAVE_NATIVE_P0_READBACK" in env:
+        options.update(mode=mode, readback=readback == "1")
+    return options
 
 
 def verify_native_p0_sources(package_root):
@@ -220,10 +234,9 @@ def _install_hooks(model, torch, profiler, modules, *, layers=43):
 
 
 def install_native_p0(model, torch, rank, *, stride=128, capacity=64, private_dir,
-                      package_root=None):
+                      package_root=None, mode='full', readback=True):
     import sglang
     from .native_p0 import NativeP0Profiler
-    from .native_p0_trace import LaunchTrace
     package_root = Path(package_root or Path(sglang.__file__).parent).resolve()
     pins = verify_native_p0_sources(package_root)
     modules = {key: importlib.import_module(name) for key, name in MODULES.items()}
@@ -247,6 +260,10 @@ def install_native_p0(model, torch, rank, *, stride=128, capacity=64, private_di
                 raise RuntimeError("native P0 callable outside pinned SGLang") from exc
             if relative not in pins:
                 raise RuntimeError("native P0 unpinned callable source: " + relative)
-    trace = LaunchTrace(torch, rank, private_dir)
-    profiler = NativeP0Profiler(torch, rank, stride=stride, capacity=capacity, layers=43, trace=trace)
+    trace = None
+    if readback:
+        from .native_p0_trace import LaunchTrace
+        trace = LaunchTrace(torch, rank, private_dir)
+    profiler = NativeP0Profiler(torch, rank, stride=stride, capacity=capacity, layers=43,
+                                trace=trace, mode=mode, readback=readback)
     return _install_hooks(model, torch, profiler, modules)

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "version": "0.5.17",
+  "commit": "29481685462732237d80d86076d6563e1f658102",
+  "source": "https://github.com/sgl-project/sglang/tree/29481685462732237d80d86076d6563e1f658102",
+  "sha256": {
+    "srt/model_executor/model_runner.py": "221032bf7ae57d2ebdb96801150a48d23244840a9b7938dc586e911671c11102",
+    "srt/layers/sampler.py": "6b727fcde1724924c71c1148d89005500195527e827fe7ec8d51eef43d92a762",
+    "srt/sampling/sampling_batch_info.py": "89bcbc5e12c80bb22bfef3186ed4dea57c1b605910509c9b4a2d5226f9e61e69",
+    "srt/sampling/sampling_params.py": "9437125033cd7abe001689cef162ba558454fb455f577e7b36b4eaa4d3f95c24",
+    "srt/sampling/custom_logit_processor.py": "5f502753c4b06df62f9df24f6b9cdbad18a02b7cae1e63757d9836b56899cd77",
+    "srt/managers/io_struct.py": "e3de0be2cbdf4778ee7529340015c849564eed6c78074315c8e8b866554ace71",
+    "srt/managers/tokenizer_manager.py": "0385c00527d2c8ad53021a2170e73a6a3eda5dd94a54c3e86a549c56b2fd4f61",
+    "srt/model_executor/forward_batch_info.py": "be44232b841781ae6b6e1f4c011a49461bec7fe12e6a45a87cd16fab3864f232",
+    "srt/managers/scheduler.py": "1d4a7683e32f0862cf5b03be33e5ec23f9d112e59546d391e28fa222fcd1619b"
+  }
+}

@@ -72,6 +72,15 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
                    '-e', f'WEAVE_NATIVE_P0_STRIDE={args.native_p0_stride}',
                    '-e', f'WEAVE_NATIVE_P0_CAPACITY={args.native_p0_capacity}',
                    '-e', f'WEAVE_NATIVE_P0_PRIVATE_DIR=/work/{run_name}/native-p0-private']
+        if getattr(args, 'native_p0_mode', 'full') != 'full' or getattr(args, 'native_p0_no_readback', False):
+            docker += ['-e', f'WEAVE_NATIVE_P0_MODE={args.native_p0_mode}',
+                       '-e', f'WEAVE_NATIVE_P0_READBACK={int(not args.native_p0_no_readback)}']
+    if getattr(args, 'fixed_prefix_dir', None):
+        relative = args.fixed_prefix_dir.relative_to(args.work_root)
+        docker += ['-e', 'WEAVE_FIXED_PREFIX=1', '-e', f'WEAVE_FIXED_PREFIX_DIR=/work/{relative}']
+        if getattr(args, 'fixed_prefix_teacher', None):
+            relative = args.fixed_prefix_teacher.relative_to(args.work_root)
+            docker += ['-e', f'WEAVE_FIXED_PREFIX_TEACHER=/work/{relative}']
     functional = args.backend == 'weave_functional'
     if args.checkpoint_content_sha256:
         docker += ['-e', f'WEAVE_CHECKPOINT_CONTENT_SHA256={args.checkpoint_content_sha256}']
@@ -136,6 +145,8 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
                     '--disable-cuda-graph-padding']
     if args.request_timing:
         command += ['--stream-interval','1','--incremental-streaming-output']
+    if getattr(args, 'fixed_prefix_dir', None):
+        command += ['--enable-custom-logit-processor', '--disable-overlap-schedule']
     return command
 
 
@@ -157,6 +168,14 @@ def main() -> int:
                         help='native Marlin branch and launch diagnosis; instrumented timing only')
     parser.add_argument('--native-p0-stride', type=int, default=128)
     parser.add_argument('--native-p0-capacity', type=int, default=64)
+    parser.add_argument('--native-p0-mode', choices=('full', 'events', 'buffers'), default='full',
+                        help='retain stage events, grouping buffers, or both for the diagnostic')
+    parser.add_argument('--native-p0-no-readback', action='store_true',
+                        help='count actual B32 replays without event reads, grouping copies, or P0 trace')
+    parser.add_argument('--fixed-prefix-dir', type=Path,
+                        help='private fixed-prefix probe directory under WORK_ROOT')
+    parser.add_argument('--fixed-prefix-teacher', type=Path,
+                        help='private teacher continuation under WORK_ROOT; may be created after launch')
     parser.add_argument('--graph-evidence-port-base', type=int, default=30310)
     parser.add_argument('--decode-graph', choices=['disabled', 'full'], help='functional graph requires explicit full opt-in')
     parser.add_argument('--decode-implementation',choices=['persistent','staged_direct','hopper_fp8','hopper_persistent'],
@@ -192,8 +211,21 @@ def main() -> int:
                 or args.stall_diagnostic or args.replay_capture_dir
                 or args.decode_implementation != 'persistent' or args.prefill_implementation != 'persistent'):
             parser.error('native P0 requires native full graph C32 request timing without other profiles/custom implementations')
-    elif args.native_p0_stride != 128 or args.native_p0_capacity != 64:
-        parser.error('native P0 stride/capacity require --native-p0')
+        if args.native_p0_mode != 'full' and not args.native_p0_no_readback:
+            parser.error('native P0 events/buffers modes require --native-p0-no-readback')
+    elif (args.native_p0_stride != 128 or args.native_p0_capacity != 64
+          or args.native_p0_mode != 'full' or args.native_p0_no_readback):
+        parser.error('native P0 stride/capacity/mode/readback settings require --native-p0')
+    if args.fixed_prefix_teacher and not args.fixed_prefix_dir:
+        parser.error('fixed-prefix teacher requires --fixed-prefix-dir')
+    if args.fixed_prefix_dir:
+        if (args.backend != 'native' or not args.graph_c32 or args.decode_graph != 'full'
+                or not args.request_timing or args.graph_stage_profile or args.profile
+                or args.execution_profile or args.execution_profile_fixed_plan
+                or args.stall_diagnostic or args.replay_capture_dir
+                or args.decode_implementation != 'persistent' or args.prefill_implementation != 'persistent'
+                or (args.native_p0 and not args.native_p0_no_readback)):
+            parser.error('fixed-prefix requires native full graph C32 request timing, no other profiles, and P0 readback disabled')
     if not 1 <= args.graph_stage_stride <= 65536 or not 1 <= args.graph_stage_capacity <= 256:
         parser.error('graph stage stride must be in 1..65536 and capacity in 1..256')
     if args.graph_stage_profile and args.decode_implementation == 'hopper_persistent':
@@ -276,6 +308,18 @@ def main() -> int:
     if not args.model_path.is_absolute() or not args.work_root.is_absolute():
         parser.error('model-path and work-root must be absolute paths')
     args.work_root = args.work_root.resolve()
+    for name in ('fixed_prefix_dir', 'fixed_prefix_teacher'):
+        path = getattr(args, name)
+        if path is None:
+            continue
+        if not path.is_absolute() or '..' in path.parts:
+            parser.error('fixed-prefix paths must be absolute under WORK_ROOT')
+        path = path.resolve()
+        try:
+            path.relative_to(args.work_root)
+        except ValueError:
+            parser.error('fixed-prefix paths must be under WORK_ROOT')
+        setattr(args, name, path)
     if args.replay_capture_dir:
         if not args.replay_capture_dir.is_absolute() or '..' in args.replay_capture_dir.parts:
             parser.error('replay capture directory must be absolute under WORK_ROOT')
@@ -325,6 +369,14 @@ def main() -> int:
         'native_p0': args.native_p0,
         'native_p0_configuration': ({'stride': args.native_p0_stride, 'capacity': args.native_p0_capacity}
                                     if args.native_p0 else None),
+        'native_p0_intervention': ({'mode': args.native_p0_mode,
+                                    'readback': not args.native_p0_no_readback}
+                                   if args.native_p0 else None),
+        'fixed_prefix': args.fixed_prefix_dir is not None,
+        'fixed_prefix_configuration': ({'private_dir': str(args.fixed_prefix_dir),
+                                        'teacher_path': str(args.fixed_prefix_teacher)
+                                        if args.fixed_prefix_teacher else None}
+                                       if args.fixed_prefix_dir else None),
         'graph_stage_configuration': ({'stride': args.graph_stage_stride, 'capacity': args.graph_stage_capacity}
                                       if args.graph_stage_profile else None),
         'hot_cache':args.hot_cache,
@@ -336,9 +388,9 @@ def main() -> int:
         'ep_correctness_status': 'not_verified', 'performance_status': 'not_run',
         'exit_code': None,
     }
-    if args.stall_diagnostic or args.graph_stage_profile or args.native_p0:
+    if args.stall_diagnostic or args.graph_stage_profile or args.native_p0 or args.fixed_prefix_dir:
         report.update(instrumented_diagnostic=True,used_for_formal_performance=False)
-    if args.graph_stage_profile or args.native_p0:
+    if args.graph_stage_profile or args.native_p0 or args.fixed_prefix_dir:
         report.update(measurement_mode='instrumented_diagnostic', formal_gpqa=False,
                       numerical_policy='record_only')
     report_path = run_dir / 'launch.json'

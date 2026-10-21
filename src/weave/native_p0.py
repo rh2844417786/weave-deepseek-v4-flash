@@ -1,8 +1,9 @@
 """Opt-in native graph diagnostics; event timestamps and aggregate work only.
 
-Captured events are reused by CUDA Graph. Each selected replay must be finished
-and read before another replay can overwrite them. The graph observer provides
-that serialization and its idle lock protects snapshot().
+Captured events are reused by CUDA Graph. With readback enabled, each selected
+replay must be finished and read before another replay can overwrite them. The
+graph observer provides that serialization and its idle lock protects snapshot().
+Intervention modes can retain only events or buffers without reading either.
 """
 from collections import Counter, deque
 from contextlib import contextmanager
@@ -55,7 +56,14 @@ def derive_layer_metrics(intervals):
 
 
 class NativeP0Profiler:
-    def __init__(self, torch, rank, stride=128, capacity=64, layers=43, trace=None):
+    def __init__(self, torch, rank, stride=128, capacity=64, layers=43, trace=None,
+                 mode='full', readback=True):
+        if mode not in ('full', 'events', 'buffers'):
+            raise ValueError('native P0 mode must be full, events, or buffers')
+        if type(readback) is not bool:
+            raise ValueError('native P0 readback must be boolean')
+        if mode != 'full' and readback:
+            raise ValueError('native P0 events/buffers modes require no readback')
         for name, value in (('stride', stride), ('capacity', capacity), ('layers', layers)):
             if type(value) is not int or value <= 0:
                 raise ValueError(f'{name} must be a positive integer')
@@ -64,16 +72,20 @@ class NativeP0Profiler:
         if torch.cuda.is_current_stream_capturing():
             raise RuntimeError('allocate profiler before graph capture')
         self.torch, self.rank, self.kind = torch, rank, 'native_p0'
+        self.mode, self.readback = mode, readback
         self.stride, self.capacity, self.layers_expected = stride, capacity, layers
         self.profile_source_sha256 = _LOADED_PROFILE_SOURCE_SHA256
         self.profile_source_manifest = deepcopy(_LOADED_PROFILE_SOURCE_MANIFEST)
         self._layers, self._metadata, self._present, self._grouping = {}, {}, {}, {}
+        self._observed, self._event_node_count = {}, 0
         self._samples = deque(maxlen=capacity)
         self._pending, self._last_sequence = None, 0
         self.b32_seen = self.sampled_total = self.aborted_samples = 0
-        self.trace, self._trace_active, self._trace_attempted = trace, False, False
+        self.trace = trace if readback else None
+        self._trace_active, self._trace_attempted = False, False
         self._launch_trace = None
-        self._outer = tuple(torch.cuda.Event(enable_timing=True) for _ in range(2))
+        self._outer = (tuple(torch.cuda.Event(enable_timing=True) for _ in range(2))
+                       if readback else ())
         for event in self._outer:
             event.record()
 
@@ -87,13 +99,15 @@ class NativeP0Profiler:
             return
         if len(self._layers) >= self.layers_expected:
             raise ValueError('too many registered layers')
-        events = {name: tuple(self.torch.cuda.Event(enable_timing=True, external=True)
-                             for _ in range(2)) for name in SPANS}
+        events = ({name: tuple(self.torch.cuda.Event(enable_timing=True, external=True)
+                              for _ in range(2)) for name in SPANS}
+                  if self.mode != 'buffers' else {})
         # CUDA events allocate lazily. Materialize every event outside capture.
         for pair in events.values():
             for event in pair:
                 event.record()
         self._layers[layer], self._metadata[layer], self._present[layer] = events, {}, set()
+        self._observed[layer] = Counter()
         self.set_metadata(layer, metadata)
 
     def set_metadata(self, layer, updates):
@@ -112,14 +126,20 @@ class NativeP0Profiler:
             return
         if layer not in self._layers:
             raise RuntimeError('register events before graph capture')
+        self._observed[layer][name] += 1
+        if self.mode == 'buffers':
+            yield
+            return
         start, end = self._layers[layer][name]
         start.record()  # Implicit current stream is essential for shared branch.
+        self._event_node_count += 1
         try:
             yield
         except BaseException:
             raise
         else:
             end.record()
+            self._event_node_count += 1
             self._present[layer].add(name)
 
     def bind_grouping(self, layer, sorted_token_ids, expert_ids, num_tokens_post_pad,
@@ -132,8 +152,9 @@ class NativeP0Profiler:
             raise ValueError('grouping block_size must be positive')
         if type(valid_pair_capacity) is not int or valid_pair_capacity < 0:
             raise ValueError('valid_pair_capacity must be nonnegative')
-        self._grouping[layer] = (sorted_token_ids, expert_ids, num_tokens_post_pad,
-                                 block_size, valid_pair_capacity)
+        if self.mode != 'events':
+            self._grouping[layer] = (sorted_token_ids, expert_ids, num_tokens_post_pad,
+                                     block_size, valid_pair_capacity)
 
     def begin_replay(self, sequence, batch):
         if self._pending is not None:
@@ -146,6 +167,8 @@ class NativeP0Profiler:
         if batch != 32:
             return False
         self.b32_seen += 1
+        if not self.readback:
+            return False
         if self.b32_seen % self.stride:
             return False
         if len(self._layers) != self.layers_expected:
@@ -274,15 +297,22 @@ class NativeP0Profiler:
         if self._pending is not None:
             raise RuntimeError('native snapshot requires an idle replay boundary')
         metadata = {str(layer): dict(deepcopy(self._metadata[layer]),
-                                    captured_spans=sorted(self._present[layer]))
+                                    captured_spans=sorted(self._present[layer]),
+                                    observed_span_calls=dict(self._observed[layer]))
                     for layer in self._layers}
         return dict(schema_version=1, kind=self.kind, rank=self.rank,
                     measurement_mode='instrumented_diagnostic', numerical_policy='record_only',
-                    formal_performance_claim=False, external_events=True,
+                    formal_performance_claim=False, external_events=self.mode != 'buffers',
                     profile_source_sha256=self.profile_source_sha256,
                     profile_source_manifest=deepcopy(self.profile_source_manifest),
                     configuration=dict(stride=self.stride, capacity=self.capacity,
                                        layers=self.layers_expected, captured_batch_size=32),
+                    intervention=dict(mode=self.mode, readback=self.readback,
+                        event_node_count=self._event_node_count,
+                        allocated_event_count=len(self._outer) + sum(
+                            len(pair) for events in self._layers.values() for pair in events.values()),
+                        retained_grouping_layer_count=len(self._grouping),
+                        retained_grouping_tensor_ref_count=3 * len(self._grouping)),
                     b32_seen=self.b32_seen, sampled_total=self.sampled_total,
                     aborted_samples=self.aborted_samples, layer_metadata=metadata,
                     launch_trace=deepcopy(self._launch_trace),

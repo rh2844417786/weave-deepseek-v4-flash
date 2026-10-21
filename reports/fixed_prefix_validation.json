@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-21",
+  "status": "local_validation_complete_server_pending",
+  "numerical_policy": "record_only",
+  "formal_performance": false,
+  "base_commit": "8cddecf291986ecd3fed641882b20ead5d744d0b",
+  "arms": [
+    "native_a",
+    "native_b",
+    "p0_full",
+    "p0_events",
+    "p0_buffers"
+  ],
+  "steps": 8,
+  "decode_steps": 7,
+  "batch_size": 32,
+  "native_trace_steps": 2,
+  "cpu_tests": {
+    "passed": 105,
+    "failed": 0,
+    "skipped": 0,
+    "interpreter": "/Users/a1234/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "command": "python3 -m unittest tests.cpu.test_fixed_prefix_data tests.cpu.test_fixed_prefix_runtime tests.cpu.test_fixed_prefix_evidence tests.cpu.test_fixed_prefix_controller tests.cpu.test_p0_interventions tests.cpu.test_native_p0 tests.cpu.test_native_p0_hooks tests.cpu.test_native_p0_evidence tests.cpu.test_native_p0_pair tests.cpu.test_native_p0_pair_controller tests.cpu.test_native_p0_pair_client tests.cpu.test_graph_hooks tests.cpu.test_graph_evidence -q"
+  },
+  "native_source_pins_verified": 9,
+  "new_launcher_previews": 5,
+  "legacy_launcher_previews": 2,
+  "normalized_preview_comparisons": "passed",
+  "syntax_check": "passed",
+  "independent_review": {
+    "status": "completed",
+    "blocking_findings_remaining": 0,
+    "corrected": [
+      "public scalar records export guard",
+      "default legacy P0 launch compatibility",
+      "test importlib mock ordering"
+    ]
+  },
+  "tensor_arithmetic_validation": "real NumPy float64 CPU tests",
+  "torch_file_loader_validation": "controlled loader tests; real Torch file integration pending server",
+  "fixed_prefix_source_sha256": "fa710cf56ba04ce376d609c9289950cd8a0776c765a843f9ec220ba0aa85cb27",
+  "p0_source_sha256": "06c8cf7a71d9e5739ecd69c26fcc2f78dae588120087a7ef32b676ef6ba0d918",
+  "serving_source_sha256": "b2226e0eb03355c0d2e37fccfb1d07df5a6ae313991cb682fa03e6dee5cfa7d0",
+  "gpu_execution": "not_run_locally",
+  "root_cause_status": "not_yet_established",
+  "throughput_improvement": "not_measured",
+  "required_server_environment": "existing lmsysorg/sglang:v0.5.17; no downloads or installs",
+  "server_entry": "scripts/run_fixed_prefix.py",
+  "server_prompt": "docs/SERVER_PROMPT_FIXED_PREFIX_P0.md"
+}
