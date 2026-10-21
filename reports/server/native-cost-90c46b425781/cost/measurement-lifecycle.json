@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-cost-90c46b425781-cost",
+  "started_utc": "2026-10-21T15:31:40.226982+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-21T15:51:43.679765+00:00"
+}

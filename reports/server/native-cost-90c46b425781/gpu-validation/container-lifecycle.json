@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-cost-90c46b425781-gpu",
+  "started_utc": "2026-10-21T14:07:38.281057+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-21T14:24:07.806365+00:00"
+}
