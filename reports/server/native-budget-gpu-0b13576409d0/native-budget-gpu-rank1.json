@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "rank": 1,
+  "world_size": 4,
+  "numerical_policy": "record_only",
+  "raw_content_exported": false,
+  "formal_performance_claim": false,
+  "model_execution_evidence": false,
+  "scope": "real_checkpoint_native_marlin_operator_eager_and_graph",
+  "baseline": "unmodified_installed_native_marlin",
+  "full_mode": "patched_full_virtual_grid_control_not_native_baseline",
+  "layer": 0,
+  "batches": [
+    7,
+    32
+  ],
+  "replay_cycles": 3,
+  "cases": [],
+  "stage": "startup",
+  "cleanup": {
+    "status": "complete",
+    "phase": "complete",
+    "started_monotonic": 5885830.0899739,
+    "graphs_owned": 0,
+    "graphs_reset": 0,
+    "completed_phases": [
+      "synchronize",
+      "reset_graphs",
+      "synchronize_after_reset",
+      "rank_barrier",
+      "destroy_nccl",
+      "destroy_gloo"
+    ],
+    "finished_monotonic": 5885830.136493412
+  },
+  "limitations": [
+    "One selected layer; not all 43 model layers or serving.",
+    "Independent rank-local GEMMs; no shared-expert/collective overlap.",
+    "Guard regions and lock release do not replace compute-sanitizer.",
+    "Oracle records sample expert 0/slot 0; native comparisons cover all outputs.",
+    "FP8 oracle is a precision comparator, not native MXFP4/BF16 semantics."
+  ],
+  "error_type": "PackageNotFoundError",
+  "stop_reason": "rank_validation_failure",
+  "all_rank_checks": [
+    {
+      "rank": 0,
+      "checks_complete": false,
+      "error_type": "PackageNotFoundError"
+    },
+    {
+      "rank": 1,
+      "checks_complete": false,
+      "error_type": "PackageNotFoundError"
+    },
+    {
+      "rank": 2,
+      "checks_complete": false,
+      "error_type": "PackageNotFoundError"
+    },
+    {
+      "rank": 3,
+      "checks_complete": false,
+      "error_type": "PackageNotFoundError"
+    }
+  ]
+}
