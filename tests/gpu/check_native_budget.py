@@ -303,6 +303,16 @@ def package_root():
     return Path(next(iter(spec.submodule_search_locations)))
 
 
+def _sgl_kernel_distribution():
+    for name in ('sglang-kernel', 'sgl-kernel'):
+        try:
+            return importlib.metadata.distribution(name)
+        except importlib.metadata.PackageNotFoundError:
+            pass
+    raise RuntimeError('installed sgl kernel distribution not found '
+                       '(tried sglang-kernel, sgl-kernel)')
+
+
 def main(argv=None):
     args = parse_args(argv)
     os.environ.update(HF_HUB_OFFLINE='1', TRANSFORMERS_OFFLINE='1', HF_DATASETS_OFFLINE='1')
@@ -359,18 +369,18 @@ def main(argv=None):
         image_id = os.environ.get('WEAVE_IMAGE_ID', '')
         require(re.fullmatch(r'sha256:[0-9a-f]{64}', image_id) is not None, 'resolved existing WEAVE_IMAGE_ID required')
         require(platform.system() == 'Linux' and platform.machine() == 'x86_64', 'Linux x86_64 runtime required')
+        distribution = _sgl_kernel_distribution()
         runtime = dict(python=platform.python_version(), torch=str(torch.__version__),
                        cuda=torch.version.cuda, sglang=importlib.metadata.version('sglang'),
-                       sgl_kernel=importlib.metadata.version('sgl-kernel'),
+                       sgl_kernel=distribution.version,
                        device=props.name, capability=[props.major, props.minor],
                        multiprocessors=props.multi_processor_count, image_id=image_id)
-        # Native grouping is supplied by this image's installed sgl-kernel AOT
+        # Native grouping is supplied by this image's installed sgl_kernel AOT
         # wheel. Record its binary inventory, without installing or fetching it.
-        distribution = importlib.metadata.distribution('sgl-kernel')
         runtime['sgl_kernel_binary_sha256'] = {
             str(path): sha256_file(distribution.locate_file(path))
             for path in (distribution.files or ()) if str(path).endswith('.so')}
-        require(runtime['sgl_kernel_binary_sha256'], 'installed sgl-kernel binary inventory unavailable')
+        require(runtime['sgl_kernel_binary_sha256'], 'installed sgl kernel distribution binary inventory unavailable')
         for observed, expected in (('python', 'python_version'), ('torch', 'torch_version'),
                                    ('cuda', 'torch_cuda'), ('sglang', 'sglang_version')):
             require(runtime[observed] == contract[expected], 'installed runtime differs from configs/runtime.json: ' + observed)
