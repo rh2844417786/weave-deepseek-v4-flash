@@ -193,7 +193,7 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
     capture. All ranks execute these fixed, ordered loops, including collectives.
     No data-dependent candidate count or rank-local early acceptance is used.
     """
-    from .native_cost import CANDIDATES, predict_cost
+    from .native_cost import CANDIDATES, predict_cost, workload_difference
     from sglang.srt.model_executor.runner import get_is_capture_mode
     torch = runtime.torch
     if (torch.cuda.is_current_stream_capturing() or not get_is_capture_mode()
@@ -298,9 +298,8 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                 if not bool(torch.isfinite(full_output).all()):
                     raise RuntimeError('nonfinite full native MLP calibration output')
                 route = _route_record(full_bindings[0], plan, torch)
-                if candidate_index and (route['features'] != anchor['features'] or
-                    route['native_routing_sha256'] != anchor['native_routing_sha256']):
-                    raise RuntimeError('budget pair changed the native routing/grouping workload')
+                if candidate_index == 0:
+                    anchor.update(route)
                 fixed = _measure(planner_graph, torch, repeats, planner_calls)
                 stages = {name: [] for name in stage_events.seen}
                 for _ in range(repeats):
@@ -309,11 +308,10 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                     for name, value in stage_events.read_us().items():
                         stages.setdefault(name, []).append(value)
                 anchor['candidates'].append(dict(pair=list(pair), full_moe=full, fixed_planner=fixed,
+                                                workload=route, workload_difference=workload_difference(anchor,route),
                                                 stages={k: timing_summary(v) for k, v in stages.items()}))
                 rows[candidate_index][anchor_index] = list(route['features']) + [
                     full['median_us'], fixed['median_us'], fixed['median_us']]
-                if candidate_index == 0:
-                    anchor.update(route)
             anchors.append(anchor)
         # The real search kernel now has a fully measured surface. Its decision
         # may change after this overhead replacement, so publish the final table.
@@ -323,6 +321,8 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
             set_control(1)
             full_graph.replay()
             torch.cuda.synchronize()
+            anchor['search_workload'] = _route_record(full_bindings[0], plan, torch)
+            anchor['search_workload_difference'] = workload_difference(anchor,anchor['search_workload'])
             set_control(0)
             search = _measure(planner_graph, torch, repeats, planner_calls)
             for candidate_index in range(len(CANDIDATES)):
@@ -344,20 +344,27 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                 if not bool(torch.isfinite(full_output).all()):
                     raise RuntimeError('nonfinite heldout full native MLP output')
                 route = _route_record(full_bindings[0], plan, torch)
+                if not fixed_curves:
+                    reference_route = route
                 fixed = _measure(planner_graph, torch, repeats, planner_calls)
                 set_control(0)
                 search = _measure(planner_graph, torch, repeats, planner_calls)
                 adjusted.append(full['median_us'] - fixed['median_us'] + search['median_us'])
-                fixed_curves.append(dict(pair=list(pair), full_moe=full, fixed_planner=fixed, search_planner=search))
-            prediction = predict_cost(rows, route['features'], total_rows)
+                fixed_curves.append(dict(pair=list(pair), full_moe=full, fixed_planner=fixed, search_planner=search,
+                                         workload=route, workload_difference=workload_difference(reference_route,route)))
             set_control(0)
             adaptive = _measure(full_graph, torch, repeats)
+            # Check the planner against this cost replay's actual workload,
+            # not the last fixed candidate's potentially different routing.
+            route = _route_record(full_bindings[0], plan, torch)
+            prediction = predict_cost(rows, route['features'], total_rows)
             actual_selection = int(plan[21].item())
             require_planner_selection(prediction, actual_selection, int(plan[20].item()))
             cost_output = full_output.clone()
             native_graph.replay()
             torch.cuda.synchronize()
             item.update(route, fixed_candidates=fixed_curves, cost_full_moe=adaptive,
+                        cost_workload_difference=workload_difference(reference_route,route),
                         prediction=prediction_record(prediction['predictions_us'], adjusted, actual_selection),
                         native_numerical=_numerical(cost_output, native_output, torch),
                         selected_pair=list(CANDIDATES[actual_selection]),
@@ -369,9 +376,11 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
             objective='unmodified_native_MLP_routing_shared_join_collective_post_add',
             objective_graph_component_events=False, geometry=geometry,
             captured_path=next(iter(captured_paths)), observed_stage_spans=sorted(stage_events.seen),
+            routing_comparison_policy='record_only',
             event_overhead_us=overhead, planner_calls_per_timed_graph=planner_calls,
             pattern_protocol='six_native_routed_synthetic_v1_four_spread_two_repeated', anchors=anchors),
-            validation=dict(complete=True, numerical_policy='record_only', heldout=heldout,
+            validation=dict(complete=True, numerical_policy='record_only', routing_comparison_policy='record_only', heldout=heldout,
+                candidate_comparison_scope='same_nominal_input_observed_routing_may_differ',
                 scope='two_independent_native_routed_full_MLP_graph_patterns',
                 collective_prediction_approximation='fixed-pair calibration versus rank-specific selected pairs',
                 numerical_reference='unmodified_loaded_native_MLP_full_graph'))

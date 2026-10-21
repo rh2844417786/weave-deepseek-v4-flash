@@ -13,7 +13,7 @@ from pathlib import Path
 from .native_budget import ROOT, source_pins
 
 METHOD = 'native_marlin_measured_cta_v2'
-POLICY_VERSION = 'measured_moe_surface_v1'
+POLICY_VERSION = 'measured_moe_surface_v2'
 CANDIDATES = ((8,8),(8,4),(8,2),(4,8),(4,4),(4,2),(2,8),(2,4),(2,2))
 PLAN_SIZE = 32
 TABLE_SHAPE = (9,6,8)
@@ -64,8 +64,6 @@ def validate_table(table, total_rows):
             if not isinstance(row,(list,tuple)) or len(row)!=8:
                 raise ValueError('native cost table must have shape 9 x 6 x 8')
             _features(row[:5],total_rows,where)
-            if index and list(row[:5])!=list(table[0][anchor][:5]):
-                raise ValueError(where + ': candidates must share measured workload anchors')
             if any(not _number(v) or v<=0 for v in row[5:]):
                 raise ValueError(where + ': measured times must be finite and positive')
             if row[5]-row[6]+row[7]<=0:
@@ -73,12 +71,22 @@ def validate_table(table, total_rows):
     return table
 
 
+def workload_difference(reference, observed):
+    """Record cross-candidate variation; no equality or magnitude acceptance gate."""
+    return dict(policy='record_only', reference_candidate_index=0,
+                features_match=observed['features']==reference['features'],
+                feature_delta=[b-a for a,b in zip(reference['features'],observed['features'])],
+                native_routing_sha256_match=observed['native_routing_sha256']==reference['native_routing_sha256'],
+                global_blocks_delta=observed['global_blocks']-reference['global_blocks'])
+
+
 def predict_cost(table, features, total_rows):
     """Nearest-two normalized-L1 interpolation; deterministic anchor/pair ties.
 
     Exact duplicate anchors use the first two observations. Their measured costs
     are averaged, so duplicate patterns do not silently discard an observation.
-    Calibrators persist the float32 upload roundtrip; both CPU and GPU perform
+    Each candidate owns its measured feature anchors; they need not equal
+    another candidate's anchors. Calibrators persist the float32 upload roundtrip; both CPU and GPU perform
     cost interpolation in double from those stored values.
     """
     validate_table(table,total_rows)
@@ -159,6 +167,24 @@ def _measured_case(case, total, index, where):
         raise ValueError(where+': workload evidence malformed')
 
 
+def _measured_workload(workload, total, where):
+    if not isinstance(workload,dict) or workload.get('total_rows')!=total:
+        raise ValueError(where+': observed workload missing')
+    _features(workload.get('features'),total,where)
+    if (type(workload.get('global_blocks')) is not int or not 0<=workload['global_blocks']<=total
+            or not _sha(workload.get('native_routing_sha256'))):
+        raise ValueError(where+': observed workload malformed')
+
+
+def _candidate_workloads(candidates, reference, total, where):
+    for candidate in candidates:
+        workload=candidate.get('workload')
+        _measured_workload(workload,total,where)
+        # Verify the record says what happened, never require a match.
+        if candidate.get('workload_difference')!=workload_difference(reference,workload):
+            raise ValueError(where+': workload difference record disagrees with observations')
+
+
 def _measured_pairs(candidates, repeats, where, stages=False):
     if not isinstance(candidates,list) or len(candidates)!=9:
         raise ValueError(where+': all nine measured candidate pairs required')
@@ -188,6 +214,7 @@ def _validate_measurements(entry, batch):
             or measured['repeats']<1 or measured.get('objective_graph_component_events') is not False
             or measured.get('objective')!='unmodified_native_MLP_routing_shared_join_collective_post_add'
             or measured.get('pattern_protocol')!='six_native_routed_synthetic_v1_four_spread_two_repeated'
+            or measured.get('routing_comparison_policy')!='record_only'
             or type(measured.get('planner_calls_per_timed_graph')) is not int
             or measured['planner_calls_per_timed_graph']<1):
         raise ValueError('native cost complete measured full-MoE protocol missing')
@@ -217,13 +244,19 @@ def _validate_measurements(entry, batch):
         where=f'native cost anchor {index}'
         _measured_case(anchor,total,index,where)
         medians=_measured_pairs(anchor.get('candidates'),repeats,where,stages=True)
+        _candidate_workloads(anchor['candidates'],anchor,total,where)
+        search_workload=anchor.get('search_workload')
+        _measured_workload(search_workload,total,where+'/search_planner')
+        if anchor.get('search_workload_difference')!=workload_difference(anchor,search_workload):
+            raise ValueError(where+': search workload difference record disagrees with observations')
         for candidate in range(9):
             row=entry['rows'][candidate][index]
-            if row!=anchor['features']+[_f32(v) for v in medians[candidate]]:
+            if row!=anchor['candidates'][candidate]['workload']['features']+[_f32(v) for v in medians[candidate]]:
                 raise ValueError(where+': table is not the float32 measured features/medians')
     validation=entry.get('validation',{})
     if (not isinstance(validation,dict) or validation.get('complete') is not True
-            or validation.get('numerical_policy')!='record_only'):
+            or validation.get('numerical_policy')!='record_only'
+            or validation.get('routing_comparison_policy')!='record_only'):
         raise ValueError('native cost heldout validation incomplete')
     heldout=validation.get('heldout')
     if not isinstance(heldout,list) or len(heldout)!=2:
@@ -232,6 +265,11 @@ def _validate_measurements(entry, batch):
         where=f'native cost heldout {index}'
         _measured_case(case,total,index,where)
         medians=_measured_pairs(case.get('fixed_candidates'),repeats,where)
+        reference=case['fixed_candidates'][0].get('workload')
+        _measured_workload(reference,total,where)
+        _candidate_workloads(case['fixed_candidates'],reference,total,where)
+        if case.get('cost_workload_difference')!=workload_difference(reference,case):
+            raise ValueError(where+': cost workload difference record disagrees with observations')
         _timing(case.get('cost_full_moe'),repeats,where+'/cost_full_moe')
         prediction=case.get('prediction',{})
         selected=prediction.get('selected_index') if isinstance(prediction,dict) else None

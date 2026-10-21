@@ -22,6 +22,19 @@ class CalibrationContract(unittest.TestCase):
             with self.assertRaises(ValueError):
                 module.timing_summary(values)
 
+    def test_workload_changes_are_recorded_instead_of_rejected(self):
+        from src.weave.native_cost import workload_difference
+        reference = dict(features=[6,1,1,36,6], total_rows=6, global_blocks=1,
+                         native_routing_sha256='a'*64)
+        observed = dict(features=[3,2,2,5,2], total_rows=6, global_blocks=3,
+                        native_routing_sha256='b'*64)
+        result = workload_difference(reference, observed)
+        self.assertEqual(result['policy'], 'record_only')
+        self.assertFalse(result['features_match'])
+        self.assertFalse(result['native_routing_sha256_match'])
+        self.assertEqual(result['feature_delta'], [-3,1,1,-31,-4])
+        self.assertTrue(workload_difference(reference, reference)['features_match'])
+
     def test_prediction_validation_records_unbounded_errors_and_regret(self):
         module = self.module()
         record = module.prediction_record([100., 1., 2.], [3., 10., 2.], 1)

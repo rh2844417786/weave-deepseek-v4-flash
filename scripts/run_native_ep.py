@@ -450,7 +450,7 @@ def main() -> int:
         'native_cost_configuration': ({'table_dir': str(args.native_cost_table_dir) if args.native_cost_table_dir else None,
                                        'calibrate_dir': str(args.native_cost_calibrate_dir) if args.native_cost_calibrate_dir else None,
                                        'repeats': args.native_cost_repeats,
-                                       'policy_version': 'measured_moe_surface_v1',
+                                       'policy_version': 'measured_moe_surface_v2',
                                        'mode': 'calibration' if args.native_cost_calibrate_dir else 'cost',
                                        'objective': 'measured_full_moe'} if args.native_budget == 'cost' else None),
         'native_p0_configuration': ({'stride': args.native_p0_stride, 'capacity': args.native_p0_capacity}

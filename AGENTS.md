@@ -29,6 +29,8 @@ The user approved upgrading the initial 75-percent heuristic to measured full-Mo
 
 The earlier heuristic and its reports remain available under their original method identity.
 
+The user removed the cross-candidate routing equality gate on 2026-10-21. Differences in the five workload features or `native_routing_sha256` are record-only and must not stop calibration or reject a measured table. Preserve each candidate's actual observed workload in its own table anchors and publish differences against candidate 0. Do not replace this removed gate with another workload-equality requirement. Validate the cost planner against its current replay's workload, not a preceding fixed candidate. Malformed data, source identity, complete coverage, nonfinite output and runtime/cleanup checks remain applicable.
+
 # Historical paper-method identity
 
 The 2026-10-18 paper-reproduction work and its evidence remain historical branches of this project. Preserve their method labels:

@@ -35,6 +35,8 @@ python3 scripts/run_native_cost.py \
 
 所有有限数值差异和生成 token 差异均为 `record_only`，不得添加误差阈值、allclose 或替代数值门槛，也不能因为预测 regret 或吞吐下降拒绝保存结果。仍保留非有限输出、非法内存、编译/运行、malformed tensor/routing、来源、覆盖、确定性算法和 cleanup 检查。
 
+本轮策略为 `measured_moe_surface_v2`。跨候选五项工作量特征与 `native_routing_sha256` 的一致性门限已移除：差异只记录，不停止校准、不拒绝表、不增加替代阈值。保留每个候选自己的 `workload` 和 `workload_difference`，以及实际 cost replay 的差异记录；允许 `features_match=false` 或 `native_routing_sha256_match=false`。使用新目录重新校准，保留旧失败证据。
+
 将控制器输出的 `export_directory` 白名单目录复制到可写 clone 的新 `reports/server/` 子目录，逐文件校验 manifest SHA256。只暂存该新目录，commit/push；不要 `git add .`。禁止回传原始题目、token IDs、生成文本、路由数组、激活、权重、完整日志、private/ 或 JIT overlay。失败同样回传已存在的脱敏聚合证据，具体原因另给脱敏描述，不能改写为成功。
 
 最终回复执行 commit、回传 commit、GPUQ job、实际分配、镜像ID、校准完成状态、预测误差/选择 regret、GPU验证状态、完整模型图与 planner/43层计数覆盖、预算对变化、两组吞吐与比值、数据耗尽、清理状态及公开目录。没有真实服务证据时不宣称吞吐提高。

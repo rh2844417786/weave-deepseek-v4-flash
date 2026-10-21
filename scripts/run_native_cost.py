@@ -34,7 +34,7 @@ from src.weave.runtime_contract import load_contract
 
 GROUPS = ('native', 'cost')
 METHOD = 'native_marlin_measured_cta_v2'
-POLICY_VERSION = 'measured_moe_surface_v1'
+POLICY_VERSION = 'measured_moe_surface_v2'
 CANDIDATES = [[8,8],[8,4],[8,2],[4,8],[4,4],[4,2],[2,8],[2,4],[2,2]]
 
 

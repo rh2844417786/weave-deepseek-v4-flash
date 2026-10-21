@@ -39,15 +39,27 @@ def measured_entry(batch):
                   native_numerical=dict(finite=True,relative_l2=1e6,max_abs=1e9,numerical_policy='record_only'),
                   selected_pair=[8,8],cpu_selected_index=0,cpu_gpu_selection_agree=True,shares_local_route_with_training=False)
              for index in (6,7)]
+    from src.weave.native_cost import workload_difference
+    def workload(record):
+        return {key:copy.deepcopy(record[key]) for key in
+                ('features','total_rows','global_blocks','native_routing_sha256')}
+    for anchor in anchors:
+        for candidate in anchor['candidates']:
+            candidate.update(workload=workload(anchor),workload_difference=workload_difference(anchor,anchor))
+        anchor.update(search_workload=workload(anchor),search_workload_difference=workload_difference(anchor,anchor))
+    for case in heldout:
+        for candidate in case['fixed_candidates']:
+            candidate.update(workload=workload(case),workload_difference=workload_difference(case,case))
+        case['cost_workload_difference']=workload_difference(case,case)
     geometry=[dict(role=role,size_m=batch*(6 if i else 1),top_k=1 if i else 6,
                    size_n=4096,size_k=2048 if i else 4096,moe_block_size=8,is_ep=True,
                    native_grid=528,n_tiles=32,k_tiles=16 if i else 32)
               for i,role in enumerate(('gate_up','down'))]
     return dict(rows=rows,measurements=dict(complete=True,units='microseconds',repeats=2,geometry=geometry,
-        objective='unmodified_native_MLP_routing_shared_join_collective_post_add',objective_graph_component_events=False,
+        objective='unmodified_native_MLP_routing_shared_join_collective_post_add',objective_graph_component_events=False,routing_comparison_policy='record_only',
         event_overhead_us=dict(samples_us=[0,1],median_us=.5),planner_calls_per_timed_graph=32,
         pattern_protocol='six_native_routed_synthetic_v1_four_spread_two_repeated',anchors=anchors),
-        validation=dict(complete=True,numerical_policy='record_only',heldout=heldout))
+        validation=dict(complete=True,numerical_policy='record_only',routing_comparison_policy='record_only',heldout=heldout))
 
 
 def profile_fixture(cost):
@@ -104,6 +116,45 @@ class CostTests(unittest.TestCase):
         self.assertEqual(answer['candidate_index'], 0)
         self.assertEqual(tuple(answer['pair']), (8,8))
         self.assertAlmostEqual(answer['predicted_us'], 111.)
+
+    def test_each_candidate_can_have_its_own_measured_workload_features(self):
+        rows = surface_for_batch(32)
+        rows[1][0][:5] = [48, 16, 16, 144, 3]
+        self.assertIs(self.cost.validate_table(rows, 192), rows)
+        self.assertEqual(self.cost.predict_cost(rows, [48,16,16,144,3], 192)['candidate_index'], 0)
+
+    def test_cross_candidate_route_differences_do_not_reject_complete_profiles(self):
+        for change in ('features', 'digest', 'both'):
+            profile = profile_fixture(self.cost)
+            entry = profile['tables']['g0']['32']; anchor = entry['measurements']['anchors'][2]
+            candidate = anchor['candidates'][1]
+            observed = {key: copy.deepcopy(anchor[key]) for key in
+                        ('features','total_rows','global_blocks','native_routing_sha256')}
+            if change in ('features', 'both'): observed['features'] = [48,16,16,144,3]
+            if change in ('digest', 'both'): observed['native_routing_sha256'] = 'f'*64
+            candidate['workload'] = observed
+            candidate['workload_difference'] = self.cost.workload_difference(anchor, observed)
+            entry['rows'][1][2][:5] = observed['features']
+            profile['profile_sha256'] = self.cost.profile_digest(profile)
+            with self.subTest(change=change):
+                self.assertIs(self.cost.validate_profile(profile), profile)
+                self.assertEqual(candidate['workload_difference']['policy'], 'record_only')
+
+    def test_heldout_cost_replay_can_differ_from_fixed_candidate_workloads(self):
+        profile = profile_fixture(self.cost)
+        case = profile['tables']['g0']['32']['validation']['heldout'][0]
+        reference = case['fixed_candidates'][0]['workload']
+        observed = case['fixed_candidates'][-1]['workload']
+        observed.update(features=[48,16,16,144,3], native_routing_sha256='d'*64)
+        case['fixed_candidates'][-1]['workload_difference'] = self.cost.workload_difference(reference, observed)
+        case.update(features=[90,30,30,270,3], native_routing_sha256='e'*64)
+        case['cost_workload_difference'] = self.cost.workload_difference(reference, case)
+        from src.weave.native_cost_calibration import prediction_record
+        prediction = self.cost.predict_cost(profile['tables']['g0']['32']['rows'],case['features'],192)
+        case['prediction'] = prediction_record(prediction['predictions_us'],list(range(101,110)),prediction['candidate_index'])
+        profile['profile_sha256'] = self.cost.profile_digest(profile)
+        self.assertIs(self.cost.validate_profile(profile), profile)
+        self.assertFalse(case['cost_workload_difference']['features_match'])
 
     def test_exact_duplicate_anchor_averages_nearest_two_and_pair_ties_are_stable(self):
         rows = surface_for_batch(32)
@@ -224,6 +275,9 @@ class CostTests(unittest.TestCase):
             for index,candidate in enumerate(near_tie):
                 for row in candidate:row[5:]=[100000000, .5 if index==1 else .25, .125]
             cases.append((near_tie,[192,1,1,36864,192]))
+            different_anchors=surface()
+            for row in different_anchors[1]:row[:]=[48,16,16,144,3,100,2,3]
+            cases.append((different_anchors,[48,16,16,144,3]))
             for rows,features in cases:
                 data=[v for candidate in rows for row in candidate for v in row]
                 data+=list(features)+[192]

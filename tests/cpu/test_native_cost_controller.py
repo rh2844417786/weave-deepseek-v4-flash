@@ -32,7 +32,7 @@ def snapshots(calls):
     for rank, item in enumerate(result):
         item.update(method='native_marlin_measured_cta_v2', mode='cost', world_size=4,
                     calibration_complete=True, profile_sha256=str(rank)*64, identity={'rank':rank},
-                    policy={'version':'measured_moe_surface_v1','candidate_pairs':[[8,8],[8,4],[8,2],[4,8],[4,4],[4,2],[2,8],[2,4],[2,2]]})
+                    policy={'version':'measured_moe_surface_v2','candidate_pairs':[[8,8],[8,4],[8,2],[4,8],[4,4],[4,2],[2,8],[2,4],[2,2]]})
         item['plans'] = []
         for layer in range(43):
             values = [0]*32
@@ -119,7 +119,7 @@ class CostLauncherTests(unittest.TestCase):
                 self.assertEqual(run_native_ep.main(),7)
             report=json.loads(next(root.glob('native-ep-*/launch.json')).read_text())
             self.assertIsNone(report['native_budget_configuration'])
-            self.assertEqual(report['native_cost_configuration'].get('policy_version'),'measured_moe_surface_v1')
+            self.assertEqual(report['native_cost_configuration'].get('policy_version'),'measured_moe_surface_v2')
             self.assertNotIn('target_percent',report['native_cost_configuration'])
             self.assertEqual(report['method'],'native_marlin_measured_cta_v2')
 

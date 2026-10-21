@@ -1,6 +1,6 @@
 # Native Marlin measured MoE cost model
 
-本阶段的方法标识为 `native_marlin_measured_cta_v2`，表策略版本为 `measured_moe_surface_v1`。目标是在原生 SGLang 中提高模型吞吐。初始并发32是本次对照的控制变量。`run_native_budget.py`、`native_marlin_dynamic_cta_v1` 及已有报告保留原有语义；本阶段使用新的 `scripts/run_native_cost.py`。
+本阶段的方法标识为 `native_marlin_measured_cta_v2`，表策略版本为 `measured_moe_surface_v2`。目标是在原生 SGLang 中提高模型吞吐。初始并发32是本次对照的控制变量。`run_native_budget.py`、`native_marlin_dynamic_cta_v1` 及已有报告保留原有语义；本阶段使用新的 `scripts/run_native_cost.py`。
 
 ## 成本模型与执行范围
 
@@ -27,6 +27,14 @@
 运行时每层只执行一次有界单 CTA planner，从已有 grouping 计算五个特征：本地路由数、活跃本地专家数、padding 后的本地 blocks、专家行数平方和、最大专家行数。按结构类别和精确 batch 查表，用归一化 L1 距离选取最近两个实测 anchor，为九个候选预测完整 MoE 成本并取最小值。预测成本用完整 MoE 耗时减去固定 planner 开销，再加上搜索 planner 开销。两个 GEMM 复用同一个持久 plan；空本地工作也各记录一次逻辑调用。
 
 这是固定 grid 内的软资源控制。它不声明精确物理 SM 所有权，不实现论文的持久通信/计算角色、通信 c、chunk K、流水线或 stealing。每个 rank 的 collective 实测时间包含跨 rank 就绪等待；把固定候选校准用于各 rank 独立选择时，是需要用 held-out 结果检验的近似。
+
+### 跨候选路由差异只记录
+
+自策略 `measured_moe_surface_v2` 起，五项工作量特征与 `native_routing_sha256` 的跨候选一致性不再作为门限。特征不同、摘要不同或两者同时不同，均继续校准；表校验也不要求各候选共享相同特征。
+
+每个候选在 `workload` 中保存自己的实测特征、总行数、分组块数和路由摘要，在 `workload_difference` 中记录相对候选0的 `features_match`、`feature_delta`、`native_routing_sha256_match` 与 `global_blocks_delta`，策略为 `record_only`。表行绑定该候选自己的实测点。共享的搜索 planner 开销另记其实际 `search_workload` 及差异，不把它的路由假称为所有候选的路由。
+
+独立验证也记录各固定候选和实际 cost replay 的工作量；CPU 预测使用当前 cost replay 的特征。若不同候选观察到不同工作量，误差与 regret 仍发布，按同一名义输入下的实际测量解释，不称为严格固定路由的比较。历史失败报告保持原状，新规则需要新目录重新校准。
 
 ## 默认完整流程
 
