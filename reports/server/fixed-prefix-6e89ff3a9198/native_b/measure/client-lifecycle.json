@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-fixed-prefix-6e89ff3a9198-native_b-measure",
+  "started_utc": "2026-10-21T07:56:38.540113+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-21T07:56:41.843595+00:00"
+}

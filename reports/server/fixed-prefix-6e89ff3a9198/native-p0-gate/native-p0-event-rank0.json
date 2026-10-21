@@ -1,0 +1,777 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "rank": 0,
+  "world_size": 4,
+  "measurement_mode": "instrumented_diagnostic",
+  "numerical_policy": "record_only",
+  "formal_performance_claim": false,
+  "model_execution_evidence": false,
+  "raw_content_exported": false,
+  "cases": [
+    {
+      "sequence": 1,
+      "batch": 32,
+      "sample": {
+        "sequence": 1,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 1,
+        "whole_graph_ms": 36.02102279663086,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.07734400033950806,
+                "end_ms": 36.013633728027344,
+                "duration_ms": 35.93628692626953
+              },
+              "routed": {
+                "start_ms": 0.08297599852085114,
+                "end_ms": 0.19145600497722626,
+                "duration_ms": 0.10847999900579453
+              },
+              "shared": {
+                "start_ms": 0.1945600062608719,
+                "end_ms": 0.21875199675559998,
+                "duration_ms": 0.024191999807953835
+              },
+              "gate_up": {
+                "start_ms": 0.08793599903583527,
+                "end_ms": 0.1435839980840683,
+                "duration_ms": 0.05564799904823303
+              },
+              "activation": {
+                "start_ms": 0.14665600657463074,
+                "end_ms": 0.1599999964237213,
+                "duration_ms": 0.013344000093638897
+              },
+              "down": {
+                "start_ms": 0.16342400014400482,
+                "end_ms": 0.1881919950246811,
+                "duration_ms": 0.024768000468611717
+              },
+              "shared_merge": {
+                "start_ms": 0.2221119999885559,
+                "end_ms": 0.2303999960422516,
+                "duration_ms": 0.008287999778985977
+              },
+              "all_reduce": {
+                "start_ms": 0.23388800024986267,
+                "end_ms": 36.01059341430664,
+                "duration_ms": 35.776702880859375
+              }
+            },
+            "moe_ms": 35.93628692626953,
+            "branch_overlap_ms": 0.0,
+            "shared_tail_ms": 0.02419199049472809,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.21875199675559998,
+            "moe_post_branches_ms": 35.794881731271744
+          }
+        },
+        "launch_trace_active": true
+      },
+      "finite": true,
+      "output_norm": 13.730630874633789,
+      "fresh_events_verified": true,
+      "join_order_verified": true,
+      "input_scale": 1
+    },
+    {
+      "sequence": 2,
+      "batch": 32,
+      "sample": {
+        "sequence": 2,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 2,
+        "whole_graph_ms": 0.21276800334453583,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.023871999233961105,
+                "end_ms": 0.20758399367332458,
+                "duration_ms": 0.18371200561523438
+              },
+              "routed": {
+                "start_ms": 0.027712000533938408,
+                "end_ms": 0.0735040009021759,
+                "duration_ms": 0.045791998505592346
+              },
+              "shared": {
+                "start_ms": 0.06201599910855293,
+                "end_ms": 0.08003199845552444,
+                "duration_ms": 0.018015999346971512
+              },
+              "gate_up": {
+                "start_ms": 0.030688000842928886,
+                "end_ms": 0.047200001776218414,
+                "duration_ms": 0.01651199907064438
+              },
+              "activation": {
+                "start_ms": 0.05027199909090996,
+                "end_ms": 0.05571199953556061,
+                "duration_ms": 0.005439999978989363
+              },
+              "down": {
+                "start_ms": 0.05875200033187866,
+                "end_ms": 0.07100799679756165,
+                "duration_ms": 0.012256000190973282
+              },
+              "shared_merge": {
+                "start_ms": 0.08342400193214417,
+                "end_ms": 0.08895999938249588,
+                "duration_ms": 0.005535999778658152
+              },
+              "all_reduce": {
+                "start_ms": 0.09203200042247772,
+                "end_ms": 0.20448000729084015,
+                "duration_ms": 0.11244799941778183
+              }
+            },
+            "moe_ms": 0.18371200561523438,
+            "branch_overlap_ms": 0.01148800179362297,
+            "shared_tail_ms": 0.006527997553348541,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.08003199845552444,
+            "moe_post_branches_ms": 0.12755199521780014
+          }
+        },
+        "launch_trace_active": false
+      },
+      "finite": true,
+      "output_norm": 27.461261749267578,
+      "fresh_events_verified": true,
+      "join_order_verified": true,
+      "input_scale": 2
+    },
+    {
+      "sequence": 3,
+      "batch": 32,
+      "sample": {
+        "sequence": 3,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 3,
+        "whole_graph_ms": 0.10796800255775452,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.017311999574303627,
+                "end_ms": 0.10265599936246872,
+                "duration_ms": 0.08534400165081024
+              },
+              "routed": {
+                "start_ms": 0.02051199972629547,
+                "end_ms": 0.06444799900054932,
+                "duration_ms": 0.043935999274253845
+              },
+              "shared": {
+                "start_ms": 0.05225599929690361,
+                "end_ms": 0.06995200365781784,
+                "duration_ms": 0.017696000635623932
+              },
+              "gate_up": {
+                "start_ms": 0.023615999147295952,
+                "end_ms": 0.03788800165057182,
+                "duration_ms": 0.014271999709308147
+              },
+              "activation": {
+                "start_ms": 0.04108799993991852,
+                "end_ms": 0.045951999723911285,
+                "duration_ms": 0.004863999783992767
+              },
+              "down": {
+                "start_ms": 0.04902400076389313,
+                "end_ms": 0.061055999249219894,
+                "duration_ms": 0.012032000347971916
+              },
+              "shared_merge": {
+                "start_ms": 0.07318399846553802,
+                "end_ms": 0.07878399640321732,
+                "duration_ms": 0.00559999980032444
+              },
+              "all_reduce": {
+                "start_ms": 0.08185599744319916,
+                "end_ms": 0.09964799880981445,
+                "duration_ms": 0.017791999503970146
+              }
+            },
+            "moe_ms": 0.08534400165081024,
+            "branch_overlap_ms": 0.012191999703645706,
+            "shared_tail_ms": 0.005504004657268524,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.06995200365781784,
+            "moe_post_branches_ms": 0.03270399570465088
+          }
+        },
+        "launch_trace_active": false
+      },
+      "finite": true,
+      "output_norm": 41.19196319580078,
+      "fresh_events_verified": true,
+      "join_order_verified": true,
+      "input_scale": 3
+    },
+    {
+      "sequence": 4,
+      "batch": 32,
+      "sample": {
+        "sequence": 4,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 4,
+        "whole_graph_ms": 0.11481600254774094,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.017823999747633934,
+                "end_ms": 0.1074879989027977,
+                "duration_ms": 0.08966399729251862
+              },
+              "routed": {
+                "start_ms": 0.02131200022995472,
+                "end_ms": 0.06415999680757523,
+                "duration_ms": 0.042847998440265656
+              },
+              "shared": {
+                "start_ms": 0.052799999713897705,
+                "end_ms": 0.07014399766921997,
+                "duration_ms": 0.017343999817967415
+              },
+              "gate_up": {
+                "start_ms": 0.024383999407291412,
+                "end_ms": 0.03824000060558319,
+                "duration_ms": 0.013856000266969204
+              },
+              "activation": {
+                "start_ms": 0.041280001401901245,
+                "end_ms": 0.04649600014090538,
+                "duration_ms": 0.005216000135987997
+              },
+              "down": {
+                "start_ms": 0.04956800118088722,
+                "end_ms": 0.06092799827456474,
+                "duration_ms": 0.011359999887645245
+              },
+              "shared_merge": {
+                "start_ms": 0.07327999919652939,
+                "end_ms": 0.07868800312280655,
+                "duration_ms": 0.005408000200986862
+              },
+              "all_reduce": {
+                "start_ms": 0.08179199695587158,
+                "end_ms": 0.10441599786281586,
+                "duration_ms": 0.022624000906944275
+              }
+            },
+            "moe_ms": 0.08966399729251862,
+            "branch_overlap_ms": 0.01135999709367752,
+            "shared_tail_ms": 0.005984000861644745,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.07014399766921997,
+            "moe_post_branches_ms": 0.03734400123357773
+          }
+        },
+        "launch_trace_active": false
+      },
+      "finite": true,
+      "output_norm": 54.922523498535156,
+      "fresh_events_verified": true,
+      "join_order_verified": true,
+      "input_scale": 4
+    }
+  ],
+  "case_count": 4,
+  "stop_reason": "none",
+  "runtime": {
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.3",
+    "device_name": "NVIDIA H100 80GB HBM3",
+    "capability": [
+      9,
+      0
+    ],
+    "device_count": 4,
+    "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155"
+  },
+  "image_id": "sha256:16aba8925507e631e1dc1e23d95d026533602591775f6a8db68b74ee99746155",
+  "profile_source_sha256": "06c8cf7a71d9e5739ecd69c26fcc2f78dae588120087a7ef32b676ef6ba0d918",
+  "smoke_source_sha256": "5b6f3600248b0d40de1017072f226387bf47774d117672ddfb86f700bce221f2",
+  "native_p0_profile": {
+    "schema_version": 1,
+    "kind": "native_p0",
+    "rank": 0,
+    "measurement_mode": "instrumented_diagnostic",
+    "numerical_policy": "record_only",
+    "formal_performance_claim": false,
+    "external_events": true,
+    "profile_source_sha256": "06c8cf7a71d9e5739ecd69c26fcc2f78dae588120087a7ef32b676ef6ba0d918",
+    "profile_source_manifest": {
+      "src/weave/native_p0.py": "56de74106eff980f7d086d340a74411d80cb6e2cbfbd4d4388c5d4b5c29dd47d",
+      "src/weave/native_p0_hooks.py": "c439885a5e007e3551dd6a79edc1329a61bc31ebf55a02d4dcfe417cb49f9a2d",
+      "src/weave/native_p0_trace.py": "08792f0ee35e739db57c696768660f54502ec57d16219d890155634017bb849b",
+      "configs/native_p0_sources.json": "d8284770d336cdb3011825ed5666143b3ba2b5e82fa20021f7ddd79bdb4c87d8"
+    },
+    "configuration": {
+      "stride": 1,
+      "capacity": 4,
+      "layers": 1,
+      "captured_batch_size": 32
+    },
+    "intervention": {
+      "mode": "full",
+      "readback": true,
+      "event_node_count": 16,
+      "allocated_event_count": 26,
+      "retained_grouping_layer_count": 0,
+      "retained_grouping_tensor_ref_count": 0
+    },
+    "b32_seen": 4,
+    "sampled_total": 4,
+    "aborted_samples": 0,
+    "layer_metadata": {
+      "0": {
+        "path": "synthetic_two_stream_bf16_mm",
+        "model_path_evidence": false,
+        "captured_spans": [
+          "activation",
+          "all_reduce",
+          "down",
+          "gate_up",
+          "moe",
+          "routed",
+          "shared",
+          "shared_merge"
+        ],
+        "observed_span_calls": {
+          "moe": 1,
+          "routed": 1,
+          "gate_up": 1,
+          "activation": 1,
+          "down": 1,
+          "shared": 1,
+          "shared_merge": 1,
+          "all_reduce": 1
+        }
+      }
+    },
+    "launch_trace": {
+      "status": "complete",
+      "expected_layers": null,
+      "kernel_count": 7,
+      "marlin_kernel_count": 0,
+      "kernels": [
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_1x2_h_bz_NNT",
+          "grid": [
+            2,
+            64,
+            1
+          ],
+          "block": [
+            384,
+            1,
+            1
+          ],
+          "threads_per_block": 384,
+          "registers_per_thread": 168,
+          "start_us": 1710440162042.957,
+          "duration_us": 11.616,
+          "shared_memory_bytes": 180692
+        },
+        {
+          "name": "void at::native::vectorized_elementwise_kernel<8, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#9}::operator()() const::{lambda(c10::BFloat16)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#9}::operator()() const::{lambda(c10::BFloat16)#1}, std::array<char*, 2ul>)",
+          "grid": [
+            128,
+            1,
+            1
+          ],
+          "block": [
+            128,
+            1,
+            1
+          ],
+          "threads_per_block": 128,
+          "registers_per_thread": 32,
+          "start_us": 1710440162069.325,
+          "duration_us": 1.472,
+          "shared_memory_bytes": 0
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_1x2_h_bz_NNT",
+          "grid": [
+            2,
+            64,
+            1
+          ],
+          "block": [
+            384,
+            1,
+            1
+          ],
+          "threads_per_block": 384,
+          "registers_per_thread": 168,
+          "start_us": 1710440162089.805,
+          "duration_us": 9.407,
+          "shared_memory_bytes": 180692
+        },
+        {
+          "name": "nvjet_sm90_tst_64x16_64x16_1x2_h_bz_NNT",
+          "grid": [
+            2,
+            64,
+            1
+          ],
+          "block": [
+            384,
+            1,
+            1
+          ],
+          "threads_per_block": 384,
+          "registers_per_thread": 168,
+          "start_us": 1710440162120.172,
+          "duration_us": 7.68,
+          "shared_memory_bytes": 180692
+        },
+        {
+          "name": "void at::native::vectorized_elementwise_kernel<8, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#9}::operator()() const::{lambda(c10::BFloat16)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::launch_clamp_scalar(at::TensorIteratorBase&, c10::Scalar, c10::Scalar, at::native::detail::ClampLimits)::{lambda()#1}::operator()() const::{lambda()#9}::operator()() const::{lambda(c10::BFloat16)#1}, std::array<char*, 2ul>)",
+          "grid": [
+            128,
+            1,
+            1
+          ],
+          "block": [
+            128,
+            1,
+            1
+          ],
+          "threads_per_block": 128,
+          "registers_per_thread": 32,
+          "start_us": 1710440162128.172,
+          "duration_us": 1.504,
+          "shared_memory_bytes": 0
+        },
+        {
+          "name": "void at::native::vectorized_elementwise_kernel<8, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<c10::BFloat16>, std::array<char*, 3ul>)",
+          "grid": [
+            128,
+            1,
+            1
+          ],
+          "block": [
+            128,
+            1,
+            1
+          ],
+          "threads_per_block": 128,
+          "registers_per_thread": 34,
+          "start_us": 1710440162139.084,
+          "duration_us": 1.343,
+          "shared_memory_bytes": 0
+        },
+        {
+          "name": "ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+          "grid": [
+            16,
+            1,
+            1
+          ],
+          "block": [
+            512,
+            1,
+            1
+          ],
+          "threads_per_block": 512,
+          "registers_per_thread": 96,
+          "start_us": 1710440162167.083,
+          "duration_us": 35754.391,
+          "shared_memory_bytes": 103808
+        }
+      ],
+      "timing_clock": "CUPTI GPU timestamp, microseconds",
+      "used_for_formal_performance": false,
+      "rank": 0
+    },
+    "samples": [
+      {
+        "sequence": 1,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 1,
+        "whole_graph_ms": 36.02102279663086,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.07734400033950806,
+                "end_ms": 36.013633728027344,
+                "duration_ms": 35.93628692626953
+              },
+              "routed": {
+                "start_ms": 0.08297599852085114,
+                "end_ms": 0.19145600497722626,
+                "duration_ms": 0.10847999900579453
+              },
+              "shared": {
+                "start_ms": 0.1945600062608719,
+                "end_ms": 0.21875199675559998,
+                "duration_ms": 0.024191999807953835
+              },
+              "gate_up": {
+                "start_ms": 0.08793599903583527,
+                "end_ms": 0.1435839980840683,
+                "duration_ms": 0.05564799904823303
+              },
+              "activation": {
+                "start_ms": 0.14665600657463074,
+                "end_ms": 0.1599999964237213,
+                "duration_ms": 0.013344000093638897
+              },
+              "down": {
+                "start_ms": 0.16342400014400482,
+                "end_ms": 0.1881919950246811,
+                "duration_ms": 0.024768000468611717
+              },
+              "shared_merge": {
+                "start_ms": 0.2221119999885559,
+                "end_ms": 0.2303999960422516,
+                "duration_ms": 0.008287999778985977
+              },
+              "all_reduce": {
+                "start_ms": 0.23388800024986267,
+                "end_ms": 36.01059341430664,
+                "duration_ms": 35.776702880859375
+              }
+            },
+            "moe_ms": 35.93628692626953,
+            "branch_overlap_ms": 0.0,
+            "shared_tail_ms": 0.02419199049472809,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.21875199675559998,
+            "moe_post_branches_ms": 35.794881731271744
+          }
+        },
+        "launch_trace_active": true
+      },
+      {
+        "sequence": 2,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 2,
+        "whole_graph_ms": 0.21276800334453583,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.023871999233961105,
+                "end_ms": 0.20758399367332458,
+                "duration_ms": 0.18371200561523438
+              },
+              "routed": {
+                "start_ms": 0.027712000533938408,
+                "end_ms": 0.0735040009021759,
+                "duration_ms": 0.045791998505592346
+              },
+              "shared": {
+                "start_ms": 0.06201599910855293,
+                "end_ms": 0.08003199845552444,
+                "duration_ms": 0.018015999346971512
+              },
+              "gate_up": {
+                "start_ms": 0.030688000842928886,
+                "end_ms": 0.047200001776218414,
+                "duration_ms": 0.01651199907064438
+              },
+              "activation": {
+                "start_ms": 0.05027199909090996,
+                "end_ms": 0.05571199953556061,
+                "duration_ms": 0.005439999978989363
+              },
+              "down": {
+                "start_ms": 0.05875200033187866,
+                "end_ms": 0.07100799679756165,
+                "duration_ms": 0.012256000190973282
+              },
+              "shared_merge": {
+                "start_ms": 0.08342400193214417,
+                "end_ms": 0.08895999938249588,
+                "duration_ms": 0.005535999778658152
+              },
+              "all_reduce": {
+                "start_ms": 0.09203200042247772,
+                "end_ms": 0.20448000729084015,
+                "duration_ms": 0.11244799941778183
+              }
+            },
+            "moe_ms": 0.18371200561523438,
+            "branch_overlap_ms": 0.01148800179362297,
+            "shared_tail_ms": 0.006527997553348541,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.08003199845552444,
+            "moe_post_branches_ms": 0.12755199521780014
+          }
+        },
+        "launch_trace_active": false
+      },
+      {
+        "sequence": 3,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 3,
+        "whole_graph_ms": 0.10796800255775452,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.017311999574303627,
+                "end_ms": 0.10265599936246872,
+                "duration_ms": 0.08534400165081024
+              },
+              "routed": {
+                "start_ms": 0.02051199972629547,
+                "end_ms": 0.06444799900054932,
+                "duration_ms": 0.043935999274253845
+              },
+              "shared": {
+                "start_ms": 0.05225599929690361,
+                "end_ms": 0.06995200365781784,
+                "duration_ms": 0.017696000635623932
+              },
+              "gate_up": {
+                "start_ms": 0.023615999147295952,
+                "end_ms": 0.03788800165057182,
+                "duration_ms": 0.014271999709308147
+              },
+              "activation": {
+                "start_ms": 0.04108799993991852,
+                "end_ms": 0.045951999723911285,
+                "duration_ms": 0.004863999783992767
+              },
+              "down": {
+                "start_ms": 0.04902400076389313,
+                "end_ms": 0.061055999249219894,
+                "duration_ms": 0.012032000347971916
+              },
+              "shared_merge": {
+                "start_ms": 0.07318399846553802,
+                "end_ms": 0.07878399640321732,
+                "duration_ms": 0.00559999980032444
+              },
+              "all_reduce": {
+                "start_ms": 0.08185599744319916,
+                "end_ms": 0.09964799880981445,
+                "duration_ms": 0.017791999503970146
+              }
+            },
+            "moe_ms": 0.08534400165081024,
+            "branch_overlap_ms": 0.012191999703645706,
+            "shared_tail_ms": 0.005504004657268524,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.06995200365781784,
+            "moe_post_branches_ms": 0.03270399570465088
+          }
+        },
+        "launch_trace_active": false
+      },
+      {
+        "sequence": 4,
+        "batch": 32,
+        "batch_size": 32,
+        "b32_ordinal": 4,
+        "whole_graph_ms": 0.11481600254774094,
+        "layers": {
+          "0": {
+            "intervals": {
+              "moe": {
+                "start_ms": 0.017823999747633934,
+                "end_ms": 0.1074879989027977,
+                "duration_ms": 0.08966399729251862
+              },
+              "routed": {
+                "start_ms": 0.02131200022995472,
+                "end_ms": 0.06415999680757523,
+                "duration_ms": 0.042847998440265656
+              },
+              "shared": {
+                "start_ms": 0.052799999713897705,
+                "end_ms": 0.07014399766921997,
+                "duration_ms": 0.017343999817967415
+              },
+              "gate_up": {
+                "start_ms": 0.024383999407291412,
+                "end_ms": 0.03824000060558319,
+                "duration_ms": 0.013856000266969204
+              },
+              "activation": {
+                "start_ms": 0.041280001401901245,
+                "end_ms": 0.04649600014090538,
+                "duration_ms": 0.005216000135987997
+              },
+              "down": {
+                "start_ms": 0.04956800118088722,
+                "end_ms": 0.06092799827456474,
+                "duration_ms": 0.011359999887645245
+              },
+              "shared_merge": {
+                "start_ms": 0.07327999919652939,
+                "end_ms": 0.07868800312280655,
+                "duration_ms": 0.005408000200986862
+              },
+              "all_reduce": {
+                "start_ms": 0.08179199695587158,
+                "end_ms": 0.10441599786281586,
+                "duration_ms": 0.022624000906944275
+              }
+            },
+            "moe_ms": 0.08966399729251862,
+            "branch_overlap_ms": 0.01135999709367752,
+            "shared_tail_ms": 0.005984000861644745,
+            "routed_tail_ms": 0.0,
+            "branches_done_ms": 0.07014399766921997,
+            "moe_post_branches_ms": 0.03734400123357773
+          }
+        },
+        "launch_trace_active": false
+      }
+    ]
+  },
+  "source_hashes_after": {
+    "profile_source_sha256": "06c8cf7a71d9e5739ecd69c26fcc2f78dae588120087a7ef32b676ef6ba0d918",
+    "smoke_source_sha256": "5b6f3600248b0d40de1017072f226387bf47774d117672ddfb86f700bce221f2"
+  },
+  "gpu_checks_status": "passed",
+  "replay_count": 4,
+  "graph_capture_count": 1,
+  "external_events": true,
+  "two_streams": true,
+  "nccl_all_reduce": true,
+  "generic_launch_metadata_verified": true,
+  "shape": {
+    "batch": 32,
+    "matrix_rows": 32,
+    "matrix_columns": 4096,
+    "dtype": "bfloat16"
+  },
+  "cleanup": {
+    "status": "complete",
+    "phase": "complete",
+    "started_monotonic": 5877270.655568318,
+    "graphs_owned": 1,
+    "graphs_reset": 1,
+    "completed_phases": [
+      "synchronize",
+      "reset_graphs",
+      "synchronize_after_reset",
+      "rank_barrier",
+      "destroy_nccl",
+      "destroy_gloo"
+    ],
+    "finished_monotonic": 5877271.85142386
+  }
+}

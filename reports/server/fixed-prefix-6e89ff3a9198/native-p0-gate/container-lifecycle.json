@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-p0-gate-fixed-prefix-6e89ff3a9198",
+  "started_utc": "2026-10-21T07:24:04.394417+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-21T07:24:29.920062+00:00"
+}
