@@ -66,6 +66,8 @@ def parse_args(argv=None):
     for name in ('model-path', 'output-dir', 'cache-root'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--table-dir', type=Path)
+    parser.add_argument('--sanitizer-smoke', action='store_true',
+                        help='targeted B32 static matrix inside the controller compute-sanitizer stage')
     parser.add_argument('--batches', type=int, nargs='+', default=[32, 65])
     parser.add_argument('--layer', type=int, default=0)
     parser.add_argument('--replay-cycles', type=int, default=5)
@@ -74,7 +76,9 @@ def parse_args(argv=None):
     args = parser.parse_args(argv)
     if args.layer not in range(43) or any(batch < 1 for batch in args.batches):
         parser.error('layer must be 0..42 and batches positive')
-    if not args.table_dir and (32 not in args.batches or not any(batch > 32 for batch in args.batches)):
+    if args.sanitizer_smoke and (args.table_dir or args.batches != [32]):
+        parser.error('--sanitizer-smoke requires static mode and exactly --batches 32')
+    if not args.table_dir and not args.sanitizer_smoke and (32 not in args.batches or not any(batch > 32 for batch in args.batches)):
         parser.error('static mechanism acceptance requires batch32 and an independent larger batch')
     if args.replay_cycles < 5 or args.timeout_seconds < 30 or args.controlled_delay_cycles < 1:
         parser.error('need >=5 replays, >=30 second watchdog, positive controlled GPU delay')
@@ -205,6 +209,7 @@ def main(argv=None):
         gpu_mechanisms_verified=False, full_model_graph_execution_verified=False,
         throughput_result_observed=False, checks_complete=False, cases=[], cleanup=dict(status='not_started'),
         memcheck='external_compute_sanitizer_required', raw_content_exported=False,
+        sanitizer_scope='targeted_B32' if args.sanitizer_smoke else 'not_requested',
         limitations=['Selected-layer operator graph with synthetic routing, not full model service.',
             'Shared inputs are deterministic BF16 partials, not checkpoint shared FP8 execution.',
             'Controlled stealing uses a diagnostic GPU delay on COMPUTE roles; no throughput claim.',
