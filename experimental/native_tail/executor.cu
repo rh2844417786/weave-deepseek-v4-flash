@@ -255,13 +255,15 @@ void launch(torch::Tensor activation,torch::Tensor weight,torch::Tensor scales,t
   TORCH_CHECK(!visits.numel()||visits.numel()>=capacity_groups*(n/(16*NT_N)),"tail task bitmap undersized");
   TORCH_CHECK(!trace.numel()||trace.numel()>=workers*10,"tail worker trace undersized");
   TORCH_CHECK(!events.numel()||events.numel()>=(capacity_groups*(n/(16*NT_N))+20)*4,"task interval storage undersized");
-  cudaDeviceProp prop;check(cudaGetDeviceProperties(&prop,activation.get_device()));
+  const int device=activation.get_device();
+  cudaDeviceProp prop;check(cudaGetDeviceProperties(&prop,device));
+  int clock_khz=0;check(cudaDeviceGetAttribute(&clock_khz,cudaDevAttrClockRate,device));
   int active;check(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&active,resident_executor,NT_THREADS,scratch));
   TORCH_CHECK(workers>1&&workers<=active*prop.multiProcessorCount,"final executor resident capacity exceeded");
   ExecutorArgs a{};a.down={reinterpret_cast<int4*>(activation.data_ptr()),reinterpret_cast<int4*>(weight.data_ptr()),reinterpret_cast<int4*>(scales.data_ptr()),reinterpret_cast<int4*>(pair.data_ptr()),sorted.data_ptr<int>(),experts.data_ptr<int>(),padded.data_ptr<int>(),routing.data_ptr<float>(),rows,n,k,int(weight.size(0)),capacity_groups};
   a.transport.layout=Layout(capacity,n);for(int r=0;r<4;++r)a.transport.peers[r]=reinterpret_cast<void*>(peers[r]);
   a.transport.rank=rank;a.transport.tokens=tokens;a.transport.session=session;a.transport.layer=layer;
-  a.transport.timeout_cycles=U64(timeout*prop.clockRate*1000.);a.transport.output=reinterpret_cast<__nv_bfloat16*>(output.data_ptr());
+  a.transport.timeout_cycles=U64(timeout*clock_khz*1000.);a.transport.output=reinterpret_cast<__nv_bfloat16*>(output.data_ptr());
   a.shared=reinterpret_cast<__nv_bfloat16*>(shared.data_ptr());a.routed_scale=scale;a.topk=topk;a.block_rows=block;a.tiles=n/(16*NT_N);a.workers=workers;a.scratch_bytes=scratch;a.plan_count=plans.size(0);
   a.groups=groups.data_ptr<int>();a.state=reinterpret_cast<ExecutorState*>(state.data_ptr());a.stats=reinterpret_cast<U64*>(stats.data_ptr());
   a.visits=visits.numel()?visits.data_ptr<int>():nullptr;a.trace=trace.numel()?reinterpret_cast<U64*>(trace.data_ptr()):nullptr;

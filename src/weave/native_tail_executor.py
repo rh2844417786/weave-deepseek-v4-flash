@@ -108,6 +108,8 @@ class NativeTailExecutor:
         ffi_includes=[libinfo.find_include_path(),libinfo.find_dlpack_include_path()]
         ffi_library=Path(libinfo.find_libtvm_ffi())
         flags=['-O3','-lineinfo','-std=c++20','-Xptxas=-v']
+        major,minor=torch.cuda.get_device_capability()
+        flags.append(f'-DSGL_CUDA_ARCH={major*100+minor*10}')
         for name,k in [('THREADS','threads'),('M','m_blocks'),('N','n_blocks'),('K','k_blocks'),('M8','m8')]:
             flags.append(f'-DNT_{name}={int(geometry[k])}')
         digest=hashlib.sha256((native_tail_source_sha256()+json.dumps(key)+str(torch.__version__)).encode()).hexdigest()
