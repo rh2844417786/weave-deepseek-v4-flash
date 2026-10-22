@@ -85,6 +85,14 @@ class FrontTests(unittest.TestCase):
             build(**inputs)
         self.assertEqual(calls, [])
 
+    def test_partial_group_allocation_does_not_create_an_out_of_bounds_task(self):
+        build,inputs,calls,module,grouped=self.fixture()
+        grouped[0].shape=(25,);grouped[0].values=list(range(25))
+        grouped[1].shape=(4,);grouped[1].values=[0,-1,1,-1]
+        with patch.dict(sys.modules, {'sglang.srt.layers.moe.fused_moe_triton':module}):
+            down=build(**inputs)
+        self.assertEqual(down.geometry.group_capacity,3)
+
     def test_modified_source_is_rejected_before_compilation(self):
         raw = (FIXTURE / front.FUSED_SOURCE).read_text()
         with self.assertRaisesRegex(RuntimeError, 'source mismatch'):

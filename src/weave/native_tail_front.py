@@ -85,7 +85,8 @@ def _down_inputs(values):
         w2=values['w2'], w2_scales=values['w2_scale'],
         geometry=NativeGeometry(values['M'], values['topk'],
             values['M'] * values['topk'], values['K'], values['N'],
-            values['block_size_m'], values['E'], values['expert_ids'].numel()),
+            values['block_size_m'], values['E'], min(values['expert_ids'].numel(),
+                values['sorted_token_ids'].numel() // values['block_size_m'])),
         owners=tuple(values[k] for k in ('hidden_states', 'w1', 'w1_scale',
             'gating_output', 'workspace', 'intermediate_cache13', 'expert_map')),
     )
@@ -225,7 +226,7 @@ class NativeDecodeFront:
             raise RuntimeError('native tail requires the native outer routed scaling location')
     def __call__(self, mlp, hidden_states, tail, *, forward_batch=None,
                  gemm_output_zero_allocator=None, input_ids=None,
-                 input_ids_global=None, skip_shared_experts=False):
+                 input_ids_global=None, skip_shared_experts=False, observer=None):
         self.validate_layer(mlp)
         if hidden_states.dtype != self.torch.bfloat16:
             raise RuntimeError('native tail decode requires the BF16 model activation contract')
@@ -239,6 +240,8 @@ class NativeDecodeFront:
             raise RuntimeError('native tail does not support bypassed routing')
         if self.native.should_skip_post_experts_all_reduce(is_tp_path=True):
             raise RuntimeError('native tail cannot replace a skipped/fused/reduce-scatter MoE collective')
+        if observer is not None:
+            observer.mark('entry')
         current_stream = self.torch.cuda.current_stream()
         pre_quant_input = mlp._maybe_quant_moe_input_once(hidden_states)
         # Source-verified native Marlin is ineligible for quantize-once, whose
@@ -276,7 +279,12 @@ class NativeDecodeFront:
         with self.torch.cuda.stream(mlp.alt_stream):
             shared_output = mlp._forward_shared_experts(hidden_states,
                 gemm_output_zero_allocator, pre_quant_input=pre_quant_input)
+        if observer is not None:
+            observer.mark('before_join')
         current_stream.wait_stream(mlp.alt_stream)
+        if observer is not None:
+            observer.mark('after_join')
+            observer.mark('tail_entry')
         # The tail owns the shared addition and global reduction. Returning
         # here bypasses only this layer's former outer add/all-reduce.
         return tail(down, shared_output, layer_id=mlp.layer_id,
