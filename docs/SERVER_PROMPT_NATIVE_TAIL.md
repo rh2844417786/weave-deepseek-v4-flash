@@ -1,7 +1,14 @@
 # 服务器 Claude Code + DeepSeek V4 Flash 执行 Prompt
 
 以下为可直接粘贴的完整指令。源码执行提交固定为
-`2ff0ba7bb29dbce4490cd46b90ce0610b5239f92`；文档后续提交不会改变该源码。
+`51515fabc57c70964cc6b33c9f8013c584340fe4`；文档后续提交不会改变该源码。
+
+执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
+Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
+
+本次重跑修复 `c079179` 回传的 S1 NVCC 编译错误。旧运行
+`native-tail-816d1423a582` 在 compute 阶段停止，尚未生成校准表或吞吐结果。
+使用新实验目录重跑完整统一入口；已有镜像、模型、数据和缓存继续保留。
 
 ---
 
@@ -22,7 +29,7 @@
 ```bash
 REPO=/srv/weave-push-repo
 WORK_ROOT=/srv/weave-work
-CODE_SHA=2ff0ba7bb29dbce4490cd46b90ce0610b5239f92
+CODE_SHA=51515fabc57c70964cc6b33c9f8013c584340fe4
 
 git -C "$REPO" status --short
 git -C "$REPO" fetch origin main
