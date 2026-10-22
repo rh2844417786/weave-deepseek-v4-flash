@@ -29,6 +29,23 @@ S1 独立提交：`5b4b7dc04f79cbfbed36f6be5d595a76039effe9`。
 S2 独立提交：`9b0668c73cce228772b7df3dd209f118631c5e72`。
 后续统一源码应从本轮最终执行提交运行；不要把旧 S1/S2 提交当作完整服务版本。
 
+## 2026-10-22：S1 编译失败及修复
+
+服务器回传 `c079179` / `native-tail-816d1423a582` 在原执行提交 `2ff0ba7` 的
+S1 编译阶段停止；NVCC 报告 dtype/weight-width 的 static_assert 和未解析的
+`div_ceil`。通信、统一执行器、校准及两组正式窗口均未启动，旧失败证据保留。
+
+修复提取器并重新生成 helper：将 scalar/weight/scale 恢复为具有固定原生默认值的
+模板参数，使原生 `if constexpr` 的其他精度分支在实例化时正确丢弃；保留原生
+断言，并约束实际入口仍为 BF16/MXFP4/E8M0。在 helper 函数内部显式导入
+`device::div_ceil`，保持 host 配置函数对 `host::div_ceil` 的解析。
+原生加载、反量化、MMA、CTA 归约和写回区域逐字保持，运行矩阵及 record-only
+策略不变。新版 overlay 按内容生成新缓存身份，已有缓存和历史报告无需清除。
+
+新增 CPU 编译契约检查读取实际生成头文件中的模板声明、类型断言、packed-width
+分支与整除调用。它验证 C++ 类型依赖和名称解析，不模拟 CUDA，也不等于 NVCC
+编译或 GPU 执行通过。请从最新服务器 Prompt 固定的修复提交重跑统一入口。
+
 ## 原生语义与方法映射
 
 固定源码和已有图元数据表明，当前 TP4/EP4、`moe-a2a-backend=none` 使用

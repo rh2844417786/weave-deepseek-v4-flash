@@ -82,13 +82,22 @@ struct DownTileArgs {
 };
 ''' + helpers + '''
 template<int threads, int thread_m_blocks, int thread_n_blocks,
-         int thread_k_blocks, bool m_block_size_8, int stages = 4>
+         int thread_k_blocks, bool m_block_size_8, int stages = 4,
+         typename scalar_t = nv_bfloat16,
+         host::ScalarTypeId w_type_id = host::kFE2M1f.id(),
+         host::ScalarTypeId s_type_id = host::kFE8M0fnu.id()>
 __device__ __forceinline__ void run_marlin_down_tile(
     const DownTileArgs& args, int native_group, int n_tile,
     int4* sh, int max_shared_mem) {
-  using scalar_t = nv_bfloat16;
-  constexpr auto w_type_id = host::kFE2M1f.id();
-  constexpr auto s_type_id = host::kFE8M0fnu.id();
+  // Preserve the native template dependence: NVCC must discard other dtype
+  // branches at instantiation before checking their static assertions.
+  static_assert(std::is_same<scalar_t, nv_bfloat16>::value &&
+      w_type_id == host::kFE2M1f.id() && s_type_id == host::kFE8M0fnu.id(),
+      "native tail requires BF16/MXFP4/E8M0");
+  // The original function lived under device::marlin_moe and found this in
+  // its parent namespace. Keep the import local so host launch selection
+  // continues to resolve host::div_ceil, rather than a device-only overload.
+  using device::div_ceil;
   constexpr int group_blocks = 2;
   constexpr bool is_zp_float = false, kIsEP = true, kHasBias = false;
   constexpr bool mul_topk_weights = true, use_atomic_add = false;
