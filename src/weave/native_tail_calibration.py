@@ -409,7 +409,8 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                 current_rank_workloads=[s['features'] for s in rank_states],
                 chosen_indices=cpu['indices'],cpu_gpu_selection_agree=True,
                 prediction=prediction_record(cpu['predicted_us'],actual_fixed,actual_selected_us=actual_selected),
-                gpu_prediction_us=current_state['leader_prediction_us'],native_numerical=numerics,
+                gpu_prediction_us=rank_states[0]['leader_prediction_us'],gpu_prediction_publisher_rank=0,
+                native_numerical=numerics,
                 numerical_policy='record_only',routing_comparison_policy='record_only')
             heldout.append(item)
         table['heldout'] = heldout
