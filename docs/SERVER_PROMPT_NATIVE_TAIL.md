@@ -1,20 +1,24 @@
 # 服务器 Claude Code + DeepSeek V4 Flash 执行 Prompt
 
 以下为可直接粘贴的完整指令。源码执行提交固定为
-`51515fabc57c70964cc6b33c9f8013c584340fe4`；文档后续提交不会改变该源码。
+`ee9778146f28d3e657fd23aeeb513bce9454fc64`；文档后续提交不会改变该源码。
 
 执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
 Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
 
-本次重跑修复 `c079179` 回传的 S1 NVCC 编译错误。旧运行
-`native-tail-816d1423a582` 在 compute 阶段停止，尚未生成校准表或吞吐结果。
-使用新实验目录重跑完整统一入口；已有镜像、模型、数据和缓存继续保留。
+本次重跑修复 `06dbd8d` 回传的 S3 executor 编译问题：为 NVCC host/device 两个
+pass 提供设备架构宏 `SGL_CUDA_ARCH`，并使用 `cudaDevAttrClockRate` 查询时钟。
+超时仍为 `timeout * clock_khz * 1000`，调度和实验配置不变。
+上一轮 `native-tail-535b61674d10` 的 S1 四 rank 各通过60个case，S2各通过17个case
+及9次Graph replay；S3在图捕获前编译失败，校准和正式窗口未启动。
+使用新实验目录重新执行下方原命令；已有镜像、模型、数据、缓存和历史报告继续保留。
 
 ---
 
 请执行 `rh2844417786/weave-deepseek-v4-flash` 的 native peer-tail 验证与正式吞吐流程。
 方法标识必须保持 `native_marlin_peer_tail_v1`，不是完整 Weave 论文复现。
-本轮代码已在开发机完成源码/CPU检查；CUDA 编译、四卡机制、完整模型 Graph 和吞吐均尚未验证。
+修复已在开发机通过源码/CPU检查。旧版本S1/S2的GPU结果按原身份保留；修复后的S3编译、
+统一执行器机制、完整模型Graph和吞吐需要本轮实际验证。
 请直接执行已授权的常规工作，失败时保留真实证据，不用 enabled 标志或预览替代实际结果。
 
 ## 1. 固定源码并保留现有数据
@@ -29,7 +33,7 @@ Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
 ```bash
 REPO=/srv/weave-push-repo
 WORK_ROOT=/srv/weave-work
-CODE_SHA=51515fabc57c70964cc6b33c9f8013c584340fe4
+CODE_SHA=ee9778146f28d3e657fd23aeeb513bce9454fc64
 
 git -C "$REPO" status --short
 git -C "$REPO" fetch origin main
