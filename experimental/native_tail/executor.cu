@@ -171,10 +171,13 @@ __global__ void resident_executor(ExecutorArgs a){
   bool entered_comm=false;U64 stolen_end=0;const U64 start=clock64();
   if(a.trace&&threadIdx.x==0){U64*tr=a.trace+blockIdx.x*10;unsigned sm;asm("mov.u32 %0, %%smid;":"=r"(sm));
     for(int j=0;j<10;++j)tr[j]=0;tr[0]=comm_role;tr[1]=sm;tr[2]=timer_ns();}
-  __shared__ bool stop,headers,can_comm,ready;
+  __shared__ bool stop,headers,can_comm,ready,compute_ready;
   while(true){
     if(threadIdx.x==0){stop=dev_load(&s->stop)||protocol_aborted(cfg,start);headers=protocol_headers_ready(cfg,inv);
-      ready=headers&&communication_ready(cfg,inv);can_comm=(comm_role&&!plan.serial)||dev_load(&s->finalized)==unsigned(cfg.chunks);}
+      ready=headers&&communication_ready(cfg,inv);can_comm=(comm_role&&!plan.serial)||dev_load(&s->finalized)==unsigned(cfg.chunks);
+      // Finalize/down contain CTA barriers. Only the leader samples the delay
+      // clock; the following barrier publishes one decision to every warp.
+      compute_ready=!a.mode[2]||clock64()-start>=U64(a.mode[3]);}
     __syncthreads();if(stop)break;
     if(comm_role&&ready){entered_comm=true;if(a.mode[2]&&threadIdx.x==0)atomicCAS(&s->first_ready,0ULL,timer_ns());if(a.trace&&threadIdx.x==0&&!a.trace[blockIdx.x*10+7])a.trace[blockIdx.x*10+7]=timer_ns();}
     bool worked=false;
@@ -193,7 +196,7 @@ __global__ void resident_executor(ExecutorArgs a){
         }
       }
     }
-    if(!worked&&!comm_role&&(!a.mode[2]||clock64()-start>=U64(a.mode[3]))){worked=try_finalize(a,cfg,inv);if(!worked)worked=do_down(a,cfg,scratch,false);}
+    if(!worked&&!comm_role&&compute_ready){worked=try_finalize(a,cfg,inv);if(!worked)worked=do_down(a,cfg,scratch,false);}
     if(!worked&&comm_role&&!entered_comm&&quota>0&&!ready){worked=do_down(a,cfg,scratch,true);if(worked){--quota;if(a.mode[2])stolen_end=timer_ns();}}
     if(threadIdx.x==0){
       if(a.mode[2]&&dev_load(&slot_control(cfg,cfg.rank,inv)->completed)==unsigned(cfg.chunks*5))atomicCAS(&s->completion_begin,0ULL,timer_ns());

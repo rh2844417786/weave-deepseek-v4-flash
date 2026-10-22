@@ -46,6 +46,22 @@ S1 编译阶段停止；NVCC 报告 dtype/weight-width 的 static_assert 和未�
 分支与整除调用。它验证 C++ 类型依赖和名称解析，不模拟 CUDA，也不等于 NVCC
 编译或 GPU 执行通过。请从最新服务器 Prompt 固定的修复提交重跑统一入口。
 
+## 2026-10-22：受控延迟下的 CTA 分支修复
+
+`04d431f` 回传的 `native-tail-c79f528d3b78` 已通过S1/S2；统一 executor 编译成功，
+提交说明记录前80次replay完成，首次启用2,000,000-cycle计算延迟时发生非法访存。
+该失败发生在S3，后续memcheck、校准和正式服务窗口均未运行。
+
+源码中的延迟判断原先由每个线程读取 `clock64()` 独立求值，却包裹了含 CTA barrier
+的 finalize/down 调用。不同warp在延迟边界可能作出不同选择，违反这些整CTA函数
+的一致调用要求。现在由thread0计算 `compute_ready`，使用已有 `__syncthreads()`
+广播后，全CTA统一决定是否进入任务。受控延迟值、stealing、算术及验收矩阵保留。
+
+新增回归用例提取实际的poll与分支条件，在CPU上模拟跨warp时钟偏移；旧条件产生
+部分CTA进入，新条件在128/256线程及边界前后保持一致。该检查确认源码控制流缺陷
+已修正，不等同于GPU非法访存已消失；需要服务器在新源码上重跑原controlled用例
+以及后续memcheck。旧失败报告保持原状态。
+
 ## 原生语义与方法映射
 
 固定源码和已有图元数据表明，当前 TP4/EP4、`moe-a2a-backend=none` 使用
