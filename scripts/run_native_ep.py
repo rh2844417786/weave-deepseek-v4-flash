@@ -63,6 +63,13 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
     ]
     if getattr(args, 'graph_c32', False):
         docker += ['-e', 'WEAVE_GRAPH_C32=1', '-e', f'WEAVE_GRAPH_EVIDENCE_PORT_BASE={args.graph_evidence_port_base}']
+    if getattr(args, 'native_tail', 'off') != 'off':
+        docker += ['-e', f'WEAVE_NATIVE_TAIL={args.native_tail}',
+                   '-e', f'WEAVE_NATIVE_TAIL_DIRECTORY=/work/{args.native_tail_directory.relative_to(args.work_root)}',
+                   '-e', f'WEAVE_NATIVE_TAIL_REPEATS={args.native_tail_repeats}',
+                   '-e', f'WEAVE_NATIVE_TAIL_EVIDENCE_DIR=/work/{run_name}/native-tail',
+                   '-e', 'WEAVE_MODEL_PATH=/model',
+                   '-e', 'TORCH_EXTENSIONS_DIR=/work/cache/weave-native-tail-extensions']
     if getattr(args, 'native_budget', 'off') != 'off':
         mode = 'adaptive' if args.native_budget == 'heuristic' else args.native_budget
         docker += ['-e', f'WEAVE_NATIVE_BUDGET={mode}']
@@ -144,7 +151,7 @@ def docker_command(args, image: str, name: str, run_name='preview',allocation=No
         '--context-length', '131072', '--mem-fraction-static', '0.80',
         '--chunked-prefill-size', '8192', '--max-running-requests', _concurrency_env('WEAVE_MAX_RUNNING_REQUESTS'),
         '--cuda-graph-backend-decode', args.decode_graph, '--cuda-graph-max-bs-decode', _concurrency_env('WEAVE_CUDA_GRAPH_MAX_BS_DECODE'),
-        '--watchdog-timeout', str(args.native_cost_calibration_timeout if getattr(args, 'native_cost_calibrate_dir', None) else 1800), '--disable-custom-all-reduce',
+        '--watchdog-timeout', str(args.native_tail_calibration_timeout if getattr(args,'native_tail','off')=='calibration' else args.native_cost_calibration_timeout if getattr(args, 'native_cost_calibrate_dir', None) else 1800), '--disable-custom-all-reduce',
         '--disable-shared-experts-fusion', '--reasoning-parser', 'deepseek-v4',
         '--decode-log-interval', '10', '--enable-metrics',
     ]
@@ -179,6 +186,10 @@ def main() -> int:
     parser.add_argument('--graph-c32', action='store_true')
     parser.add_argument('--native-budget', choices=('off', 'cost', 'heuristic', 'adaptive', 'full'), default='off',
                         help='cost is measured MoE argmin; heuristic/adaptive retain v1; off is original')
+    parser.add_argument('--native-tail', choices=('off','static','calibration','measured'), default='off')
+    parser.add_argument('--native-tail-directory',type=Path)
+    parser.add_argument('--native-tail-repeats',type=int,default=7)
+    parser.add_argument('--native-tail-calibration-timeout',type=int,default=43200)
     parser.add_argument('--native-budget-target-percent', type=int, default=75)
     cost_paths = parser.add_mutually_exclusive_group()
     cost_paths.add_argument('--native-cost-table-dir', type=Path,
@@ -230,6 +241,19 @@ def main() -> int:
     parser.add_argument('--execution-profile-fixed-plan',action='store_true',
                         help='explicit fixed/eager diagnostic with full-forward sampling; no measured bank')
     args = parser.parse_args()
+    if args.native_tail != 'off':
+        if (args.backend!='native' or args.native_budget!='off' or not args.graph_c32 or args.decode_graph!='full'
+            or not args.request_timing or args.native_p0 or args.graph_stage_profile or args.profile
+            or args.execution_profile or args.execution_profile_fixed_plan or args.stall_diagnostic
+            or args.replay_capture_dir or args.fixed_prefix_dir or args.fixed_prefix_teacher
+            or args.decode_implementation!='persistent' or args.prefill_implementation!='persistent'):
+            parser.error('native tail requires native full graph C32 without another method/diagnostic')
+        if args.native_tail_directory is None:
+            parser.error('native tail directory required; generate with scripts/run_native_tail.py --execute')
+        if args.native_tail_repeats<2 or args.native_tail_calibration_timeout<1:
+            parser.error('positive tail timeout and at least two measured repeats required')
+    elif args.native_tail_directory or args.native_tail_repeats!=7 or args.native_tail_calibration_timeout!=43200:
+        parser.error('tail configuration requires an explicit native-tail mode')
     if args.native_budget == 'cost':
         if not (args.native_cost_table_dir or args.native_cost_calibrate_dir):
             parser.error('native cost requires measured tables or calibration output; generate with '
@@ -362,6 +386,19 @@ def main() -> int:
     if not args.model_path.is_absolute() or not args.work_root.is_absolute():
         parser.error('model-path and work-root must be absolute paths')
     args.work_root = args.work_root.resolve()
+    if args.native_tail_directory is not None:
+        path=args.native_tail_directory
+        if not path.is_absolute() or '..' in path.parts:parser.error('native tail directory must be absolute')
+        path=path.resolve()
+        try:path.relative_to(args.work_root)
+        except ValueError:parser.error('native tail directory must be under WORK_ROOT')
+        args.native_tail_directory=path
+        if args.execute and args.native_tail=='calibration' and any(path.glob('native-tail-rank*.json')):
+            parser.error('fresh tail calibration directory required; preserve historical profiles')
+        if args.execute and args.native_tail=='measured' and any(not (path/f'native-tail-rank{r}.json').is_file() for r in range(4)):
+            parser.error('four measured tail profiles required; run scripts/run_native_tail.py --execute')
+        if args.execute and not args.checkpoint_content_sha256:
+            parser.error('native tail requires verified original checkpoint identity')
     for key in ('native_cost_table_dir', 'native_cost_calibrate_dir'):
         path = getattr(args, key)
         if path is None:
@@ -442,6 +479,8 @@ def main() -> int:
         'graph_c32': args.graph_c32,
         'graph_stage_profile': args.graph_stage_profile,
         'native_p0': args.native_p0,
+        'native_tail': args.native_tail,
+        'native_tail_configuration': dict(directory=str(args.native_tail_directory),repeats=args.native_tail_repeats,method='native_marlin_peer_tail_v1') if args.native_tail!='off' else None,
         'native_budget': args.native_budget,
         'native_budget_configuration': ({'mode': args.native_budget,
                                          'target_percent': args.native_budget_target_percent,
@@ -479,6 +518,9 @@ def main() -> int:
     if args.graph_stage_profile or args.native_p0 or args.fixed_prefix_dir:
         report.update(measurement_mode='instrumented_diagnostic', formal_gpqa=False,
                       numerical_policy='record_only')
+    if args.native_tail != 'off':
+        report.update(method='native_marlin_peer_tail_v1',numerical_policy='record_only',
+                      measurement_mode='native_tail_'+args.native_tail,complete_weave_claim=False)
     if args.native_budget == 'cost':
         report.update(method='native_marlin_measured_cta_v2', numerical_policy='record_only',
                       measurement_mode=('native_cost_calibration' if args.native_cost_calibrate_dir

@@ -15,7 +15,7 @@ import types
 
 from .calibration import atomic_json
 from .native_cost_calibration import (private_arguments, _pattern, _measure,
-    _numerical, _output_tensor, _tensor_digest, timing_summary)
+    _numerical, _output_tensor, _tensor_digest, timing_summary, _event_overhead)
 from .native_tail_cost import (METHOD, POLICY, SCALARS, STAGES, select_joint,
     profile_digest, validate_surface)
 from .native_tail_front import _compile_function
@@ -188,11 +188,25 @@ def _measure_tail(graph, torch, repeats, engine, layer, batch):
     graph.replay(); torch.cuda.synchronize()
     samples, states = [], []
     for _ in range(repeats):
+        # Align ranks outside the timed interval after all preceding diagnostic
+        # readbacks. The native reference uses the identical boundary.
+        engine.dist.barrier(group=engine.group)
         start.record(); graph.replay(); end.record(); end.synchronize()
         samples.append(float(start.elapsed_time(end))*1000.)
         # Reads are outside the objective interval and occur only in calibration.
         states.append(_checked_snapshot(engine, layer, batch))
     return timing_summary(samples), states
+
+
+def _measure_native(graph, torch, repeats, engine):
+    start,end=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
+    graph.replay();torch.cuda.synchronize()
+    samples=[]
+    for _ in range(repeats):
+        engine.dist.barrier(group=engine.group)
+        start.record();graph.replay();end.record();end.synchronize()
+        samples.append(float(start.elapsed_time(end))*1000.)
+    return timing_summary(samples)
 
 
 def calibrate_layer(runtime, layer, batch, original, args, kwargs):
@@ -291,15 +305,18 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                 return native(True)
         native_stage_graph, _, _ = capture(native_diagnostic)
         total_rows = full_down.geometry.pair_rows
+        event_overhead=_event_overhead(torch,repeats)
+        diagnostic_start,diagnostic_end=torch.cuda.Event(enable_timing=True),torch.cuda.Event(enable_timing=True)
         surface = [[] for _ in plans]
         anchors = []
         # Two spread and two repeated-row inputs, with real loaded router/expert
         # weights. Held-out seeds are distinct; no previous cost table is used.
         for anchor_index in (0,1,4,5):
             anchor = _pattern(bound,anchor_index,batch,vocab_size,torch)
-            native_time = _measure(native_graph,torch,repeats)
+            native_time = _measure_native(native_graph,torch,repeats,engine)
             native_join = []
             for _ in range(repeats):
+                engine.dist.barrier(group=engine.group)
                 native_stage_graph.replay();torch.cuda.synchronize()
                 native_join.append(native_points.us('before_join','after_join'))
             anchor.update(native_full_moe=native_time,native_shared_join_wait_us=native_join,candidates=[])
@@ -310,9 +327,11 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                     raise RuntimeError('nonfinite native tail full-MoE calibration output')
                 objective_route = _route_record(full_down,full_states[-1],torch)
                 engine.set_fixed(layer,batch,index,diagnostic=True)
-                curves, diagnostic_records, joins = [], [], []
+                curves, diagnostic_records, joins, diagnostic_totals = [], [], [], []
                 for _ in range(repeats):
-                    diagnostic_graph.replay();torch.cuda.synchronize()
+                    engine.dist.barrier(group=engine.group)
+                    diagnostic_start.record();diagnostic_graph.replay();diagnostic_end.record();diagnostic_end.synchronize()
+                    diagnostic_totals.append(float(diagnostic_start.elapsed_time(diagnostic_end))*1000.)
                     state = _checked_snapshot(engine,layer,batch,private=True)
                     route = _route_record(diagnostic_down,state,torch)
                     curve = curve_from_snapshot(plan,state,front_us=new_points.us('entry','tail_entry'))
@@ -332,19 +351,22 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                     workload=chosen_route,workload_difference=workload_difference(reference_route,chosen_route),
                     representative_observation=representative,
                     diagnostic_observations=diagnostic_records,new_shared_join_wait_us=joins,
+                    diagnostic_full_moe=timing_summary(diagnostic_totals),
+                    diagnostic_overhead_median_us=statistics.median(diagnostic_totals)-full['median_us'],
                     shared_join_wait_delta_us=statistics.median(joins)-statistics.median(native_join)))
             anchors.append(anchor)
         validate_surface(surface,plans,total_rows)
         table = dict(plans=[p.to_dict() for p in plans],total_rows=total_rows,surface=surface,
             executor_resources=ctx.resources, native_geometry=ctx.geometry,
-            measurements=dict(complete=True,repeats=repeats,anchors=anchors,
+            measurements=dict(complete=True,repeats=repeats,anchors=anchors,event_pair_overhead=event_overhead,
                 objective='real_loaded_native_MLP_front_shared_join_tail_global_reduce',
                 objective_graph_component_events=False,diagnostic_graph_separate=True,
+                rank_alignment='CPU_group_barrier_before_each_timed_or_diagnostic_replay_not_in_event_interval',
                 curve_estimator='actual_observation_nearest_median_local_stage_cost',
                 pattern_protocol=dict(training_indices=[0,1,4,5],heldout_indices=[6,7],
                     training_layout='two_spread_two_repeated_rows'),
                 timing_scope='per_rank_only_no_cross_GPU_absolute_clock_subtraction',
-                role_switch_model='observed_stolen_tile_end_to_first_communication_including_ready_wait',
+                role_switch_model='first_communication_after_both_tile_end_and_local_observed_readiness_excludes_ready_wait',
                 prepare_model='feature_scan_and_post_planner_join_zeroing_overlaps_planner',
                 routing_comparison_policy='record_only'),heldout=[])
         rank_tables = _gather(torch,table,runtime.group)
@@ -357,6 +379,7 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
             engine.set_search(layer,batch,diagnostic=True)
             search_samples = []
             for _ in range(repeats):
+                engine.dist.barrier(group=engine.group)
                 diagnostic_graph.replay();torch.cuda.synchronize()
                 state = _checked_snapshot(engine,layer,batch,private=True)
                 search_samples.append(dict(planner_us=_interval(state.get('planner_begin_ns'),
@@ -381,7 +404,7 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
         heldout = []
         for pattern_index in (6,7):
             item = _pattern(bound,pattern_index,batch,vocab_size,torch)
-            native_time = _measure(native_graph,torch,repeats)
+            native_time = _measure_native(native_graph,torch,repeats,engine)
             fixed, fixed_states = [], []
             for index, plan in enumerate(plans):
                 engine.set_fixed(layer,batch,index,diagnostic=False)

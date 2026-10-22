@@ -198,9 +198,16 @@ def measured_table_fixture(batch):
         surface.append([dict(plan=plan,features=[i+1,1,1,(i+1)**2,i+1],front_us=1.,prepare_us=1.,
             planner_us=1.,finish_us=1.,role_switch_us=0.,down_us=[2.],finalize_us=[1.],
             fetch_reduce_us=[1.],fetch_result_us=[1.]) for _ in range(4)])
-    anchors=[dict(index=index,candidates=[dict(plan=plan,full_moe=timing,
-        diagnostic_observations=[{'protocol_valid':True},{'protocol_valid':True}]) for plan in plans])
-        for index in (0,1,4,5)]
+    anchors=[]
+    for position,index in enumerate((0,1,4,5)):
+        records=[]
+        for candidate,plan in enumerate(plans):
+            observed=dict(surface[candidate][position])
+            records.append(dict(plan=plan,full_moe=timing,representative_observation=0,
+                diagnostic_observations=[dict(protocol_valid=True,curve=observed),dict(protocol_valid=True,curve=observed)]))
+            surface[candidate][position]['fixed_planner_us']=1.
+        anchors.append(dict(index=index,candidates=records,search_planner=dict(
+            representative_observation=0,observations=[dict(planner_us=1.),dict(planner_us=1.)])))
     heldout=[dict(index=index,cpu_gpu_selection_agree=True,native_numerical=dict(finite=True,
                  relative_l2=1e100,max_abs=1e100,numerical_policy='record_only'),
                  native_full_moe=timing,selected_full_moe=timing,
@@ -234,7 +241,7 @@ class TailProfileTests(unittest.TestCase):
             self.assertEqual(len(profiles['0']['tables']),32)
 
     def test_missing_table_and_incomplete_execution_evidence_rejected(self):
-        for mutation in ('batch','measurements','heldout','planner','nonfinite'):
+        for mutation in ('batch','measurements','heldout','planner','nonfinite','unmeasured_curve'):
             def mutate(p):
                 table=p['tables']['g0:32']
                 if mutation=='batch':p['tables'].pop('g0:32')
@@ -242,6 +249,7 @@ class TailProfileTests(unittest.TestCase):
                 if mutation=='heldout':table['heldout'].pop()
                 if mutation=='planner':table['heldout'][0]['cpu_gpu_selection_agree']=False
                 if mutation=='nonfinite':table['heldout'][0]['native_numerical']['finite']=False
+                if mutation=='unmeasured_curve':table['surface'][0][0]['front_us']=4.
             with self.subTest(mutation=mutation),tempfile.TemporaryDirectory() as tmp:
                 identity=self.write_profiles(tmp,mutate)
                 with self.assertRaises(ValueError):module().load_profiles(tmp,identity)

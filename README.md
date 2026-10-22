@@ -2,6 +2,18 @@
 
 ## 当前目标：提高原生 SGLang 吞吐
 
+2026-10-22 主线为 `native_marlin_peer_tail_v1`：保留原生 front 与 prefill，
+将 decode down、局部合并和输出归约接入同一 resident worker 执行器，加入输出通道
+chunk、有限初始 stealing 和新实测 DAG 模型。它是 MoE tail 的机制适配，不是完整
+Weave 五阶段复现。源码、CPU 检查和离线服务器入口已交付；CUDA 编译、四卡机制、
+完整模型 Graph 与新吞吐结果仍需服务器验证。
+
+入口：[执行器及验证说明](docs/NATIVE_TAIL_EXECUTOR.md) ·
+[统一服务器脚本](scripts/run_native_tail.py)。原有 [CTA measured-cost 方法](docs/NATIVE_COST_MODEL.md)
+及其历史报告保留；本轮不继续增加旧 CTA 比例规则或要求重做 P0。
+
+### 历史 P0 阶段记录
+
 2026-10-20 起，主线改为优化原生 SGLang 的 DeepSeek-V4-Flash 吞吐。32并发用于首轮控制变量，后续可调整实际batch和并发。先执行原生 P0，记录真实 MoE 分支、routed/shared 时间区间、Marlin 启动资源和四rank差异，再决定第一项优化。
 
 入口：[原生 P0 说明](docs/NATIVE_P0.md) · [服务器执行 Prompt](docs/SERVER_PROMPT_NATIVE_P0.md)。原生 P0 已回传 H100 采样证据；当前新增配对检查完成本地验证，实际配对GPU执行待回传。P0 不修改 CTA 配额，不输出正式加速比。

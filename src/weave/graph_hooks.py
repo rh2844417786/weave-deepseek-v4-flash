@@ -28,6 +28,8 @@ def graph_observer_source_sha256():
                  'src/weave/native_cost_runtime.py', 'src/weave/native_cost_calibration.py',
                  'csrc/native_cost.h'):
         digest.update((ROOT / name).read_bytes())
+    for path in sorted((ROOT / 'src/weave').glob('native_tail*.py')):
+        digest.update(path.read_bytes())
     return digest.hexdigest()
 
 
@@ -46,7 +48,11 @@ def start_endpoint(observer, verify, budget=None):
             pass
         def do_GET(self):
             try:
-                if self.path == '/budget-coverage' and budget is not None:
+                if self.path == '/tail-close' and budget is not None and hasattr(budget,'executor'):
+                    with observer.lock:
+                        if observer.active:raise ValueError('tail cleanup requires idle service')
+                        result,code=budget.close(),200
+                elif self.path in ('/budget-coverage','/tail-coverage') and budget is not None:
                     with observer.lock:
                         if observer.active:
                             raise ValueError('budget snapshot requires an idle graph service')
@@ -96,6 +102,8 @@ def patch_backend(cls, setup):
         observer = setup(cuda_graph_runner)
         self._weave_graph_observer, self._weave_graph_runner = observer, cuda_graph_runner
         init(self, cuda_graph_runner, **kwargs)
+        tail=getattr(cuda_graph_runner.model_runner.model,'weave_native_tail',None)
+        if tail is not None:tail.graph_backend=self
     def capture_one(self, shape_key, *args, **kwargs):
         observer = self._weave_graph_observer
         batch = shape_key.size
@@ -156,6 +164,10 @@ def patch_backend(cls, setup):
 
 
 def setup_budget(model, torch, rank, package_root):
+    from .native_tail_runtime import tail_options, install_native_tail
+    tail = tail_options()
+    if tail is not None:
+        return install_native_tail(model,torch,rank,package_root,**tail)
     from .native_cost_runtime import cost_options, install_native_cost
     options = cost_options()
     if options is not None:

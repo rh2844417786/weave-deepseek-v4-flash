@@ -31,6 +31,26 @@ The earlier heuristic and its reports remain available under their original meth
 
 The user removed the cross-candidate routing equality gate on 2026-10-21. Differences in the five workload features or `native_routing_sha256` are record-only and must not stop calibration or reject a measured table. Preserve each candidate's actual observed workload in its own table anchors and publish differences against candidate 0. Do not replace this removed gate with another workload-equality requirement. Validate the cost planner against its current replay's workload, not a preceding fixed candidate. Malformed data, source identity, complete coverage, nonfinite output and runtime/cleanup checks remain applicable.
 
+# Native peer-tail phase (2026-10-22)
+
+The approved implementation is `native_marlin_peer_tail_v1`. Read
+`docs/NATIVE_TAIL_EXECUTOR.md` and `docs/SERVER_PROMPT_NATIVE_TAIL.md`.
+Keep native routing/grouping/gate-up/activation and prefill. Only decode down,
+local top-k sum plus shared partial, and this MoE output reduction enter the
+resident executor. Do not replace unrelated collectives. A full-K native Marlin
+device tile, actual peer payload tasks, channel chunks, bounded initial stealing
+and a new measured DAG planner implement this tail adaptation. It is not the
+paper's full five-stage scheduler. Worker quotas are not exclusive physical SMs.
+
+Keep the older CTA methods and results unchanged. New calibration uses only this
+executor's actual measurements. Publish source implementation, observed GPU
+mechanisms, full-model graph execution and throughput results separately. No CPU
+test or enabled flag proves GPU execution. The unified offline entry is
+`scripts/run_native_tail.py`; `--stage foundations` independently checks S1/S2.
+Numerical, generation, workload-difference, prediction and performance results
+remain record-only. Protocol, exact task coverage, finite output, source identity,
+memory validity, graph replay and cleanup checks remain required.
+
 # Historical paper-method identity
 
 The 2026-10-18 paper-reproduction work and its evidence remain historical branches of this project. Preserve their method labels:

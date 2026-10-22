@@ -6,7 +6,7 @@ namespace weave::native_tail {
 // CTA-consistent, bounded try-work. No claimed task waits for an unready dependency.
 // Task ids [0,C) = OWNER_REDUCE, [C,5C) = FETCH_RESULT(chunk,owner).
 // OWNER_REDUCE fuses pull of four source partials with fixed-rank FP32 accumulation.
-__device__ inline int transport_try_work(const TransportConfig& cfg,Invocation inv) {
+__device__ inline int transport_try_work(const TransportConfig& cfg,Invocation inv,U64* readiness_clock=nullptr) {
   __shared__ int selected;
   SlotControl* local=slot_control(cfg,cfg.rank,inv);
   if(threadIdx.x==0) {
@@ -25,6 +25,11 @@ __device__ inline int transport_try_work(const TransportConfig& cfg,Invocation i
   __syncthreads();
   int task=selected;
   if(task<0) return -1;
+  // Diagnostic timestamp is recorded on the successful ready claim, including
+  // the race where ready appeared after the executor's preceding nonblocking poll.
+  if(readiness_clock && threadIdx.x==0){U64 time;asm volatile("mov.u64 %0, %%globaltimer;":"=l"(time));
+    atomicCAS(readiness_clock,0ULL,time);}
+  __syncthreads();
   int c=task<cfg.chunks?task:(task-cfg.chunks)/kRanks;
   int owner=task<cfg.chunks?cfg.rank:(task-cfg.chunks)%kRanks;
   int width=cfg.layout.hidden/(cfg.chunks*kRanks);

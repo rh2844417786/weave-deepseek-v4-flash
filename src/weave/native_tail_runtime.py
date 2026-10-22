@@ -50,7 +50,7 @@ def tail_options(environ=None):
 def native_tail_source_sha256():
     paths = sorted((ROOT / 'src/weave').glob('native_tail*.py'))
     paths += sorted(p for p in (ROOT / 'experimental/native_tail').rglob('*') if p.is_file())
-    paths.append(ROOT / 'configs/native_tail_sources.json')
+    paths += [ROOT / name for name in ('configs/native_tail_sources.json','src/weave/native_cost_runtime.py','src/weave/native_cost_calibration.py','src/weave/graph_hooks.py','src/weave/graph_observer.py','configs/runtime.json')]
     digest = hashlib.sha256()
     for path in paths:
         # Exclude interpreter/cache files; only delivered implementation inputs.
@@ -118,6 +118,7 @@ class NativeTailRuntime:
         self.executor = NativeTailExecutor(torch, rank, self.package_root, self.group,
             max_batch=32, cache_root=cache / METHOD / f'rank{rank}', directory=self.directory,
             mode=mode, repeats=repeats)
+        self.executor.configure_groups(self.groups,self.layer_groups)
         self.host_tail_calls = [0] * 43
         self.identity = dict(schema_version=1, method=METHOD, numerical_policy='record_only',
             rank=rank, layer_count=43, source_sha256=self.source, upstream_sha256=self.pins,
@@ -127,7 +128,8 @@ class NativeTailRuntime:
             shared_contract='FP8_TP4_partial_joined_before_tail',
             scaling_contract='topk_weight_in_down_then_BF16_slot_sum_then_outer_routed_scale_and_shared',
             coverage_contract='one_native_gate_up_one_tail_per_decode_layer')
-        atomic_json(self.directory / f'identity-rank{rank}.json', self.identity)
+        evidence=Path(os.environ.get('WEAVE_NATIVE_TAIL_EVIDENCE_DIR',str(self.directory)))
+        atomic_json(evidence / f'identity-rank{rank}.json', self.identity)
 
     def active(self):
         observer = getattr(self.model, 'weave_graph_observer', None)
@@ -171,7 +173,17 @@ class NativeTailRuntime:
             host_warmup_capture_tail_calls=list(self.host_tail_calls))
 
     def close(self):
+        if getattr(self,'cleanup_result',None):return self.cleanup_result
+        backend=getattr(self,'graph_backend',None)
+        if backend is None:raise RuntimeError('native tail graph owner missing during cleanup')
+        graphs=list(backend._graphs.values())
+        self.torch.cuda.synchronize()
+        for graph in graphs:graph.reset()
+        self.torch.cuda.synchronize()
         self.executor.close()
+        backend.cleanup()
+        self.cleanup_result=dict(status='complete',rank=self.rank,graphs_owned=len(graphs),graphs_reset=len(graphs),ipc_closed=True)
+        return self.cleanup_result
 
 
 def install_native_tail(model, torch, rank, package_root, **options):
