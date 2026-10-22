@@ -177,11 +177,14 @@ class NativeTailRuntime:
         backend=getattr(self,'graph_backend',None)
         if backend is None:raise RuntimeError('native tail graph owner missing during cleanup')
         graphs=list(backend._graphs.values())
-        self.torch.cuda.synchronize()
-        for graph in graphs:graph.reset()
-        self.torch.cuda.synchronize()
-        self.executor.close()
-        backend.cleanup()
+        # Endpoint handlers run on fresh HTTP threads, whose CUDA default may
+        # be device0. Reset and synchronize the owning rank explicitly.
+        with self.torch.cuda.device(self.rank):
+            self.torch.cuda.synchronize(self.rank)
+            for graph in graphs:graph.reset()
+            self.torch.cuda.synchronize(self.rank)
+            self.executor.close()
+            backend.cleanup()
         self.cleanup_result=dict(status='complete',rank=self.rank,graphs_owned=len(graphs),graphs_reset=len(graphs),ipc_closed=True)
         return self.cleanup_result
 

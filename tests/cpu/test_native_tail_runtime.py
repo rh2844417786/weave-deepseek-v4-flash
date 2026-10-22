@@ -95,3 +95,32 @@ class RuntimeTests(unittest.TestCase):
 
 
 if __name__ == '__main__':unittest.main()
+
+
+class TailCleanupDeviceTest(unittest.TestCase):
+    def test_http_thread_resets_graphs_on_owning_device(self):
+        from contextlib import contextmanager
+        from types import SimpleNamespace
+        from src.weave.native_tail_runtime import NativeTailRuntime
+        active=[0];events=[]
+        @contextmanager
+        def device(rank):
+            before=active[0];active[0]=rank
+            try:yield
+            finally:active[0]=before
+        def sync(rank):
+            self.assertEqual(rank,3);self.assertEqual(active[0],3)
+            events.append('sync')
+        def reset():
+            self.assertEqual(active[0],3);events.append('reset')
+        def close():
+            self.assertEqual(active[0],3);events.append('ipc_close')
+        runtime=NativeTailRuntime.__new__(NativeTailRuntime)
+        runtime.rank=3;runtime.torch=SimpleNamespace(cuda=SimpleNamespace(device=device,synchronize=sync))
+        runtime.graph_backend=SimpleNamespace(_graphs={0:SimpleNamespace(reset=reset)},cleanup=lambda:events.append('backend_cleanup'))
+        runtime.executor=SimpleNamespace(close=close)
+        report=runtime.close()
+        self.assertEqual(events,['sync','reset','sync','ipc_close','backend_cleanup'])
+        self.assertEqual(report,dict(status='complete',rank=3,graphs_owned=1,graphs_reset=1,ipc_closed=True))
+        self.assertEqual(active[0],0)
+        self.assertEqual(runtime.close(),report)

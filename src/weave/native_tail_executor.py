@@ -220,7 +220,7 @@ class NativeTailExecutor:
             if ctx.group==group and b==batch:self._upload(ctx,rank_tables)
 
     def snapshot_context(self,layer,batch,private=False):
-        t=self.torch;t.cuda.synchronize();ctx=self.contexts[layer,batch]
+        t=self.torch;t.cuda.synchronize(self.rank);ctx=self.contexts[layer,batch]
         result=dict(ctx.module.snapshot(ctx.state))
         result['protocol']=dict(self.transport.ws.snapshot(ctx.plans[result['selected_index']].chunks))
         result['canary_ok']=all(bool((storage[:32]==123.).all() and (storage[-32:]==123.).all()) for storage in (ctx.pair_storage,ctx.output_storage))
@@ -233,7 +233,7 @@ class NativeTailExecutor:
         return result
 
     def snapshot(self):
-        self.torch.cuda.synchronize()
+        self.torch.cuda.synchronize(self.rank)
         rows=[]
         for layer,state in sorted(self.stats.items()):
             v=state.cpu().tolist()
@@ -249,4 +249,5 @@ class NativeTailExecutor:
     def close(self):
         if self.closed:return
         # Caller resets all owned graphs before this collective IPC teardown.
-        self.torch.cuda.synchronize();self.transport.close();self.closed=True
+        with self.torch.cuda.device(self.rank):
+            self.torch.cuda.synchronize(self.rank);self.transport.close();self.closed=True

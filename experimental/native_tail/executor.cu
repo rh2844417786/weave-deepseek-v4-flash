@@ -270,6 +270,7 @@ void launch(torch::Tensor activation,torch::Tensor weight,torch::Tensor scales,t
   void*args[]={&a};check(cudaLaunchCooperativeKernel((void*)resident_executor,workers,NT_THREADS,args,scratch,at::cuda::getCurrentCUDAStream()));
 }
 pybind11::dict snapshot(torch::Tensor tensor){
+  c10::cuda::CUDAGuard guard(tensor.device());
   ExecutorState state;check(cudaMemcpy(&state,tensor.data_ptr(),sizeof(state),cudaMemcpyDeviceToHost));
   pybind11::dict d;d["local_groups"]=state.groups;d["features"]=std::vector<double>(state.features,state.features+5);d["selected_index"]=state.selected;
   d["chosen_indices"]=std::vector<int>(state.chosen,state.chosen+4);d["leader_prediction_us"]=state.prediction;
