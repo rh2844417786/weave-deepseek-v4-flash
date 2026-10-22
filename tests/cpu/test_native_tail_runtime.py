@@ -1,4 +1,5 @@
 import unittest
+import sys
 from types import SimpleNamespace as NS
 from src.weave.native_tail_runtime import install_tail_dispatch, tail_options, NativeTailRuntime
 
@@ -62,6 +63,35 @@ class RuntimeTests(unittest.TestCase):
         runtime.model.weave_graph_observer.capturing=True
         runtime.torch.cuda.is_current_stream_capturing=lambda:True
         runtime.maybe_calibrate(0,2,None,(),{})
+
+    def test_calibration_receives_the_original_bound_forward_inside_native_warmup(self):
+        from unittest.mock import patch
+        received=[]
+        module=NS(calibrate_layer=lambda *a:received.append(a))
+        runtime=object.__new__(NativeTailRuntime)
+        runtime.mode='calibration';runtime.model=NS(weave_graph_observer=NS(capturing=True))
+        runtime.torch=NS(cuda=NS(is_current_stream_capturing=lambda:False))
+        original=lambda *a,**kw:'native'
+        with patch.dict(sys.modules,{'src.weave.native_tail_calibration':module}):
+            runtime.maybe_calibrate(4,32,original,('hidden',),{'input_ids_global':'ids'})
+        self.assertEqual(received,[(runtime,4,32,original,('hidden',),{'input_ids_global':'ids'})])
+
+    def test_runtime_tail_binding_preserves_native_positional_and_keyword_inputs(self):
+        runtime=object.__new__(NativeTailRuntime)
+        mlp=NS(layer_id=0)
+        runtime.model=NS(model=NS(layers=[NS(mlp=mlp)]))
+        runtime.host_tail_calls=[0]
+        runtime.executor=object()
+        calls=[]
+        runtime.front=lambda *a,**kw:calls.append((a,kw)) or 'global-result'
+        def original(hidden_states,forward_batch=None,gemm_output_zero_allocator=None,
+                     input_ids=None,input_ids_global=None,skip_shared_experts=False):
+            raise AssertionError('old MoE should not run in new decode helper')
+        result=runtime.invoke_tail(0,original,('hidden','batch','allocator','local'),{'input_ids_global':'global'})
+        self.assertEqual(result,'global-result')
+        self.assertEqual(calls,[((mlp,'hidden',runtime.executor),dict(forward_batch='batch',
+            gemm_output_zero_allocator='allocator',input_ids='local',input_ids_global='global',skip_shared_experts=False))])
+        self.assertEqual(runtime.host_tail_calls,[1])
 
 
 if __name__ == '__main__':unittest.main()
