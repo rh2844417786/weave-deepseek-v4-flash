@@ -9,7 +9,7 @@ Weave 五阶段复现。源码、CPU 检查和离线服务器入口已交付；C
 完整模型 Graph 与新吞吐结果仍需服务器验证。
 
 入口：[执行器及验证说明](docs/NATIVE_TAIL_EXECUTOR.md) ·
-[统一服务器脚本](scripts/run_native_tail.py)。原有 [CTA measured-cost 方法](docs/NATIVE_COST_MODEL.md)
+[统一服务器脚本](scripts/run_native_tail.py) · [服务器完整 Prompt](docs/SERVER_PROMPT_NATIVE_TAIL.md)。原有 [CTA measured-cost 方法](docs/NATIVE_COST_MODEL.md)
 及其历史报告保留；本轮不继续增加旧 CTA 比例规则或要求重做 P0。
 
 ### 历史 P0 阶段记录

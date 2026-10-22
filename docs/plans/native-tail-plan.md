@@ -35,7 +35,7 @@ rh2844417786/weave-deepseek-v4-flash
 29481685462732237d80d86076d6563e1f658102
 ```
 
-最新 main 包含 2026 年 10 月 21 日的 measured-cost 服务结果；对应运行使用的父提交为 `dccd705403bc9cc049d8fd95bc9a8ca431bf2c42`。上游文件的固定 SHA256 在 `configs/native_budget_sources.json` 中。 
+最新 main 包含 2026 年 10 月 21 日的 measured-cost 服务结果；对应运行使用的父提交为 `dccd705403bc9cc049d8fd95bc9a8ca431bf2c42`。上游文件的固定 SHA256 在 `configs/native_budget_sources.json` 中。
 
 已读取你列出的预算文档与源码，以及 `native_cost.py`、`native_cost_patch.py`、`native_cost_runtime.py`、`native_cost_calibration.py`、`csrc/native_cost.h` 的关键实现，核对了最新正式结果和固定上游 Marlin 的计算、条带划分、归约、写回部分。
 
@@ -53,7 +53,7 @@ Weave HTML 入口未能直接读取，改读了页眉明确标记为 **2609.2148
 | 物理 captured grid 固定 | kernel 内使用逻辑 worker 数重新划分原有工作 |
 | 没有该 native 路径的通信 worker、chunk、stealing | 当前 runtime 身份和成本模型文档明确承认未实现 |
 
-现有补丁把 Marlin 中三个影响工作划分的 `gridDim.x` 使用位置替换为逻辑 worker 数，停用 CTA 在访问锁和异步 shared-memory 操作前退出。**这是 GEMM 工作参与数量控制，不是通信—计算角色调度。** 
+现有补丁把 Marlin 中三个影响工作划分的 `gridDim.x` 使用位置替换为逻辑 worker 数，停用 CTA 在访问锁和异步 shared-memory 操作前退出。**这是 GEMM 工作参与数量控制，不是通信—计算角色调度。**
 
 最新启动记录还确认：原生组关闭 custom all-reduce，使用精确 batch 1–32 的 full graph、关闭 graph padding，prefill 走原生。无需重新做一轮泛化 P0 才能承认这些事实。
 
@@ -69,7 +69,7 @@ Weave HTML 入口未能直接读取，改读了页眉明确标记为 **2609.2148
 | measured CTA cost | 1809.243 token/s |
 | 比值 | 0.955679 |
 
-两组均为 full graph、自然 GPQA、初始并发 32、每组 1200 秒；没有数据或补充队列耗尽。该轮成本模型始终选择预算对 `(8,8)`，未观察到候选对切换。不能把约 4.4% 的下降确定归因于某一个开销，也不能把这轮结果当作通信调度机制的验证。 
+两组均为 full graph、自然 GPQA、初始并发 32、每组 1200 秒；没有数据或补充队列耗尽。该轮成本模型始终选择预算对 `(8,8)`，未观察到候选对切换。不能把约 4.4% 的下降确定归因于某一个开销，也不能把这轮结果当作通信调度机制的验证。
 
 **因此，下一步缺的是可被调度的执行机制，而不是再给现有预算表增加特征。**
 
@@ -174,7 +174,7 @@ Weave HTML 入口未能直接读取，改读了页眉明确标记为 **2609.2148
 
 ## 4.1 现有 Marlin 不是现成的 device-side tile 库
 
-固定源码中的 Marlin 是 `__global__` kernel。其工作条带、跨 CTA 部分和以及 `locks_off` 与 grid 几何共同确定；不能把任意一段循环直接作为可窃取任务，继续沿用原锁编号。  
+固定源码中的 Marlin 是 `__global__` kernel。其工作条带、跨 CTA 部分和以及 `locks_off` 与 grid 几何共同确定；不能把任意一段循环直接作为可窃取任务，继续沿用原锁编号。
 
 能够复用、但需要提取的部分已经存在：
 
@@ -187,7 +187,7 @@ Weave HTML 入口未能直接读取，改读了页眉明确标记为 **2609.2148
 | CTA 内归约 | `thread_block_reduce` |
 | BF16 写回、routing weight 处理 | `write_result` |
 
-这些并不是当前独立导出的 device API，而是嵌在全局 kernel 内的局部状态与 lambda，需要重构成显式上下文。  
+这些并不是当前独立导出的 device API，而是嵌在全局 kernel 内的局部状态与 lambda，需要重构成显式上下文。
 
 ## 4.2 第一版采用“完整 K 的 down tile”
 
@@ -301,7 +301,7 @@ P_{r,k}
 
 不能“某一个专家完成就宣布整个 token 的输出完成”。
 
-当前文档记录 `shared_tp1=false`，因此 shared 是归约前的分片贡献。本方案第一版明确支持该已验证契约；遇到其他 shared 模式必须显式报出不支持，不能悄悄套用错误加法位置。未来支持 TP1 shared 时，应在全局归约后加入。 
+当前文档记录 `shared_tp1=false`，因此 shared 是归约前的分片贡献。本方案第一版明确支持该已验证契约；遇到其他 shared 模式必须显式报出不支持，不能悄悄套用错误加法位置。未来支持 TP1 shared 时，应在全局归约后加入。
 
 ## 5.3 最小通信方案：设备端 owner 分片归约＋结果收集
 
@@ -522,7 +522,7 @@ F_{\rm down,useful}=2P_rHI,
 | stealing 成本 | tile 时间、角色恢复延迟、首次通信被推迟的时间 |
 | 固定成本 | prepare、统计、planner、协议头、结束确认 |
 
-旧 measured-cost 表的目标是“两次独立 GEMM＋shared join＋串行 collective”，不适用于新 DAG。**可以复用身份绑定、原始样本保存、CPU/GPU planner 一致性和 held-out 工具，不能复用旧表中的耗时作为新执行器成本。** 
+旧 measured-cost 表的目标是“两次独立 GEMM＋shared join＋串行 collective”，不适用于新 DAG。**可以复用身份绑定、原始样本保存、CPU/GPU planner 一致性和 held-out 工具，不能复用旧表中的耗时作为新执行器成本。**
 
 ## 7.3 预测完整关键路径
 
