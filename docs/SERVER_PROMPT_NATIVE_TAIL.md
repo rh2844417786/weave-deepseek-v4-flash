@@ -1,25 +1,28 @@
 # 服务器 Claude Code + DeepSeek V4 Flash 执行 Prompt
 
 以下为可直接粘贴的完整指令。源码执行提交固定为
-`14665a65510d86d72aaa94c26a41a91fd01b893e`；文档后续提交不会改变该源码。
+`501d2214f1f19deb71f5e7562b987431cde54ed8`；文档后续提交不会改变该源码。
 
 执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
 Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
 
-本次重跑修复 `04d431f` 回传的受控stealing阶段故障。旧运行
-`native-tail-c79f528d3b78` 已通过S1/S2，S3已编译并完成前80次replay；首次启用
-非零计算延迟时出现非法访存，后续memcheck、校准和正式服务窗口未启动。
-修复将计算延迟判断交给CTA leader，通过已有屏障广播后再进入含CTA barrier的任务。
-保留原来的2,000,000-cycle受控延迟、stealing用例与全部case，不通过关闭延迟绕过错误。
-CPU控制流回归通过；实际非法访存是否消失须由本次GPU重跑确认。
-使用新实验目录重新执行下方原命令，保留已有镜像、模型、数据、缓存和历史报告。
+本次重跑采用 `--report-api-errors no`，保留memcheck的内存检查和退出码99。
+上轮 `a6ebb0e` / `native-tail-06ee57bda6e0` 的统一executor四rank各完成200次replay；
+随后memcheck因116条第三方API探测错误退出99，服务器检查未报告访存违规。
+类别为torch的 `cuGetProcAddress_v2` 与NCCL的 `cudaFuncGetAttributes`。
+我们自己路径的CUDA API失败仍由check()/NT_CUDA抛异常，应用非零退出依然是硬失败。
+
+报告将116条及类别作为带来源的历史观测保留；no模式不输出当前被抑制数量，所以
+`current_run.filtered_count` 和categories记null/未观测，不能写0、复制116或编造各类拆分。
+旧失败记录保持原状态。本次不新增API审计运行，按下方原命令重跑完整流程。
+使用新实验目录，保留已有镜像、模型、数据、缓存和历史报告。
 
 ---
 
 请执行 `rh2844417786/weave-deepseek-v4-flash` 的 native peer-tail 验证与正式吞吐流程。
 方法标识必须保持 `native_marlin_peer_tail_v1`，不是完整 Weave 论文复现。
-修复已在开发机通过源码/CPU检查。旧版本S1/S2的GPU结果按原身份保留；修复后的S3运行、
-统一执行器机制、完整模型Graph和吞吐需要本轮实际验证。
+修复已在开发机通过源码/CPU检查。旧版本S1/S2/S3独立检查结果按原身份保留；新策略下的memcheck、
+校准、完整模型Graph和吞吐需要本轮实际验证。
 请直接执行已授权的常规工作，失败时保留真实证据，不用 enabled 标志或预览替代实际结果。
 
 ## 1. 固定源码并保留现有数据
@@ -34,7 +37,7 @@ CPU控制流回归通过；实际非法访存是否消失须由本次GPU重跑�
 ```bash
 REPO=/srv/weave-push-repo
 WORK_ROOT=/srv/weave-work
-CODE_SHA=14665a65510d86d72aaa94c26a41a91fd01b893e
+CODE_SHA=501d2214f1f19deb71f5e7562b987431cde54ed8
 
 git -C "$REPO" status --short
 git -C "$REPO" fetch origin main
@@ -95,7 +98,9 @@ python3 scripts/run_native_tail.py \
 1. S1 真权重 native down 与提取 down：全部原生 M block、B32及更大batch、图重放与scratch复用。
 2. S2 四卡 IPC、系统同步、cooperative Graph、ready/ack/epoch/slot、延迟/取消与清理。
 3. S3–S5 统一执行器：精确任务集合、C1/C2、serial、未注入与受控 stealing、真实同卡区间。
-4. 实际 compute-sanitizer memcheck，针对 B32 的同一执行器；错误退出码不能忽略。
+4. 实际 compute-sanitizer memcheck，针对 B32 的同一执行器。核对命令含
+   `--report-api-errors no --error-exitcode 99`；工具或应用非零退出仍须失败，不能忽略。
+   `executor_memcheck/check.json` 应包含选项、实际退出码及历史API错误计数/类别来源。
 5. 真实模型原生 capture_one warmup 内的所有结构组、精确B1..32校准与留出验证。
 6. 使用生成表的 GPU 当前-workload planner/graph 验证。
 7. 原始 native 与 peer_tail 正式服务窗口。
