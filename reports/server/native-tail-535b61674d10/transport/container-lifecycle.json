@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-tail-535b61674d10-transport",
+  "started_utc": "2026-10-22T10:22:28.377101+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-22T10:23:29.686183+00:00"
+}

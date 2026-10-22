@@ -1,0 +1,45 @@
+{
+  "container_name": "weave-native-tail-535b61674d10-executor",
+  "started_utc": "2026-10-22T10:23:29.839875+00:00",
+  "termination_signal": null,
+  "exit_code": 1,
+  "cleanup_status": "absent",
+  "cleanup_attempts": [
+    {
+      "command": [
+        "docker",
+        "stop",
+        "--timeout",
+        "2",
+        "weave-native-tail-535b61674d10-executor"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such container: weave-native-tail-535b61674d10-executor\n"
+    },
+    {
+      "command": [
+        "docker",
+        "rm",
+        "--force",
+        "weave-native-tail-535b61674d10-executor"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such container: weave-native-tail-535b61674d10-executor\n"
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "--format",
+        "{{.State.Running}}",
+        "weave-native-tail-535b61674d10-executor"
+      ],
+      "returncode": 1,
+      "stdout": "\n",
+      "stderr": "error: no such object: weave-native-tail-535b61674d10-executor\n"
+    }
+  ],
+  "finished_utc": "2026-10-22T10:28:43.255425+00:00"
+}
