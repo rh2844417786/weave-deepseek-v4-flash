@@ -218,6 +218,32 @@ chunk/计算/stealing/peer bytes。真实 batch 分布、数据/补充队列耗�
 关闭 peer 映射和本地 allocation。最后停止 owned container。校准私有图由校准器
 单独 reset；启动失败或 context 中止保留真实清理状态。
 
+## Memcheck 的 API 报告策略
+
+从本次修复起，统一入口调用 `compute-sanitizer --tool memcheck` 时显式传入
+`--report-api-errors no`，保留 `--target-processes all --error-exitcode 99`。
+这是关闭工具的 CUDA API 错误报告；memcheck 的内存/硬件错误检查继续执行。
+应用自身任何非零退出仍为硬失败，包括我们用 `check()` / `NT_CUDA` 检查后抛出的
+CUDA API 异常。只有工具进程成功且四rank完整检查、来源及清理通过，才记 verified。
+
+策略依据是服务器回传 `a6ebb0e` 的 `native-tail-06ee57bda6e0`：四rank各完成200次
+统一执行器replay；随后memcheck因116条API探测错误退出99，服务器检查未报告访存违规。
+已知类别是torch导入阶段的 `cuGetProcAddress_v2` 符号探测及NCCL的
+`cudaFuncGetAttributes` kernel属性探测。旧失败报告保持原状态。
+
+`configs/native_tail_memcheck_api_reference.json` 保存该历史总计、类别、来源提交和
+公开manifest摘要。历史数据来源为服务器提交说明及用户对私有日志的检查；没有公开
+原始日志，也没有捏造各类别的拆分数量。
+
+每次 `executor_memcheck/check.json` 的 `memory_check` 同时记录选项、实际进程退出码、
+应用非零退出规则及 `api_error_observations`：
+
+- `historical_reference`：上述历史116条及两类API，明确不是本次测量。
+- `current_run.filtered_count` / `categories`：`null`。`no` 模式不再输出这项数据，
+  状态记为 `not_observable_with_report_api_errors_no`，不能写成0或复制历史116。
+
+成功和失败出口都保留这些聚合证据，仍按原白名单导出；不新增GPU审计运行或实验组。
+
 ## 回传与解释
 
 控制器打印 `work_directory`、`export_directory`。公开目录为静态白名单 JSON 与

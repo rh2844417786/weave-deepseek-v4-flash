@@ -41,6 +41,7 @@ from src.weave.native_tail_cost import METHOD, POLICY, MAX_PLANS, load_profile
 
 GROUPS = ('native', 'peer_tail')
 GPU_STAGES = ('compute', 'transport', 'executor', 'executor_memcheck', 'measured_validation')
+MEMCHECK_REPORT_API_ERRORS = 'no'
 GENERATE = 'python3 scripts/run_native_tail.py --work-root /srv/weave-work --records PREPARED_MAIN --execute'
 
 
@@ -115,8 +116,28 @@ def gpu_command(stage, args, image, folder, allocation=None, checkpoint=None):
             '{ echo "Installed compute-sanitizer is required; use the existing CUDA13 image/tool path, without online installation." >&2; exit 127; }; '
             'exec "$native_tail_sanitizer" "$@"')
         command=command[:split]+['bash','-c',check_script,'native-tail-memcheck','--tool','memcheck',
-            '--target-processes','all','--error-exitcode','99']+command[split:]
+            '--target-processes','all','--report-api-errors',MEMCHECK_REPORT_API_ERRORS,
+            '--error-exitcode','99']+command[split:]
     return command
+
+
+def memcheck_evidence():
+    """Separate the inspected prior API probes from unobservable new counts.
+
+    report-api-errors=no suppresses API diagnostics entirely. The prior 116 is
+    never presented as a current-run measurement, and unknown counts are not 0.
+    Process failures, including our checked CUDA API exceptions, remain fatal.
+    """
+    reference = json.loads((ROOT/'configs/native_tail_memcheck_api_reference.json').read_text())
+    return dict(verified=False,tool='compute-sanitizer',mode='memcheck',
+        target_processes='all',report_api_errors=MEMCHECK_REPORT_API_ERRORS,
+        api_reporting_scope='all_CUDA_API_reports',error_exit_code=99,
+        actual_process_exit_code=None,application_nonzero_exit_is_hard_failure=True,
+        scope='B32_executor_native_down_and_peer_IPC',
+        api_error_observations=dict(
+            current_run=dict(filtered_count=None,categories=None,
+                count_status='not_observable_with_report_api_errors_no'),
+            historical_reference=reference))
 
 
 def export_public(run, destination):
@@ -599,6 +620,9 @@ def run_gpu_stage(stage,args,out,identity,image,allocation,owner,check_cancelled
     manager=[sys.executable,str(ROOT/'scripts/manage_container.py'),'--name',command[command.index('--name')+1],
              '--evidence',str(lifecycle),'--log',str(folder/'gpu-private.log'),'--']+command
     result=dict(status='running',method=METHOD,stage=stage,numerical_policy='record_only')
+    memory_check=memcheck_evidence() if stage=='executor_memcheck' else None
+    if memory_check is not None:
+        result['memory_check']=memory_check
     try:
         child=owner.spawn(manager,lifecycle,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
         deadline=time.monotonic()+args.gpu_timeout+120.
@@ -607,13 +631,15 @@ def run_gpu_stage(stage,args,out,identity,image,allocation,owner,check_cancelled
             if time.monotonic()>=deadline:
                 raise TimeoutError('native_tail_gpu_stage_deadline')
             time.sleep(.2)
+        if memory_check is not None:
+            memory_check['actual_process_exit_code']=child.returncode
         if child.returncode!=0:
             raise RuntimeError('native_tail_gpu_stage_failed')
         owner.stop();check_cancelled()
         result=summarize_gpu_reports(stage,folder,identity)
-        if stage=='executor_memcheck':
-            result['memory_check']=dict(verified=True,tool='compute-sanitizer',mode='memcheck',
-                target_processes='all',error_exit_code=99,actual_process_exit_code=child.returncode,scope='B32_executor_native_down_and_peer_IPC')
+        if memory_check is not None:
+            memory_check['verified']=True
+            result['memory_check']=memory_check
         return result
     except BaseException as exc:
         result.update(status='failed',error_type=type(exc).__name__)

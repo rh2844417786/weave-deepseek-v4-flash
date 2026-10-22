@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_name": "native-tail-06ee57bda6e0",
+  "source_commit": "a6ebb0ecfd2b92e336e01e2133b45d690d574ac4",
+  "execution_commit": "14665a65510d86d72aaa94c26a41a91fd01b893e",
+  "public_manifest": "reports/server/native-tail-06ee57bda6e0/manifest.json",
+  "public_manifest_sha256": "ef97bcd4d2b090ffbef890dc6a2b0032354d0cb68b4744d0321ba4e132f4f153",
+  "observation_source": "server_return_commit_description_and_user_inspection_of_private_log",
+  "observed_count": 116,
+  "per_category_counts_available": false,
+  "categories": [
+    {
+      "api": "cuGetProcAddress_v2",
+      "category": "driver_symbol_lookup_probe",
+      "component": "torch_import",
+      "observed_count": null
+    },
+    {
+      "api": "cudaFuncGetAttributes",
+      "category": "kernel_attribute_probe",
+      "component": "NCCL",
+      "observed_count": null
+    }
+  ],
+  "memory_access_violations_reported": 0,
+  "original_process_exit_code": 99,
+  "original_run_status": "failed",
+  "is_current_run_measurement": false
+}
