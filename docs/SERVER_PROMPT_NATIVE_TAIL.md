@@ -1,7 +1,7 @@
 # 服务器 Claude Code + DeepSeek V4 Flash 执行 Prompt
 
 以下为可直接粘贴的完整指令。源码执行提交固定为
-`df3211186bbfbd4d604f5ff0a745402447b95fcb`；文档后续提交不会改变该源码。
+`2ff0ba7bb29dbce4490cd46b90ce0610b5239f92`；文档后续提交不会改变该源码。
 
 ---
 
@@ -22,7 +22,7 @@
 ```bash
 REPO=/srv/weave-push-repo
 WORK_ROOT=/srv/weave-work
-CODE_SHA=df3211186bbfbd4d604f5ff0a745402447b95fcb
+CODE_SHA=2ff0ba7bb29dbce4490cd46b90ce0610b5239f92
 
 git -C "$REPO" status --short
 git -C "$REPO" fetch origin main
@@ -125,7 +125,7 @@ main clone 的 `reports/server/` 下。逐文件核对 manifest SHA256，并调�
 private/ 或 JIT overlay。原始 GPU rank 报告留在私有目录，公开采用控制器生成的缩减 check.json。
 
 回传前安全同步 main，保留现有修改。只 `git add reports/server/<这次新目录>`，
-不使用 `git add .`。提交并非强制推送 main，记录回传 commit SHA。
+不使用 `git add .`。提交后正常 push main，禁止 force-push，记录回传 commit SHA。
 
 ## 6. 最终汇报
 
