@@ -248,7 +248,20 @@ class NativeTailExecutor:
             profiles_sha256={r:p.get('profile_sha256') for r,p in self.profiles.items()},
             calibration_complete=profile.get('status')=='complete',rows=rows)
 
+    def disconnect_peers(self):
+        if self.closed:return
+        with self.torch.cuda.device(self.rank):
+            self.torch.cuda.synchronize(self.rank)
+            self.transport.disconnect_peers()
+
+    def release_local(self):
+        if self.closed:return
+        with self.torch.cuda.device(self.rank):
+            self.transport.release_local()
+            self.closed=True
+
     def close(self):
+        # Standalone GPU harness only; service uses HTTP prepare/commit.
         if self.closed:return
         # Caller resets all owned graphs before this collective IPC teardown.
         with self.torch.cuda.device(self.rank):

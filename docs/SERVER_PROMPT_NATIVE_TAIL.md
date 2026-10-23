@@ -6,23 +6,26 @@
 执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
 Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
 
-本次重跑采用 `--report-api-errors no`，保留memcheck的内存检查和退出码99。
-上轮 `a6ebb0e` / `native-tail-06ee57bda6e0` 的统一executor四rank各完成200次replay；
-随后memcheck因116条第三方API探测错误退出99，服务器检查未报告访存违规。
-类别为torch的 `cuGetProcAddress_v2` 与NCCL的 `cudaFuncGetAttributes`。
-我们自己路径的CUDA API失败仍由check()/NT_CUDA抛异常，应用非零退出依然是硬失败。
+本次修复校准服务的 `/tail-close` 超时。上轮 `78fa8cf` 回传的
+`native-tail-ff67a7982c3d` 已完成四rank S1/S2/executor/memcheck、四份校准表和留出验证，
+随后清理超时，measured validation 和两个1200秒正式窗口没有执行。
+旧报告缺少分阶段清理进度，不能把 `graphs_reset=0` 默认汇总值视为实际 reset 次数。
 
-报告将116条及类别作为带来源的历史观测保留；no模式不输出当前被抑制数量，所以
-`current_run.filtered_count` 和categories记null/未观测，不能写0、复制116或编造各类拆分。
-旧失败记录保持原状态。本次不新增API审计运行，按下方原命令重跑完整流程。
-使用新实验目录，保留已有镜像、模型、数据、缓存和历史报告。
+新服务清理使用 HTTP prepare/commit：全四rank销毁图并断开 peer 映射后才释放本地IPC；
+不再由后台HTTP线程复用仍在工作的 scheduler TP CPU group。分阶段进度写入0664 JSON，
+超时时按实际阶段汇报。保留原有300秒清理期限，不靠单纯延长等待掩盖问题。
+
+本次使用全新实验目录和校准表目录，保留旧表、已有镜像、模型、数据及编译缓存。
+runtime/Graph hooks 已改变源码身份，不能给旧校准表换标签或强行通过来源检查。
+仍采用 `--report-api-errors no --error-exitcode 99`；真实访存错误、应用CUDA异常和
+非零退出保持硬失败。被屏蔽的本轮API诊断计数为未观测/null，历史116条记录保持原身份。
 
 ---
 
 请执行 `rh2844417786/weave-deepseek-v4-flash` 的 native peer-tail 验证与正式吞吐流程。
 方法标识必须保持 `native_marlin_peer_tail_v1`，不是完整 Weave 论文复现。
-修复已在开发机通过源码/CPU检查。旧版本S1/S2/S3独立检查结果按原身份保留；新策略下的memcheck、
-校准、完整模型Graph和吞吐需要本轮实际验证。
+修复在开发机执行源码/CPU回归；服务器CUDA验证以本轮实际结果为准。
+旧版本独立检查和校准结果按原身份保留，不能替代本轮清理、完整模型Graph及吞吐验证。
 请直接执行已授权的常规工作，失败时保留真实证据，不用 enabled 标志或预览替代实际结果。
 
 ## 1. 固定源码并保留现有数据
@@ -130,9 +133,18 @@ graph replay、取消超时与清理检查。
 
 ## 5. 清理与回传
 
-控制器在完成后并发请求四个 `/tail-close`，核对实际 graph reset 与 collective IPC close，
-然后关闭 owned container。启动失败或 CUDA context 中止时如实记录未完成的清理，不把进程
-被终止解释为 graph 已 reset。
+控制器在校准/peer_tail窗口结束后执行：四个 `/tail-close-prepare` 并发请求 →
+确认四rank均 prepared、完整graph reset、peers_disconnected=true、ipc_closed=false →
+四个 `/tail-close` 并发提交，确认四rank complete、ipc_closed=true。整个过程不用 scheduler
+TP CPU group，不手工跳过 prepare 调用 commit；任一 prepare 失败均不释放其他rank的本地IPC。
+默认 `--cleanup-timeout 300` 是两阶段共用期限，不能自行增大或绕过失败继续正式对照。
+
+若仍超时，检查控制器生成的 `calibration/tail-cleanup.json` 或 `peer_tail/tail-cleanup.json`：
+报告 phase、各rank最后阶段、graphs_owned/reset、peers_disconnected、ipc_closed、error_type。
+状态来源包括服务私有目录 `native-tail/cleanup-rankN.json`；控制器自动白名单汇总，无需上传
+完整私有目录。HTTP `/tail-close-status` 无CUDA调用，但GIL阻塞时可能不响应，以文件为补充。
+未知计数记null；部分计数只报告已确认范围。最后关闭 owned container；被强制终止不代表图
+reset或IPC显式清理成功。失败即保留证据并停止后续服务对照。
 
 记录程序打印的 `work_directory` 与 `export_directory`。只把后者的白名单目录复制到可写
 main clone 的 `reports/server/` 下。逐文件核对 manifest SHA256，并调用

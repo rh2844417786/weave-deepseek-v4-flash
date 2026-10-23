@@ -1,6 +1,7 @@
 """Independent BF16 peer-tail transport; no Marlin or historical compute dependency.
 
-IPC setup and teardown are host collectives. The steady path is one cooperative
+IPC setup is collective; standalone teardown uses a host barrier and service
+teardown uses the controller's HTTP prepare/commit barrier. The steady path is one cooperative
 CUDA kernel. Its same device helpers are included by the unified tail executor.
 Run/snapshot must never overlap: one ordered stream owns this workspace, including
 all graphs that capture it. An aborted workspace is terminal and must be closed.
@@ -125,6 +126,7 @@ class NativeTailTransport:
             raise ValueError('native tail transport requires exactly four ranks in a Gloo setup group')
         self.capacity, self.hidden, self.ws = capacity, hidden, None
         self.closed = False
+        self.peers_disconnected = False
         signatures = [None]*4
         dist.all_gather_object(signatures, (capacity, hidden), group=group)
         if any(value != (capacity, hidden) for value in signatures):
@@ -195,20 +197,36 @@ class NativeTailTransport:
         evidence.update(assess_transport_evidence(evidence))
         return evidence
 
+    def disconnect_peers(self):
+        """Local prepare: exported allocation stays alive until every peer agrees."""
+        if self.closed or self.peers_disconnected:
+            return
+        if self.ws is not None:
+            self.ws.disconnect()
+        self.peers_disconnected = True
+
+    def release_local(self):
+        """Local commit; caller must first confirm ALL ranks disconnected."""
+        if self.closed:
+            return
+        if not self.peers_disconnected:
+            raise RuntimeError('disconnect peers before releasing local IPC allocation')
+        if self.ws is not None:
+            self.ws.close()
+        self.closed = True
+
     def close(self):
+        """Standalone harness collective; never call from a serving HTTP thread."""
         if self.closed:
             return
         # Even a terminal abort must finish every kernel before mappings are unmapped.
         error = None
         try:
-            if self.ws is not None:
-                self.ws.disconnect()
+            self.disconnect_peers()
         except Exception as exc:
             error = f'{type(exc).__name__}: {exc}'
         errors = [None]*4
         self.dist.all_gather_object(errors, error, group=self.group)
         if any(errors):
             raise RuntimeError(f'cannot safely free IPC allocations after failed disconnect: {errors}')
-        if self.ws is not None:
-            self.ws.close()
-        self.closed = True
+        self.release_local()

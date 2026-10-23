@@ -156,13 +156,15 @@ class TailCoverageTests(unittest.TestCase):
 
 
 class TailCleanupTests(unittest.TestCase):
-    def test_collective_ipc_close_requests_all_rank_endpoints_concurrently(self):
+    def test_two_phase_ipc_close_requests_all_rank_endpoints_concurrently(self):
         import threading
         controller=module();barrier=threading.Barrier(4)
         def endpoint(url, timeout):
             rank=int(url.split(':')[-1].split('/')[0])-30310
             barrier.wait(timeout=2)
-            return dict(rank=rank,status='complete',graphs_owned=32,graphs_reset=32,ipc_closed=True)
+            prepared=url.endswith('/tail-close-prepare')
+            return dict(rank=rank,status='prepared' if prepared else 'complete',
+                        graphs_owned=32,graphs_reset=32,peers_disconnected=True,ipc_closed=not prepared)
         with tempfile.TemporaryDirectory() as tmp:
             args=SimpleNamespace(graph_evidence_port_base=30310,cleanup_timeout=10.)
             with patch.object(controller,'http_json',side_effect=endpoint):

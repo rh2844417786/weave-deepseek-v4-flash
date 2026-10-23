@@ -343,35 +343,80 @@ def compare_tail_groups(groups):
     return comparison
 
 
-def close_tail_service(args, folder):
-    """All four endpoints must run concurrently: close performs a Gloo IPC barrier."""
-    result = dict(status='unverified', ipc_closed=False, graphs_reset=0, ranks={})
-    try:
+def close_tail_service(args, folder, server_dir=None):
+    """HTTP barrier: all ranks disconnect peers before any frees its allocation.
+
+    Never use the live scheduler's TP CPU group for background cleanup. One
+    deadline covers both parallel four-rank phases. Failed prepare means no
+    commit; the owning process then tears down the failed container.
+    """
+    result = dict(status='unverified', protocol='http_two_phase_v1',
+        phase='prepare', ipc_closed=False, graphs_reset=None, ranks={})
+    deadline = time.monotonic() + args.cleanup_timeout
+    fields = ('schema_version', 'protocol', 'rank', 'status', 'phase',
+              'graphs_owned', 'graphs_reset', 'peers_disconnected', 'ipc_closed',
+              'completed_phases', 'updated_utc', 'error_type')
+    def public_progress(reply):
+        row = {key:reply[key] for key in fields if key in reply}
+        safe_tail_public(row)
+        return row
+    def phase(endpoint, expected_status):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError('native_tail_cleanup_deadline')
         with ThreadPoolExecutor(max_workers=4) as pool:
             futures = {rank:pool.submit(http_json,
-                f'http://127.0.0.1:{args.graph_evidence_port_base+rank}/tail-close',
-                timeout=args.cleanup_timeout) for rank in range(4)}
+                f'http://127.0.0.1:{args.graph_evidence_port_base+rank}/{endpoint}',
+                timeout=remaining) for rank in range(4)}
             errors = []
             for rank, future in futures.items():
                 try:
                     reply = future.result()
+                    if reply.get('rank') != rank:
+                        raise ValueError('tail cleanup rank identity differs')
+                    result['ranks'][str(rank)] = public_progress(reply)
                     owned, reset = reply.get('graphs_owned'), reply.get('graphs_reset')
-                    if (reply.get('rank') != rank or reply.get('status') != 'complete'
-                            or reply.get('ipc_closed') is not True or type(owned) is not int
-                            or owned < 1 or type(reset) is not int or reset != owned):
+                    if (reply.get('status') != expected_status or type(owned) is not int
+                            or owned < 1 or type(reset) is not int or reset != owned
+                            or reply.get('peers_disconnected') is not True
+                            or reply.get('ipc_closed') is not (expected_status == 'complete')):
                         raise ValueError('graph reset and IPC close evidence incomplete')
-                    result['ranks'][str(rank)] = {k:reply[k] for k in
-                        ('rank','status','graphs_owned','graphs_reset','ipc_closed')}
                 except Exception as exc:
-                    errors.append(type(exc).__name__)
+                    errors.append(dict(rank=rank, phase=result['phase'], error_type=type(exc).__name__))
             if errors:
-                result['error_types'] = errors
+                result['errors'] = errors
+                result['error_types'] = [error['error_type'] for error in errors]
                 raise RuntimeError('native_tail_service_cleanup_unverified')
-        result.update(status='complete',ipc_closed=True,
-                      graphs_reset=sum(r['graphs_reset'] for r in result['ranks'].values()))
+    try:
+        atomic_json(Path(folder)/'tail-cleanup.json', result)
+        phase('tail-close-prepare', 'prepared')
+        result['phase'] = 'commit'
+        atomic_json(Path(folder)/'tail-cleanup.json', result)
+        phase('tail-close', 'complete')
+        result.update(status='complete', phase='complete', ipc_closed=True)
         return result
+    except Exception as exc:
+        result.setdefault('error_types', [type(exc).__name__])
+        raise
     finally:
-        atomic_json(Path(folder)/'tail-cleanup.json',result)
+        if result['status'] != 'complete' and server_dir is not None:
+            # Root-owned container files are atomic 0664 JSON. A journal remains
+            # readable even when a CUDA call blocks its HTTP handler/GIL.
+            for rank in range(4):
+                path = Path(server_dir)/'native-tail'/f'cleanup-rank{rank}.json'
+                try:
+                    row = json.loads(path.read_text())
+                    if row.get('rank') != rank:
+                        raise ValueError('cleanup journal rank identity differs')
+                    result['ranks'][str(rank)] = public_progress(row)
+                except Exception as exc:
+                    result.setdefault('progress_read_errors', {})[str(rank)] = type(exc).__name__
+        resets = [row.get('graphs_reset') for row in result['ranks'].values()]
+        known = [count for count in resets if type(count) is int and count >= 0]
+        result['graphs_reset_observed'] = sum(known) if known else None
+        result['graphs_reset'] = sum(known) if len(known) == 4 else None
+        result['progress_rank_count'] = len(result['ranks'])
+        atomic_json(Path(folder)/'tail-cleanup.json', result)
 
 
 def _unverified_tail_cleanup(folder, reason):
@@ -454,7 +499,7 @@ def run_group(args, variant, out, run_name, identity, workload, image, env, owne
                 tail_check = validate_tail_delta(tail_before, tail_after, graph_check, identity)
                 atomic_json(folder / 'tail-check.json', tail_check); group['tail_evidence'] = tail_check
             if variant == 'peer_tail':
-                group['tail_cleanup'] = close_tail_service(args,folder)
+                group['tail_cleanup'] = close_tail_service(args,folder,server_dir=server_dir)
             group.update(status='passed', stage='complete', client_summary=client, batch_evidence=graph_check)
         owner.stop(); check_cancelled()
     except BaseException as exc:
@@ -463,7 +508,7 @@ def run_group(args, variant, out, run_name, identity, workload, image, env, owne
     finally:
         if variant == 'peer_tail' and not (folder/'tail-cleanup.json').exists():
             if service_ready:
-                try: close_tail_service(args,folder)
+                try: close_tail_service(args,folder,server_dir=server_dir)
                 except BaseException as exc: group.update(status='failed',cleanup_error_type=type(exc).__name__)
             else:
                 _unverified_tail_cleanup(folder,'service_not_ready_or_aborted')
@@ -504,7 +549,7 @@ def run_calibration(args, out, run_name, identity, env, owner, check_cancelled):
     finally:
         try:
             if service_ready:
-                close_tail_service(args,folder)
+                close_tail_service(args,folder,server_dir=server_dir)
             else:
                 _unverified_tail_cleanup(folder,'service_not_ready_or_aborted')
         except BaseException as exc:

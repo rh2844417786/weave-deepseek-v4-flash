@@ -48,14 +48,19 @@ def start_endpoint(observer, verify, budget=None):
             pass
         def do_GET(self):
             try:
-                if self.path == '/tail-close' and budget is not None and hasattr(budget,'executor'):
-                    with observer.lock:
-                        if observer.active:raise ValueError('tail cleanup requires idle service')
-                        result,code=budget.close(),200
+                if self.path in ('/tail-close-prepare', '/tail-close', '/tail-close-status') and budget is not None and hasattr(budget, 'executor'):
+                    if self.path == '/tail-close-status':
+                        # CPU state only: no CUDA call or cleanup operation lock here.
+                        result, code = budget.cleanup_status(), 200
+                    else:
+                        observer.begin_cleanup()
+                        # No observer lock or scheduler process-group collective here.
+                        result, code = (budget.prepare_close() if self.path == '/tail-close-prepare'
+                                        else budget.close()), 200
                 elif self.path in ('/budget-coverage','/tail-coverage') and budget is not None:
                     with observer.lock:
-                        if observer.active:
-                            raise ValueError('budget snapshot requires an idle graph service')
+                        if observer.active or observer.closing:
+                            raise ValueError('budget snapshot requires an idle, open graph service')
                         verify()
                         result, code = budget.snapshot(), 200
                 elif self.path == '/graph-coverage':

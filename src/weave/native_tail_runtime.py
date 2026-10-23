@@ -12,6 +12,9 @@ import importlib
 import inspect
 import os
 from pathlib import Path
+from copy import deepcopy
+from datetime import datetime, timezone
+from threading import Lock
 
 from .calibration import atomic_json
 from .native_tail_patch import METHOD, ROOT, verify_sources
@@ -130,6 +133,7 @@ class NativeTailRuntime:
             coverage_contract='one_native_gate_up_one_tail_per_decode_layer')
         evidence=Path(os.environ.get('WEAVE_NATIVE_TAIL_EVIDENCE_DIR',str(self.directory)))
         atomic_json(evidence / f'identity-rank{rank}.json', self.identity)
+        self._init_cleanup(evidence)
 
     def active(self):
         observer = getattr(self.model, 'weave_graph_observer', None)
@@ -172,21 +176,87 @@ class NativeTailRuntime:
         return dict(self.identity, executor=result,
             host_warmup_capture_tail_calls=list(self.host_tail_calls))
 
+    def _init_cleanup(self, evidence):
+        self._cleanup_lock, self._cleanup_operation = Lock(), Lock()
+        self._cleanup_path = Path(evidence) / f'cleanup-rank{self.rank}.json'
+        self._cleanup_state = dict(schema_version=1, protocol='http_two_phase_v1',
+            rank=self.rank, status='not_started', phase='not_started',
+            graphs_owned=None, graphs_reset=0, peers_disconnected=False,
+            ipc_closed=False, completed_phases=[])
+        self._cleanup_update()
+
+    def cleanup_status(self):
+        # This lock is never held during graph reset, synchronization or IPC calls.
+        with self._cleanup_lock:
+            return deepcopy(self._cleanup_state)
+
+    def _cleanup_update(self, **changes):
+        with self._cleanup_lock:
+            self._cleanup_state.update(changes)
+            self._cleanup_state['updated_utc'] = datetime.now(timezone.utc).isoformat()
+            atomic_json(self._cleanup_path, self._cleanup_state)
+
+    def _cleanup_step(self, phase, operation):
+        self._cleanup_update(phase=phase)
+        operation()
+        completed = self.cleanup_status()['completed_phases']
+        self._cleanup_update(completed_phases=completed + [phase])
+
+    def prepare_close(self):
+        """Destroy graphs and disconnect peers locally; do not free exported memory.
+
+        A live SGLang scheduler still broadcasts on its TP CPU group while idle.
+        Service teardown must therefore never enter that group's collectives.
+        The controller supplies the all-rank barrier between prepare and commit.
+        """
+        with self._cleanup_operation:
+            state = self.cleanup_status()
+            if state['status'] in ('prepared', 'complete'):
+                return state
+            if state['status'] == 'failed':
+                raise RuntimeError('native tail cleanup previously failed; stop container')
+            try:
+                self._cleanup_update(status='preparing', phase='graph_owner')
+                backend = getattr(self, 'graph_backend', None)
+                if backend is None:
+                    raise RuntimeError('native tail graph owner missing during cleanup')
+                graphs = list(backend._graphs.values())
+                self._cleanup_update(graphs_owned=len(graphs))
+                # HTTP threads may default to device 0; select this rank explicitly.
+                with self.torch.cuda.device(self.rank):
+                    self._cleanup_step('synchronize_before_reset', lambda: self.torch.cuda.synchronize(self.rank))
+                    def reset_graphs():
+                        for index, graph in enumerate(graphs):
+                            graph.reset()
+                            self._cleanup_update(graphs_reset=index + 1)
+                    self._cleanup_step('reset_graphs', reset_graphs)
+                    self._cleanup_step('synchronize_after_reset', lambda: self.torch.cuda.synchronize(self.rank))
+                    self._cleanup_step('disconnect_peers', self.executor.disconnect_peers)
+                    self._cleanup_update(peers_disconnected=True)
+                    self._cleanup_step('clear_backend', backend.cleanup)
+                self._cleanup_update(status='prepared', phase='prepared')
+                return self.cleanup_status()
+            except Exception as exc:
+                self._cleanup_update(status='failed', error_type=type(exc).__name__)
+                raise
+
     def close(self):
-        if getattr(self,'cleanup_result',None):return self.cleanup_result
-        backend=getattr(self,'graph_backend',None)
-        if backend is None:raise RuntimeError('native tail graph owner missing during cleanup')
-        graphs=list(backend._graphs.values())
-        # Endpoint handlers run on fresh HTTP threads, whose CUDA default may
-        # be device0. Reset and synchronize the owning rank explicitly.
-        with self.torch.cuda.device(self.rank):
-            self.torch.cuda.synchronize(self.rank)
-            for graph in graphs:graph.reset()
-            self.torch.cuda.synchronize(self.rank)
-            self.executor.close()
-            backend.cleanup()
-        self.cleanup_result=dict(status='complete',rank=self.rank,graphs_owned=len(graphs),graphs_reset=len(graphs),ipc_closed=True)
-        return self.cleanup_result
+        """Commit local release only after the HTTP controller confirms four prepares."""
+        with self._cleanup_operation:
+            state = self.cleanup_status()
+            if state['status'] == 'complete':
+                return state
+            if state['status'] != 'prepared':
+                raise RuntimeError('native tail cleanup must prepare all ranks before commit')
+            try:
+                self._cleanup_update(status='committing')
+                with self.torch.cuda.device(self.rank):
+                    self._cleanup_step('release_local', self.executor.release_local)
+                self._cleanup_update(status='complete', phase='complete', ipc_closed=True)
+                return self.cleanup_status()
+            except Exception as exc:
+                self._cleanup_update(status='failed', error_type=type(exc).__name__)
+                raise
 
 
 def install_native_tail(model, torch, rank, package_root, **options):

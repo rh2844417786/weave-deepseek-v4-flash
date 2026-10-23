@@ -63,14 +63,24 @@ class GraphObserver:
         self.lock = RLock()
         self.active = self.sequence = 0
         self.capturing = False
+        self.closing = False
         self.captured = set()
         self.counts = Counter()
         self.raw, self.buckets, self.forwards = Counter(), Counter(), Counter()
         self.stage_profiler = stage_profiler
 
+    def begin_cleanup(self):
+        """Terminal admission barrier, shared by graph replay and model forward."""
+        with self.lock:
+            if self.active:
+                raise ValueError('tail cleanup requires idle service')
+            self.closing = True
+
     @contextmanager
     def operation(self):
         with self.lock:
+            if self.closing:
+                raise RuntimeError('graph service is closing')
             self.active += 1
             self.sequence += 1
         try:

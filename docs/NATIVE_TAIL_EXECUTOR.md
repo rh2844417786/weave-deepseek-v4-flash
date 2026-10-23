@@ -214,9 +214,46 @@ tail、planner、protocol commit 差分与真实 graph replay 对齐，报告计
 chunk/计算/stealing/peer bytes。真实 batch 分布、数据/补充队列耗尽、TTFT/ITL、
 完整窗口 TPS 与 sustained-C32 是否可用按既有口径报告。
 
-四个 `/tail-close` 必须并发请求：在 idle 时显式 reset 已捕获图、同步，再两阶段
-关闭 peer 映射和本地 allocation。最后停止 owned container。校准私有图由校准器
+服务清理由控制器执行两阶段 HTTP 屏障：先并发请求四个 `/tail-close-prepare`，
+全部确认 prepared 后才并发请求四个 `/tail-close` 释放本地 allocation。两阶段共用
+`--cleanup-timeout`（默认300秒），随后停止 owned container。校准私有图由校准器
 单独 reset；启动失败或 context 中止保留真实清理状态。
+
+### 2026-10-23：校准完成后的服务清理超时修复
+
+`reports/server/native-tail-ff67a7982c3d`（执行源码 `501d221`，回传 `78fa8cf`）
+记录了四rank的 S1/S2/executor/memcheck 完成，以及四份完整校准表和留出验证。
+校准服务随后在四个 `/tail-close` 超时，measured validation 和两组正式窗口未运行。
+旧汇总中的 `graphs_reset=0` 来自没有收到端点回复时的默认值，不能据此认定图没有 reset，
+也不能从旧报告断定具体卡在哪一个 CUDA 或 Gloo 调用。
+
+源码核对发现原清理 HTTP 线程调用 `transport.close()` 的 `all_gather_object`，
+复用了仍在运行的 SGLang scheduler TP CPU group。固定上游
+[`2948168546` request_receiver.py](https://github.com/sgl-project/sglang/blob/29481685462732237d80d86076d6563e1f658102/python/sglang/srt/managers/scheduler_components/request_receiver.py)
+在 idle 循环仍通过这个组广播请求。后台清理与调度器可以交错进入不匹配的 collective；
+这是已确认的不安全通信路径，与旧超时一致，但旧证据未证明它是唯一阻塞点。
+
+修复后的服务路径不调用这个进程组：
+
+1. prepare 在 observer 入场锁下检查 idle 并设置终止状态，阻止新的 forward/replay；
+   释放该锁后，在所属 rank 的 CUDA device 上依次 sync、reset 所有图、sync、断开 peer
+   映射、清除 backend 图引用。此时本 rank 导出的 IPC allocation 仍存活。
+2. 控制器要求四份 prepared 回复都有完整 graph reset、peer disconnected 和尚未 free
+   的证据；任一失败均不提交 commit，由现有 owner 终止失败容器。
+3. 全部 prepared 后，各 rank 的 `/tail-close` 仅释放本地 allocation。禁止先 free
+   再等待其他 rank。独立 GPU harness 的 `close()` 保留原有 Gloo 屏障，不受此改动影响。
+
+每rank将 `cleanup-rankN.json` 原子写入服务目录 `native-tail/`，权限0664；包括当前阶段、
+已 reset 数量、peer disconnect、本地 IPC release 和错误类型。每个 graph.reset 前后的
+进度可追踪；不保存原始错误文本或模型数据。`/tail-close-status` 只读取 CPU 状态，
+不持有清理操作锁且不调用 CUDA。若阻塞的扩展调用持有 Python GIL，HTTP 也可能不响应，
+控制器仍可直接读取文件。失败进度被白名单汇总进原有 `tail-cleanup.json`。
+未知 reset 总数记 null，部分已确认数单列 `graphs_reset_observed`；不以容器退出冒充清理成功。
+
+本次仅改变服务生命周期，未改变 kernel、预算/成本模型、数值策略或实验矩阵。
+源码身份哈希包含 runtime 和 Graph hooks，因此旧表保留但不能换标签复用：默认入口会在
+新目录重新校准。已有编译缓存继续保留；只有完整匹配本次身份的表才能显式复用。
+CPU 回归不能证明服务器 CUDA 清理已经恢复，需按最新服务器 Prompt 重跑。
 
 ## Memcheck 的 API 报告策略
 
