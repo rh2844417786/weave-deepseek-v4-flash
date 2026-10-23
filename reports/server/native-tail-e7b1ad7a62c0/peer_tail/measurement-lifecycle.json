@@ -1,0 +1,8 @@
+{
+  "container_name": "weave-native-tail-e7b1ad7a62c0-peer_tail",
+  "started_utc": "2026-10-23T13:02:56.493167+00:00",
+  "termination_signal": null,
+  "exit_code": 0,
+  "cleanup_status": "not_required",
+  "finished_utc": "2026-10-23T13:23:00.876242+00:00"
+}
