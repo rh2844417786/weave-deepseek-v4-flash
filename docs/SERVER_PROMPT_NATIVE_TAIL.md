@@ -1,7 +1,7 @@
 # 服务器 Claude Code + DeepSeek V4 Flash 执行 Prompt
 
 以下为可直接粘贴的完整指令。源码执行提交固定为
-`501d2214f1f19deb71f5e7562b987431cde54ed8`；文档后续提交不会改变该源码。
+`ccc4d46188bb81a2eeaf4cc13a0d2d53f431f423`；文档后续提交不会改变该源码。
 
 执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
 Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
@@ -24,7 +24,8 @@ runtime/Graph hooks 已改变源码身份，不能给旧校准表换标签或强
 
 请执行 `rh2844417786/weave-deepseek-v4-flash` 的 native peer-tail 验证与正式吞吐流程。
 方法标识必须保持 `native_marlin_peer_tail_v1`，不是完整 Weave 论文复现。
-修复在开发机执行源码/CPU回归；服务器CUDA验证以本轮实际结果为准。
+修复在开发机通过83项native-tail与47项Graph相关CPU测试，以及语法和入口预览检查；
+服务器CUDA验证以本轮实际结果为准。
 旧版本独立检查和校准结果按原身份保留，不能替代本轮清理、完整模型Graph及吞吐验证。
 请直接执行已授权的常规工作，失败时保留真实证据，不用 enabled 标志或预览替代实际结果。
 
@@ -40,7 +41,7 @@ runtime/Graph hooks 已改变源码身份，不能给旧校准表换标签或强
 ```bash
 REPO=/srv/weave-push-repo
 WORK_ROOT=/srv/weave-work
-CODE_SHA=501d2214f1f19deb71f5e7562b987431cde54ed8
+CODE_SHA=ccc4d46188bb81a2eeaf4cc13a0d2d53f431f423
 
 git -C "$REPO" status --short
 git -C "$REPO" fetch origin main
