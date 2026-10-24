@@ -65,6 +65,52 @@ NT_HD inline bool lex_less(const int* a,const int* b){for(int r=0;r<4;++r){if(a[
 NT_HD inline void consider_plan(const TailCurve*curves,const TailPlan*plans,int count,const int*ids,int*chosen,double&best){
   double cost=dag_cost(curves,count,ids,plans[ids[0]].chunks);
   if(cost<best||(cost==best&&lex_less(ids,chosen))){best=cost;for(int r=0;r<4;++r)chosen[r]=ids[r];}}
+// Shared CPU/CUDA candidate enumeration. Arithmetic is unchanged from the
+// serial oracle below, including shortlist tie order and lexicographic ties.
+NT_HD inline int shortlist_tail_plans(const TailCurve*curves,const TailPlan*plans,
+    int count,int rank,int chunks,int*out){
+  double a=1.e300,b=1.e300;out[0]=out[1]=-1;
+  for(int p=0;p<count;++p)if(plans[p].chunks==chunks&&!plans[p].serial){
+    double cost=curve_local(curves[rank*count+p],chunks);
+    if(cost<a){b=a;out[1]=out[0];a=cost;out[0]=p;}
+    else if(cost<b){b=cost;out[1]=p;}
+  }return (out[0]>=0)+(out[1]>=0);
+}
+NT_HD inline bool tail_candidate_ids(int count,const int*shortlist,const int*length,
+    int candidate,int*ids){
+  if(candidate<count){for(int r=0;r<4;++r)ids[r]=candidate;return true;}
+  int c=(candidate-count)/16,bits=(candidate-count)%16;
+  if(c>=3)return false;
+  for(int r=0;r<4;++r){int i=(bits>>(3-r))&1;
+    if(i>=length[c*4+r])return false;
+    ids[r]=shortlist[(c*4+r)*2+i];
+  }return true;
+}
+#ifdef __CUDACC__
+// Called by EVERY lane of one CTA, never from a single-thread branch. Each
+// rank/plan interpolation and each joint candidate is evaluated just once.
+__device__ inline double select_tail_plan_parallel(const double*table,const int*anchors,
+    const double*features,const TailPlan*plans,int count,int total,TailCurve*cache,int*chosen){
+  __shared__ int shortlist[24],length[12];
+  __shared__ double costs[kCostMaxPlans+48],best;
+  for(int i=threadIdx.x;i<4*count;i+=blockDim.x)
+    interpolate_curve(table+i*kCostAnchors*kCostRow,anchors[i],features+(i/count)*5,total,cache[i]);
+  __syncthreads();
+  for(int i=threadIdx.x;i<12;i+=blockDim.x)
+    length[i]=shortlist_tail_plans(cache,plans,count,i%4,1<<(i/4),shortlist+i*2);
+  __syncthreads();
+  for(int i=threadIdx.x;i<count+48;i+=blockDim.x){int ids[4];
+    costs[i]=tail_candidate_ids(count,shortlist,length,i,ids)?dag_cost(cache,count,ids,plans[ids[0]].chunks):1.e300;
+  }
+  __syncthreads();
+  if(threadIdx.x==0){best=1.e300;for(int r=0;r<4;++r)chosen[r]=0;
+    for(int i=0;i<count+48;++i){int ids[4];if(!tail_candidate_ids(count,shortlist,length,i,ids))continue;
+      if(costs[i]<best||(costs[i]==best&&lex_less(ids,chosen))){best=costs[i];for(int r=0;r<4;++r)chosen[r]=ids[r];}
+    }
+  }
+  __syncthreads();return best;
+}
+#endif
 // One bounded coordinator. Cache is preallocated global scratch, avoiding an
 // 18 KiB per-thread local array or a fake dynamic shared-memory geometry change.
 NT_HD inline double select_tail_plan(const double*table,const int*anchors,const double*features,

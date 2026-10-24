@@ -148,7 +148,8 @@ def export_public(run, destination):
     names = ['experiment.json', 'comparison.json', 'source-manifest.json', 'serving-source-manifest.json',
              'tail-source-manifest.json', 'data-manifest.json', 'native-checkpoint-proof.json',
              'calibration/check.json', 'calibration/tail-ready.json', 'calibration/launch.json',
-             'calibration/runtime.json', 'calibration/server-lifecycle.json', 'calibration/tail-cleanup.json']
+             'calibration/runtime.json', 'calibration/server-lifecycle.json', 'calibration/tail-cleanup.json',
+             'calibration/performance-analysis.json']
     names += [f'{stage}/{name}' for stage in GPU_STAGES for name in ('check.json', 'container-lifecycle.json')]
     names += [f'calibration/native-tail-rank{r}.json' for r in range(4)]
     group_names = ('group.json', 'launch.json', 'runtime.json', 'server-lifecycle.json',
@@ -636,7 +637,7 @@ def summarize_gpu_reports(stage, folder, identity):
                     raise ValueError('executor exact mechanism/workload/replay case matrix differs')
                 for c in cases:
                     if (any(c.get(k) is not True for k in ('protocol_valid','canary_ok','native_locks_zero',
-                            'stable_graph_addresses','exact_task_coverage')) or c.get('front_and_tail_calls')!=1):
+                            'stable_graph_addresses','exact_task_coverage','finalize_task_coverage_verified')) or c.get('front_and_tail_calls')!=1):
                         raise ValueError('executor per-case taskset, protocol, memory or capture evidence invalid')
                 if stage == 'measured_validation':
                     if (report.get('profile_sha256') != identity['tail_profiles'][str(rank)]['profile_sha256']
@@ -647,6 +648,7 @@ def summarize_gpu_reports(stage, folder, identity):
                'gpu_mechanisms_verified':report.get('gpu_mechanisms_verified') is True}
         # These are aggregate fields; task vectors, timelines and raw rank reports stay private.
         for key in ('graph_capture_replay','profile_sha256','planner_validation',
+                    'finalize_task_coverage_verified','execution_timing_summary',
                     'overlap_observed','controlled_stealing_observed',
                     'controlled_stolen_worker_resumed_communication','uninjected_operator_stealing_observed'):
             if key in report:
@@ -813,6 +815,8 @@ def main(argv=None):
                     profiles=profile_summary(profiles),heldout_validation='complete_record_only',numerical_policy='record_only'))
             else:
                 profiles=run_calibration(args,out,'native-ep-'+name+'-calibration',identity,env,owner,check_cancelled)
+            from src.weave.native_tail_timing import summarize_profiles
+            atomic_json(out/'calibration/performance-analysis.json',summarize_profiles(profiles))
             identity['tail_profiles']=profile_summary(profiles);save()
             check_cancelled();report['stage']='measured_validation';save()
             report['gpu_checks']['measured_validation']=run_gpu_stage('measured_validation',args,out,identity,image,allocation,owner,check_cancelled)

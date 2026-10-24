@@ -6,26 +6,25 @@
 执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
 Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
 
-本次修复校准服务的 `/tail-close` 超时。上轮 `78fa8cf` 回传的
-`native-tail-ff67a7982c3d` 已完成四rank S1/S2/executor/memcheck、四份校准表和留出验证，
-随后清理超时，measured validation 和两个1200秒正式窗口没有执行。
-旧报告缺少分阶段清理进度，不能把 `graphs_reset=0` 默认汇总值视为实际 reset 次数。
+本次修复B32下的执行效率和chunk发布延迟。基线 `26e314f` 回传的
+`native-tail-e7b1ad7a62c0` 已完成清理、Graph和两个1200秒窗口，吞吐为native1901.44、
+peer_tail221.10 token/s。已有校准确认毫秒级单线程planner与单CTA finalize；
+常用C2/C4样本的通信都在全部本地down结束后才开始，见 `docs/NATIVE_TAIL_OVERLAP_ANALYSIS.md`。
 
-新服务清理使用 HTTP prepare/commit：全四rank销毁图并断开 peer 映射后才释放本地IPC；
-不再由后台HTTP线程复用仍在工作的 scheduler TP CPU group。分阶段进度写入0664 JSON，
-超时时按实际阶段汇报。保留原有300秒清理期限，不靠单纯延长等待掩盖问题。
+新源码将同一候选搜索分给一个CTA协作，将finalize拆成多CTA切片，并限制重复跨卡轮询。
+保留原生算术、模型、Graph、候选集合、stealing和数值record-only策略。
+新增聚合任务覆盖和诊断时序证据，不新增正式服务实验组，不强制要求重叠或吞吐达到门限。
 
-本次使用全新实验目录和校准表目录，保留旧表、已有镜像、模型、数据及编译缓存。
-runtime/Graph hooks 已改变源码身份，不能给旧校准表换标签或强行通过来源检查。
-仍采用 `--report-api-errors no --error-exitcode 99`；真实访存错误、应用CUDA异常和
-非零退出保持硬失败。被屏蔽的本轮API诊断计数为未观测/null，历史116条记录保持原身份。
+本次用全新实验目录和校准表目录，保留旧表、镜像、模型、数据与编译缓存。
+源码身份已变，不能给旧表换标签复用。仍采用 `--report-api-errors no --error-exitcode 99`，
+真实访存错误、应用CUDA异常和非零退出保持硬失败；未知的本轮API抑制计数保留null。
 
 ---
 
 请执行 `rh2844417786/weave-deepseek-v4-flash` 的 native peer-tail 验证与正式吞吐流程。
 方法标识必须保持 `native_marlin_peer_tail_v1`，不是完整 Weave 论文复现。
-修复在开发机通过83项native-tail与47项Graph相关CPU测试，以及语法和入口预览检查；
-服务器CUDA验证以本轮实际结果为准。
+修复在开发机通过87项native-tail和47项Graph相关CPU测试、公开导出与入口检查；
+NVCC编译、GPU访存、重叠及吞吐以本轮实际运行结果为准。
 旧版本独立检查和校准结果按原身份保留，不能替代本轮清理、完整模型Graph及吞吐验证。
 请直接执行已授权的常规工作，失败时保留真实证据，不用 enabled 标志或预览替代实际结果。
 
@@ -56,6 +55,7 @@ git rev-parse HEAD
 否则创建新的带唯一后缀目录，不能重置原目录。
 
 阅读该执行 checkout 的 `AGENTS.md`、`docs/NATIVE_TAIL_EXECUTOR.md` 和各检查脚本 `--help`。
+同时阅读 `docs/NATIVE_TAIL_OVERLAP_ANALYSIS.md`。
 S1/S2 的独立提交为 `5b4b7dc`、`9b0668c`，本次完整执行仍使用上面的最终源码提交。
 
 ## 2. 环境与数据
@@ -101,11 +101,19 @@ python3 scripts/run_native_tail.py \
 
 1. S1 真权重 native down 与提取 down：全部原生 M block、B32及更大batch、图重放与scratch复用。
 2. S2 四卡 IPC、系统同步、cooperative Graph、ready/ack/epoch/slot、延迟/取消与清理。
-3. S3–S5 统一执行器：精确任务集合、C1/C2、serial、未注入与受控 stealing、真实同卡区间。
+3. S3–S5 统一执行器：原矩阵不变，核对精确任务集合、C1/C2、serial、未注入与受控 stealing。
+   新增finalize切片expected/claimed/completed与发布数量检查，必须记录
+   `finalize_task_coverage_verified=true`。读取 `execution_timing_summary`：planner耗时、
+   chunk0发布相对最后down的时间、首个peer任务相对最后down的时间、真实区间重叠时长。
+   新版本通信计时起点在成功claim之后；不能把轮询或任务包络空隙当作重叠。
+   保持受控stealing与无注入重叠分开；观测为零仍如实记录，不增大注入延迟制造性能收益。
 4. 实际 compute-sanitizer memcheck，针对 B32 的同一执行器。核对命令含
    `--report-api-errors no --error-exitcode 99`；工具或应用非零退出仍须失败，不能忽略。
    `executor_memcheck/check.json` 应包含选项、实际退出码及历史API错误计数/类别来源。
 5. 真实模型原生 capture_one warmup 内的所有结构组、精确B1..32校准与留出验证。
+   控制器自动生成 `calibration/performance-analysis.json`，含B32各rank/结构组的阶段统计、
+   搜索与固定planner成本、原生/自动选择/最快固定计划的留出完整MLP时间。
+   和 `native-tail-e7b1ad7a62c0` 比较，不能相加重叠区间或跨rank时间冒充端到端节省。
 6. 使用生成表的 GPU 当前-workload planner/graph 验证。
 7. 原始 native 与 peer_tail 正式服务窗口。
 
@@ -163,7 +171,12 @@ private/ 或 JIT overlay。原始 GPU rank 报告留在私有目录，公开采�
 
 - 执行 commit、回传 commit、GPUQ job、实际四卡 allocation、image ID、公开目录。
 - S1/S2/统一执行器/memcheck/measured验证的完整 case 数、四rank状态、graph replay、清理。
-- 真正执行的 task/worker/SM 证据；chunk overlap、受控 stealing 与自然观察分开。
+- 真正执行的task/worker/SM证据、最终kernel寄存器/local/shared/驻留worker数；
+  `planner_implementation=cooperative_cta_candidates_v2`，finalize每任务元素数。
+- 聚合任务完整覆盖；无注入B32/C2下chunk发布时间、首个peer任务时间、真实重叠时长；
+  受控stealing与自然观察分开，零重叠也要报告。
+- 旧/新B32校准planner、finalize、通信及完整MLP时间对比；正式窗口仍只用整体TPS，
+  不把校准曲线当成正式窗口的分阶段测量。
 - 校准表与策略身份、当前-workload CPU/GPU 选择、预测偏差、regret，以及测量开销。
 - 原生和新路径的 shared join 变化、静态 down/通信代价；不能将未隔离因素强行归因。
 - 两组实际 full Graph、B32覆盖、四rank一致、无 eager 回退与无窗口内 recapture。

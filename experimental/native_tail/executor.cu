@@ -5,15 +5,17 @@
 #include "marlin_down_tile.cuh"
 #include "peer_reduce.cuh"
 #include "cost_model.h"
+#include "task_schedule.h"
 namespace cg=cooperative_groups;
 namespace weave::native_tail {
 struct ExecutorState {
-  unsigned cursor,groups,tasks_per_chunk,done[4],finalize_claim[4],finalized,stop;
+  unsigned cursor,groups,tasks_per_chunk,done[4],finalize_claim[4],finalize_done[4],finalize_tasks,finalized,stop;
   unsigned invalid,selected;
   double features[5];
   int chosen[4];
   double prediction;
   TailCurve cache[4*kCostMaxPlans];
+  U64 published_ns[4];
   U64 times[4][8]; // diagnostic only: down min/max, finalize, owner, gather
   U64 marker_start,start,planned,finish,planner_begin,planner_end,completion_begin,role_switch,first_ready;
 };
@@ -56,58 +58,100 @@ __device__ inline void feature_scan(const ExecutorArgs&a){
   s->groups=groups;s->features[0]=total;s->features[1]=0;s->features[2]=groups;s->features[3]=0;s->features[4]=0;
   for(int e=0;e<64;++e){s->features[1]+=rows[e]>0;s->features[3]+=double(rows[e])*rows[e];s->features[4]=nt_max(s->features[4],rows[e]);}
 }
+// Collective within block 0. Other CTAs zero pair storage while this CTA
+// exchanges workload and evaluates the measured candidates in parallel.
 __device__ inline bool choose_consensus(const ExecutorArgs&a,U64 start){
   auto&cfg=a.transport;auto*local=control(cfg,cfg.rank);auto&box=local->planner;
+  __shared__ double features[20];
+  __shared__ bool valid;
   U64 epoch=local->sequence+1;
-  for(int i=0;i<5;++i)box.workload[i]=a.state->features[i];
-  box.workload[5]=a.mode[0];box.workload[6]=a.mode[1];box.workload[7]=cfg.layer;
-  sys_store(&box.workload_epoch,epoch);
-  if(cfg.rank==0){
-    for(int r=0;r<4;++r)while(sys_load(&control(cfg,r)->planner.workload_epoch)<epoch)
-      if(protocol_aborted(cfg,start))return false;
-    double f[20];for(int r=0;r<4;++r){auto&b=control(cfg,r)->planner;
-      if(sys_load(&b.workload_epoch)!=epoch||b.workload[5]!=a.mode[0]||b.workload[7]!=cfg.layer){abort_local(cfg,kIdentity);return false;}
-      if(a.mode[0]==1&&b.workload[6]!=a.mode[1]){abort_local(cfg,kIdentity);return false;}
-      for(int i=0;i<5;++i)f[r*5+i]=b.workload[i];}
-    if(a.mode[0]==0){a.state->prediction=select_tail_plan(a.table,a.anchors,f,a.plans,a.plan_count,a.down.pair_rows,a.state->cache,a.state->chosen);}
-    else {if(a.mode[1]<0||a.mode[1]>=a.plan_count){abort_local(cfg,kIdentity);return false;}
-      for(int r=0;r<4;++r)a.state->chosen[r]=a.mode[1];a.state->prediction=0;}
-    for(int r=0;r<4;++r)box.plan[r]=a.state->chosen[r];
-    sys_store(&box.plan_epoch,epoch);
+  if(threadIdx.x==0){
+    valid=true;
+    for(int i=0;i<5;++i)box.workload[i]=a.state->features[i];
+    box.workload[5]=a.mode[0];box.workload[6]=a.mode[1];box.workload[7]=cfg.layer;
+    sys_store(&box.workload_epoch,epoch);
+    if(cfg.rank==0){
+      for(int r=0;r<4&&valid;++r)while(sys_load(&control(cfg,r)->planner.workload_epoch)<epoch)
+        if(protocol_aborted(cfg,start)){valid=false;break;}
+      for(int r=0;r<4&&valid;++r){auto&b=control(cfg,r)->planner;
+        if(sys_load(&b.workload_epoch)!=epoch||b.workload[5]!=a.mode[0]||b.workload[7]!=cfg.layer||
+           (a.mode[0]==1&&b.workload[6]!=a.mode[1])){abort_local(cfg,kIdentity);valid=false;break;}
+        for(int i=0;i<5;++i)features[r*5+i]=b.workload[i];
+      }
+    }
   }
-  auto&leader=control(cfg,0)->planner;
-  while(sys_load(&leader.plan_epoch)<epoch)if(protocol_aborted(cfg,start))return false;
-  if(sys_load(&leader.plan_epoch)!=epoch){abort_local(cfg,kIdentity);return false;}
-  for(int r=0;r<4;++r)a.state->chosen[r]=leader.plan[r];
-  a.state->selected=a.state->chosen[cfg.rank];
-  if(a.state->selected>=unsigned(a.plan_count)){abort_local(cfg,kIdentity);return false;}
-  sys_store(&box.plan_ack,epoch);
-  // No rank may overwrite its mailbox before the leader has read all features.
-  for(int r=0;r<4;++r)while(sys_load(&control(cfg,r)->planner.plan_ack)<epoch)
-    if(protocol_aborted(cfg,start))return false;
-  return true;
+  __syncthreads();if(!valid)return false;
+  if(cfg.rank==0){
+    if(a.mode[0]==0){
+      double prediction=select_tail_plan_parallel(a.table,a.anchors,features,a.plans,a.plan_count,
+          a.down.pair_rows,a.state->cache,a.state->chosen);
+      if(threadIdx.x==0)a.state->prediction=prediction;
+    }else if(threadIdx.x==0){
+      if(a.mode[1]<0||a.mode[1]>=a.plan_count){abort_local(cfg,kIdentity);valid=false;}
+      else {for(int r=0;r<4;++r)a.state->chosen[r]=a.mode[1];a.state->prediction=0;}
+    }
+    __syncthreads();
+    if(threadIdx.x==0&&valid){
+      for(int r=0;r<4;++r)box.plan[r]=a.state->chosen[r];
+      sys_store(&box.plan_epoch,epoch);
+    }
+  }
+  if(threadIdx.x==0&&valid){
+    auto&leader=control(cfg,0)->planner;
+    while(sys_load(&leader.plan_epoch)<epoch)if(protocol_aborted(cfg,start)){valid=false;break;}
+    if(valid&&sys_load(&leader.plan_epoch)!=epoch){abort_local(cfg,kIdentity);valid=false;}
+    if(valid){
+      for(int r=0;r<4;++r)a.state->chosen[r]=leader.plan[r];
+      a.state->selected=a.state->chosen[cfg.rank];
+      if(a.state->selected>=unsigned(a.plan_count)){abort_local(cfg,kIdentity);valid=false;}
+    }
+    if(valid){sys_store(&box.plan_ack,epoch);
+      for(int r=0;r<4&&valid;++r)while(sys_load(&control(cfg,r)->planner.plan_ack)<epoch)
+        if(protocol_aborted(cfg,start)){valid=false;break;}
+    }
+  }
+  __syncthreads();return valid;
 }
 __device__ inline bool try_finalize(const ExecutorArgs&a,const TransportConfig&cfg,Invocation inv){
-  __shared__ int chunk;
-  if(threadIdx.x==0){chunk=-1;for(int c=0;c<cfg.chunks&&chunk<0;++c)
-    if(dev_load(&a.state->done[c])==a.state->tasks_per_chunk&&atomicCAS(&a.state->finalize_claim[c],0u,1u)==0)chunk=c;}
+  __shared__ int chunk,task;
+  __shared__ bool last;
+  if(threadIdx.x==0){chunk=task=-1;
+    for(int c=0;c<cfg.chunks&&chunk<0;++c)if(dev_load(&a.state->done[c])==a.state->tasks_per_chunk){
+      unsigned id=dev_load(&a.state->finalize_claim[c]);
+      while(id<a.state->finalize_tasks){unsigned old=atomicCAS(&a.state->finalize_claim[c],id,id+1);
+        if(old==id){chunk=c;task=id;break;}id=old;}
+    }
+  }
   __syncthreads();if(chunk<0)return false;
   const U64 begin=a.mode[2]?timer_ns():0;
-  int width=a.down.n/(cfg.chunks*4);size_t n=size_t(cfg.tokens)*width*4;
+  int width=a.down.n/(cfg.chunks*4),n=cfg.tokens*width*4;
+  auto range=finalize_task_range(task,n,blockDim.x);
   auto*pair=reinterpret_cast<__nv_bfloat16*>(a.down.output);
-  for(size_t i=threadIdx.x;i<n;i+=blockDim.x){int owner=i/(size_t(cfg.tokens)*width),token=(i/width)%cfg.tokens,x=i%width;
+  for(int i=range.begin+threadIdx.x;i<range.end;i+=blockDim.x){
+    int owner=i/(cfg.tokens*width),token=(i/width)%cfg.tokens,x=i%width;
     int channel=(chunk*4+owner)*width+x;float sum=0;
     for(int k=0;k<a.topk;++k)sum+=__bfloat162float(pair[(size_t(token)*a.topk+k)*a.down.n+channel]);
-    // Native moe_topk_sum rounds BF16 before outer shared.add_(alpha=scale).
+    // Preserve native BF16 rounding and the original per-element top-k order.
     float routed=__bfloat162float(__float2bfloat16_rn(sum));
     float shared=__bfloat162float(a.shared[size_t(token)*a.down.n+channel]);
     __nv_bfloat16 value=__float2bfloat16_rn(fmaf(a.routed_scale,routed,shared));
     if(!isfinite(__bfloat162float(value)))abort_local(cfg,kNonfinite);
     cfg.layout.partial(cfg.peers[cfg.rank],inv.slot)[payload_index(cfg,chunk,owner,token,x)]=value;
   }
-  publish_local_chunk(cfg,inv,chunk);
-  if(threadIdx.x==0){cuda::atomic_ref<unsigned,cuda::thread_scope_device>(a.state->finalized).fetch_add(1,cuda::memory_order_acq_rel);
-    atomicAdd(a.stats+30,1ULL);if(a.mode[2])tick_range(a.state->times[chunk]+2,begin,timer_ns());}
+  // Every writer fences its own payload. The final producer acquires the
+  // completion chain before publishing one ready epoch for the entire chunk.
+  __threadfence_system();__syncthreads();
+  if(threadIdx.x==0)last=cuda::atomic_ref<unsigned,cuda::thread_scope_device>(a.state->finalize_done[chunk])
+      .fetch_add(1,cuda::memory_order_acq_rel)+1==a.state->finalize_tasks;
+  __syncthreads();
+  if(last){
+    publish_local_chunk(cfg,inv,chunk);
+    if(threadIdx.x==0){
+      if(a.mode[2])a.state->published_ns[chunk]=timer_ns();
+      cuda::atomic_ref<unsigned,cuda::thread_scope_device>(a.state->finalized).fetch_add(1,cuda::memory_order_acq_rel);
+      atomicAdd(a.stats+30,1ULL);}
+  }
+  if(threadIdx.x==0&&a.mode[2])tick_range(a.state->times[chunk]+2,begin,timer_ns());
   __syncthreads();return true;
 }
 __device__ inline bool do_down(const ExecutorArgs&a,const TransportConfig&cfg,int4*scratch,bool stolen){
@@ -143,12 +187,15 @@ __global__ void resident_executor(ExecutorArgs a){
   cg::grid_group grid=cg::this_grid();auto*s=a.state;auto cfg=a.transport;cfg.diagnostics=a.mode[2]!=0;
   if(blockIdx.x==0&&threadIdx.x==0){
     s->cursor=s->groups=s->tasks_per_chunk=s->finalized=s->stop=s->invalid=0;s->prediction=0;
-    for(int c=0;c<4;++c){s->done[c]=s->finalize_claim[c]=0;for(int j=0;j<8;++j)s->times[c][j]=j%2?0:~0ULL;}
+    for(int c=0;c<4;++c){s->done[c]=s->finalize_claim[c]=s->finalize_done[c]=0;s->published_ns[c]=0;for(int j=0;j<8;++j)s->times[c][j]=j%2?0:~0ULL;}
     s->start=a.mode[2]?s->marker_start:0;s->planner_begin=s->planner_end=s->completion_begin=s->role_switch=s->first_ready=0;feature_scan(a);
     s->planner_begin=a.mode[2]?timer_ns():0;
     if(s->invalid)abort_local(cfg,kIdentity);
-    else choose_consensus(a,clock64());
-    s->planner_end=a.mode[2]?timer_ns():0;
+  }
+  if(blockIdx.x==0){
+    __syncthreads();
+    if(!s->invalid)choose_consensus(a,clock64());
+    if(threadIdx.x==0)s->planner_end=a.mode[2]?timer_ns():0;
   }
   // Empty remote slots must be zero, as in native EP. No down task writes them.
   for(size_t i=blockIdx.x*blockDim.x+threadIdx.x;i<size_t(a.down.pair_rows)*a.down.n;i+=gridDim.x*blockDim.x)
@@ -161,7 +208,9 @@ __global__ void resident_executor(ExecutorArgs a){
   if(blockIdx.x==0&&threadIdx.x==0){
     if(plan.comm>=a.workers||a.tiles%plan.chunks||a.down.n%(4*plan.chunks*16*NT_N)||
         (plan.comm<2&&plan.steal)||(plan.serial&&(plan.comm||plan.chunks!=1||plan.steal))){abort_local(cfg,kIdentity);}
-    s->tasks_per_chunk=s->groups*(a.tiles/plan.chunks);prepare_invocation(cfg);
+    s->tasks_per_chunk=s->groups*(a.tiles/plan.chunks);
+    s->finalize_tasks=finalize_task_count(cfg.tokens,a.down.n,plan.chunks,blockDim.x);
+    prepare_invocation(cfg);
     atomicAdd(a.stats,1ULL);atomicAdd(a.stats+8+s->selected,1ULL);
     atomicAdd(a.stats+36,U64(s->groups==0));atomicAdd(a.stats+38,U64(a.mode[0]==0));
     s->planned=a.mode[2]?timer_ns():0;
@@ -172,16 +221,25 @@ __global__ void resident_executor(ExecutorArgs a){
   if(a.trace&&threadIdx.x==0){U64*tr=a.trace+blockIdx.x*10;unsigned sm;asm("mov.u32 %0, %%smid;":"=r"(sm));
     for(int j=0;j<10;++j)tr[j]=0;tr[0]=comm_role;tr[1]=sm;tr[2]=timer_ns();}
   __shared__ bool stop,headers,can_comm,ready,compute_ready;
+  if(threadIdx.x==0)headers=false;
+  __syncthreads();
   while(true){
-    if(threadIdx.x==0){stop=dev_load(&s->stop)||protocol_aborted(cfg,start);headers=protocol_headers_ready(cfg,inv);
-      ready=headers&&communication_ready(cfg,inv);can_comm=(comm_role&&!plan.serial)||dev_load(&s->finalized)==unsigned(cfg.chunks);
+    if(threadIdx.x==0){
+      // One progress owner polls peer abort/completion. Compute CTAs read local
+      // state instead of flooding system-scope mailboxes during every tile.
+      if(blockIdx.x==0&&protocol_aborted(cfg,start))dev_store(&s->stop,1);
+      stop=dev_load(&s->stop);
+      can_comm=communication_worker_eligible(blockIdx.x,plan.comm,cfg.chunks,
+          dev_load(&s->finalized)==unsigned(cfg.chunks));
+      if(can_comm&&!headers)headers=protocol_headers_ready(cfg,inv);
+      ready=comm_role&&headers&&communication_ready(cfg,inv);
       // Finalize/down contain CTA barriers. Only the leader samples the delay
       // clock; the following barrier publishes one decision to every warp.
       compute_ready=!a.mode[2]||clock64()-start>=U64(a.mode[3]);}
     __syncthreads();if(stop)break;
     if(comm_role&&ready){entered_comm=true;if(a.mode[2]&&threadIdx.x==0)atomicCAS(&s->first_ready,0ULL,timer_ns());if(a.trace&&threadIdx.x==0&&!a.trace[blockIdx.x*10+7])a.trace[blockIdx.x*10+7]=timer_ns();}
     bool worked=false;
-    if(headers&&can_comm){U64 begin=a.mode[2]?timer_ns():0;int task=transport_try_work(cfg,inv,a.mode[2]?&s->first_ready:nullptr);
+    if(headers&&can_comm){U64 begin=a.mode[2]?timer_ns():0;int task=transport_try_work(cfg,inv,a.mode[2]?&s->first_ready:nullptr,a.mode[2]?&begin:nullptr);
       if(task>=0){worked=true;entered_comm=true;
         if(threadIdx.x==0){
           int c=task<cfg.chunks?task:(task-cfg.chunks)/4;int stage=task<cfg.chunks?4:6;
@@ -200,7 +258,7 @@ __global__ void resident_executor(ExecutorArgs a){
     if(!worked&&comm_role&&!entered_comm&&quota>0&&!ready){worked=do_down(a,cfg,scratch,true);if(worked){--quota;if(a.mode[2])stolen_end=timer_ns();}}
     if(threadIdx.x==0){
       if(a.mode[2]&&dev_load(&slot_control(cfg,cfg.rank,inv)->completed)==unsigned(cfg.chunks*5))atomicCAS(&s->completion_begin,0ULL,timer_ns());
-      if(headers&&transport_complete(cfg,inv))dev_store(&s->stop,1);
+      if(blockIdx.x==0&&headers&&transport_complete(cfg,inv))dev_store(&s->stop,1);
       if(!worked)__nanosleep(64);
     }
     __syncthreads();
@@ -231,7 +289,9 @@ pybind11::dict resources(int scratch){
   pybind11::dict d;d["workers"]=active*prop.multiProcessorCount;d["active_blocks_per_sm"]=active;
   d["sms"]=prop.multiProcessorCount;d["registers"]=attr.numRegs;d["local_bytes"]=attr.localSizeBytes;
   d["static_shared_bytes"]=attr.sharedSizeBytes;d["scratch_bytes"]=scratch;d["threads"]=NT_THREADS;
-  d["state_bytes"]=sizeof(ExecutorState);return d;
+  d["state_bytes"]=sizeof(ExecutorState);
+  d["planner_implementation"]="cooperative_cta_candidates_v2";
+  d["finalize_elements_per_task"]=NT_THREADS*kFinalizeElementsPerThread;return d;
 }
 void launch(torch::Tensor activation,torch::Tensor weight,torch::Tensor scales,torch::Tensor sorted,
   torch::Tensor experts,torch::Tensor padded,torch::Tensor routing,torch::Tensor shared,
@@ -278,6 +338,10 @@ pybind11::dict snapshot(torch::Tensor tensor){
   c10::cuda::CUDAGuard guard(tensor.device());
   ExecutorState state;check(cudaMemcpy(&state,tensor.data_ptr(),sizeof(state),cudaMemcpyDeviceToHost));
   pybind11::dict d;d["local_groups"]=state.groups;d["features"]=std::vector<double>(state.features,state.features+5);d["selected_index"]=state.selected;
+  d["chunk_published_ns"]=std::vector<U64>(state.published_ns,state.published_ns+4);
+  d["finalize_tasks_per_chunk"]=state.finalize_tasks;d["finalized_chunks"]=state.finalized;
+  d["finalize_claimed"]=std::vector<unsigned>(state.finalize_claim,state.finalize_claim+4);
+  d["finalize_completed"]=std::vector<unsigned>(state.finalize_done,state.finalize_done+4);
   d["chosen_indices"]=std::vector<int>(state.chosen,state.chosen+4);d["leader_prediction_us"]=state.prediction;
   d["start_ns"]=state.start;d["planned_ns"]=state.planned;d["finish_ns"]=state.finish;d["planner_begin_ns"]=state.planner_begin;d["planner_end_ns"]=state.planner_end;d["completion_begin_ns"]=state.completion_begin;d["role_switch_ns"]=state.role_switch;d["first_ready_ns"]=state.first_ready;
   std::vector<std::vector<U64>>times;for(int c=0;c<4;++c)times.emplace_back(state.times[c],state.times[c]+8);d["chunk_times_ns"]=times;return d;

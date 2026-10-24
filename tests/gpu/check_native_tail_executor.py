@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from src.weave.hopper_evidence import atomic_report
 from src.weave.native_tail_patch import METHOD, verify_sources, load_down_op
+from src.weave.native_tail_timing import snapshot_timing, summarize_cases
 from tests.gpu import check_native_tail_compute as compute
 from tests.gpu import check_native_budget as support
 
@@ -353,6 +354,7 @@ def main(argv=None):
                         after_stats = ctx.stats.cpu().tolist()
                         require(after_stats[0]-before_stats[0] == 1 and after_stats[1]-before_stats[1] == 1
                             and after_stats[34]-before_stats[34] == 1, 'one front/tail/committed invocation coverage differs')
+                        require(snapshot.get('finalize_tasks_verified') is True, 'finalize task coverage/publication incomplete')
                         protocol = snapshot['protocol']
                         assessed = assess_transport_evidence(protocol)
                         require(assessed['valid'], 'protocol task/ack/nonfinite/canary check failed: '+str(assessed['failures']))
@@ -399,6 +401,8 @@ def main(argv=None):
                         trace_path.chmod(0o600)
                         report['cases'].append(dict(batch=batch,m_block=block,mode=mode_name,pattern=pattern,
                             replay=replay,sequence=sequence,plan=actual_plan,resources=ctx.resources,
+                            finalize_task_coverage_verified=True,
+                            timing=snapshot_timing(snapshot,chunks=actual_plan['chunks'],tiles=case.tiles,capacity=case.capacity),
                             controlled_compute_delay_cycles=delay,mechanisms=mechanisms,numerical=numerical,
                             oracle_numerical=oracle,planner=planner,protocol_valid=True,canary_ok=True,
                             native_locks_zero=True,stable_graph_addresses=True,exact_task_coverage=True,
@@ -410,6 +414,8 @@ def main(argv=None):
         require(native_tail_source_sha256() == report['source_sha256'],'native tail source changed during validation')
         verify_sources(package)
         report.update(observed,case_count=len(report['cases']),expected_case_count=expected,
+            finalize_task_coverage_verified=all(c['finalize_task_coverage_verified'] for c in report['cases']),
+            execution_timing_summary=summarize_cases(report['cases']),
             checks_complete=True,stop_reason='complete_case_coverage',
             graph_capture_replay=dict(verified=True,replays=total_replays,
                 initial_sequence=initial_sequence,final_sequence=final_sequence,

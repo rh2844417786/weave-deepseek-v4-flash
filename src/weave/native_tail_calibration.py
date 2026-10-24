@@ -20,6 +20,7 @@ from .native_tail_cost import (METHOD, POLICY, SCALARS, STAGES, select_joint,
     profile_digest, validate_surface)
 from .native_tail_front import _compile_function
 from .native_tail_patch import source_pins
+from .native_tail_timing import snapshot_timing
 
 
 def _finite_nonnegative(value, name):
@@ -338,6 +339,7 @@ def calibrate_layer(runtime, layer, batch, original, args, kwargs):
                     curves.append(curve)
                     joins.append(new_points.us('before_join','after_join'))
                     diagnostic_records.append(dict(workload=route,curve=curve,
+                        timing=snapshot_timing(state,chunks=plan.chunks,tiles=diagnostic_down.geometry.n//(ctx.geometry['n_blocks']*16),capacity=diagnostic_down.geometry.group_capacity),
                         rank_local_timestamps={k:v for k,v in state.items() if k.endswith('_ns')},
                         protocol_valid=True))
                 chosen_curve, representative = _median_curve(plan,curves)

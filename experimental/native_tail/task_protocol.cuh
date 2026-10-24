@@ -135,8 +135,9 @@ __device__ inline bool protocol_headers_ready(const TransportConfig& cfg,Invocat
   return true;
 }
 // Every payload writer must call its own fence before the CTA leader publishes.
-// For many-CTA finalize: each producing CTA first device-publishes its completion;
-// the finalizing CTA acquires all completions, writes the complete chunk, then calls here.
+// For many-CTA finalize: every producing lane first system-fences its payload;
+// each CTA then releases completion. The last CTA acquires that completion chain
+// before calling here to publish readiness for the whole chunk.
 __device__ inline void publish_local_chunk(const TransportConfig& cfg,Invocation inv,int chunk) {
   __threadfence_system(); __syncthreads();
   if(threadIdx.x==0) sys_store(&slot_control(cfg,cfg.rank,inv)->ready[chunk],inv.sequence);

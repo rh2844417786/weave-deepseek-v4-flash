@@ -267,7 +267,7 @@ class TailGpuSummaryTests(unittest.TestCase):
             for rank in range(4):
                 cases=[dict(batch=32,mode='measured',pattern=p,replay=i,protocol_valid=True,
                     canary_ok=True,native_locks_zero=True,stable_graph_addresses=True,
-                    exact_task_coverage=True,front_and_tail_calls=1)
+                    exact_task_coverage=True,finalize_task_coverage_verified=True,front_and_tail_calls=1)
                     for p in ('concentrated','balanced','light','empty_rank2') for i in range(5)]
                 report=dict(rank=rank,method='native_marlin_peer_tail_v1',numerical_policy='record_only',
                     status='complete',checks_complete=True,cleanup={'status':'complete'},cases=cases,

@@ -33,6 +33,16 @@ def deployment_identity(torch,rank,package_root):
     return value
 
 
+def finalize_coverage_valid(state,tokens,hidden,chunks,threads):
+    """Exact slice counts; independent of finite numerical-error magnitudes."""
+    expected=max(1,(tokens*(hidden//chunks)+threads*8-1)//(threads*8))
+    counts=[expected]*chunks+[0]*(4-chunks)
+    return (state.get('finalize_tasks_per_chunk')==expected
+            and state.get('finalize_claimed')==counts
+            and state.get('finalize_completed')==counts
+            and state.get('finalized_chunks')==chunks)
+
+
 @dataclass
 class Binding:
     layer:int
@@ -229,6 +239,9 @@ class NativeTailExecutor:
         p=result['protocol']
         result['protocol_valid']=result['canary_ok'] and p.get('abort_code')==0 and p.get('nonfinite')==0 and p.get('acknowledged') is True and p.get('canary_ok') is True
         if ctx.diagnostic:result['protocol_valid'] &= len(p.get('tasks',[]))==p.get('expected_tasks') and all(v==1 for v in p.get('tasks',[]))
+        result['finalize_tasks_verified']=finalize_coverage_valid(result,batch,self.config['hidden'],
+            ctx.plans[result['selected_index']].chunks,ctx.resources['threads'])
+        result['protocol_valid'] &= result['finalize_tasks_verified']
         result['resources']=ctx.resources;result['geometry']=ctx.geometry
         if private:
             result.update(visits=ctx.visits.cpu().tolist(),trace=ctx.trace.cpu().tolist(),events=ctx.events.cpu().tolist())

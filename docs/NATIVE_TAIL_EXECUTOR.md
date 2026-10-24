@@ -29,6 +29,15 @@ S1 独立提交：`5b4b7dc04f79cbfbed36f6be5d595a76039effe9`。
 S2 独立提交：`9b0668c73cce228772b7df3dd209f118631c5e72`。
 后续统一源码应从本轮最终执行提交运行；不要把旧 S1/S2 提交当作完整服务版本。
 
+## 2026-10-24：B32执行成本与chunk发布修复
+
+`26e314f` 回传的 `native-tail-e7b1ad7a62c0` 完成了Graph和两阶段清理，但吞吐为
+native1901.44、peer_tail221.10 token/s。B32校准显示毫秒级单线程planner和
+单CTA finalize，常用C2/C4样本的首个peer任务均在全部本地下游down结束后才开始。
+本轮改为CTA协作搜索、多CTA finalize和有界通信轮询；候选和逐元素算术保留。
+详见 [B32瓶颈分析与修复](NATIVE_TAIL_OVERLAP_ANALYSIS.md)。新代码尚需服务器GPU
+重跑；本地CPU验证不能证明新的重叠、访存安全或吞吐收益。
+
 ## 2026-10-22：S1 编译失败及修复
 
 服务器回传 `c079179` / `native-tail-816d1423a582` 在原执行提交 `2ff0ba7` 的

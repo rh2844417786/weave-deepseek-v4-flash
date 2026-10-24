@@ -27,23 +27,26 @@ class CtaControlTests(unittest.TestCase):
     def test_clock_skew_cannot_split_cta_at_delay_boundary(self):
         declaration,poll,guard=control_source()
         source='''#include <iostream>
+#include "experimental/native_tail/task_schedule.h"
+using weave::native_tail::communication_worker_eligible;
 using U64=unsigned long long;
-struct {unsigned x;} threadIdx;
+struct {unsigned x;} threadIdx,blockIdx;
 U64 now;U64 clock64(){return now;}
 struct State {unsigned stop=0,finalized=0;};
 struct Config {int chunks=2;};struct Invocation {};
 unsigned dev_load(unsigned*p){return *p;}
+void dev_store(unsigned*p,unsigned v){*p=v;}
 bool protocol_aborted(const Config&,U64){return false;}
 bool protocol_headers_ready(const Config&,Invocation){return true;}
 bool communication_ready(const Config&,Invocation){return false;}
 int sample(int threads,int diagnostic,int delay,U64 elapsed,bool comm_role,bool worked){
  State state;State*s=&state;Config cfg;Invocation inv;
- struct {bool serial=false;}plan;
+ struct {bool serial=false;int comm=2;}plan;
  int mode[4]={1,0,diagnostic,delay};struct {int*mode;}a{mode};
  const U64 start=10000;
 '''+declaration+'''
  // Simulate the leader publishing the real poll, then the existing CTA barrier.
- threadIdx.x=0;now=start+elapsed;
+ threadIdx.x=0;blockIdx.x=0;headers=false;now=start+elapsed;
 '''+poll+'''
  bool expected=!worked&&!comm_role&&(!diagnostic||elapsed>=U64(delay));
  int entered=0;
@@ -71,7 +74,7 @@ int main(){int errors=0;
 '''
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'control.cpp';binary=Path(directory)/'control';path.write_text(source)
-            build=subprocess.run(['c++','-std=c++20',str(path),'-o',str(binary)],capture_output=True,text=True)
+            build=subprocess.run(['c++','-std=c++20','-I',str(ROOT),str(path),'-o',str(binary)],capture_output=True,text=True)
             self.assertEqual(build.returncode,0,build.stderr)
             run=subprocess.run([str(binary)],capture_output=True,text=True)
             self.assertEqual(run.returncode,0,run.stderr)
