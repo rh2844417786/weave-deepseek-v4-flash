@@ -1,7 +1,7 @@
 # 服务器 Claude Code + DeepSeek V4 Flash 执行 Prompt
 
 以下为可直接粘贴的完整指令。源码执行提交固定为
-`ccc4d46188bb81a2eeaf4cc13a0d2d53f431f423`；文档后续提交不会改变该源码。
+`bc11f94027a95f8c2f1afc33c56d0ce0f7e82c7f`；文档后续提交不会改变该源码。
 
 执行提交以这份从最新 main 读取的 Prompt 为准；固定 execution checkout 中较早的
 Prompt 作为历史记录，不用于改写下面的 `CODE_SHA`。
@@ -40,7 +40,7 @@ NVCC编译、GPU访存、重叠及吞吐以本轮实际运行结果为准。
 ```bash
 REPO=/srv/weave-push-repo
 WORK_ROOT=/srv/weave-work
-CODE_SHA=ccc4d46188bb81a2eeaf4cc13a0d2d53f431f423
+CODE_SHA=bc11f94027a95f8c2f1afc33c56d0ce0f7e82c7f
 
 git -C "$REPO" status --short
 git -C "$REPO" fetch origin main
